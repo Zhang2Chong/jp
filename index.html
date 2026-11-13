@@ -1,28 +1,63 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh‑CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF‑8">
+<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
 <title>张氏家谱</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#111;color:#ffdd66;font-family:Microsoft YaHei,sans-serif;padding:20px 10px}
-.container{max-width:720px;margin:0 auto}
-h1{text-align:center;margin:30px 0;font-size:32px}
-.intro{max-width:100%;margin:0 auto 40px;background:#222;padding:25px;border-radius:12px;line-height:1.8}
-.btn{display:block;width:220px;margin:30px auto;padding:14px;text-align:center;background:#b8860b;color:white;text-decoration:none;border-radius:8px;font-size:18px}
+*{box‑sizing:border‑box;margin:0;padding:0}
+body{background:#111;color:#ffdd66;font‑family:Microsoft YaHei,sans‑serif;padding:20px}
+.container{max‑width:720px;margin:0 auto;background:#222;padding:25px;border‑radius:12px}
+h1,h2{text‑align:center;margin‑bottom:20px}
+.btn{display:block;width:100%;padding:12px;margin:8px 0;border:none;border‑radius:8px;font‑size:18px}
+.btn‑orange{background:#ff8800;color:white}
+#browseSection{display:none;margin‑top:20px}
+table{width:100%;border‑collapse:collapse;margin‑top:15px;font‑size:12px}
+th,td{border:1px solid #555;padding:6px;text‑align:left}
+th{background:#444}
 </style>
 </head>
 <body>
 <div class="container">
 <h1>张氏家谱</h1>
-<div class="intro">
-<h3>📜 家谱说明</h3>
-<p>本家谱收录张氏历代族人资料，支持世代浏览、人员查询、亲属关系比对。</p>
-<p>👉 【浏览入口】即将上线世代列表与个人详情查询</p>
-<p>👉 【管理入口】持有家族密码人员：<a href="admin.html" style="color:#ffdd66">进入新增族人页面</a></p>
+<div>
+<p>本家谱收录张氏历代族人资料</p>
+<button class="btn btn‑orange" id="btnBrowse">进入家谱浏览</button>
+<button class="btn btn‑orange" onclick="location.href='admin.html'">管理入口（新增族人）</button>
 </div>
-<a class="btn" href="#browse">进入家谱浏览</a>
+
+<div id="browseSection">
+<h2>族人列表</h2>
+<table id="familyTable">
+<thead id="tableHead"></thead>
+<tbody id="tableBody"></tbody>
+</table>
 </div>
+</div>
+
+<script>
+const csvUrl="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
+
+document.getElementById("btnBrowse").onclick=async function(){
+  this.style.display="none";
+  document.getElementById("browseSection").style.display="block";
+  const res=await fetch(csvUrl);
+  const text=await res.text();
+  const lines=text.trim().split("\n");
+  const head=lines[0].split(",");
+  let headHtml="";
+  head.forEach(h=>headHtml+=`<th>${h}</th>`);
+  document.getElementById("tableHead").innerHTML=`<tr>${headHtml}</tr>`;
+
+  let bodyHtml="";
+  for(let i=1;i<lines.length;i++){
+    const row=lines[i].split(",");
+    let cellHtml="";
+    row.forEach(c=>cellHtml+=`<td>${c}</td>`);
+    bodyHtml+=`<tr>${cellHtml}</tr>`;
+  }
+  document.getElementById("tableBody").innerHTML=bodyHtml;
+}
+</script>
 </body>
 </html>
