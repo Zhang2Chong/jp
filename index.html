@@ -3,67 +3,27 @@
 <head>
 <meta charset="UTF‑8">
 <meta name="viewport" content="width=device‑width, initial‑scale=1.0">
-<title>单人完整族谱</title>
+<title>张氏家谱</title>
 <style>
 *{box‑sizing:border‑box;margin:0;padding:0}
-body{background:#1a1a1a;color:#ffdd66;font‑family:"Microsoft YaHei",sans‑serif;padding:20px}
-.back{color:#ff8800;margin‑bottom:20px;display:block}
-h2{text‑align:center;margin‑bottom:20px}
-.line{font‑size:20px;margin:10px 0}
+body{background:#1a1a1a;color:#ffdd66;font‑family:"Microsoft YaHei",sans‑serif;padding:24px}
+.container{max‑width:850px;margin:0 auto;text‑align:center}
+h1{font‑size:36px;margin‑bottom:6px;color:#ffdd66}
+.author{font‑size:18px;margin‑bottom:40px;color:#e2b558}
+.btn{display:block;width:100%;padding:16px;margin:12px 0;border:none;border‑radius:8px;font‑size:20px;color:white;text‑decoration:none}
+.btn‑1{background:#ff8800}
+.btn‑2{background:#2288ff}
+#adminLink{position:absolute;top:20px;right:20px;color:#ff8800;text‑decoration:none;font‑size:16px}
 </style>
 </head>
 <body>
-<a class="back" href="browse.html">← 返回世代列表</a>
-<h2 id="title"></h2>
-<div id="result"></div>
+<a id="adminLink" href="admin.html">管理入口（新增族人）</a>
+<div class="container">
+<h1>张氏家谱</h1>
+<div class="author">编撰：张观来陈桑</div>
 
-<script>
-const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
-let familyMap={};
-
-// 获取url里面传过来的人员编号
-const params=new URLSearchParams(location.search);
-const targetNo=params.get("no");
-
-async function load(){
-  const res=await fetch(CSV_URL);
-  const text=await res.text();
-  const lines=text.trim().split(/\r?\n/);
-  const head=lines[0].split(",");
-  const idxNo=head.indexOf("No");
-  const idxName=head.indexOf("姓名");
-  const idxFather=head.indexOf("父亲编号");
-  const idxGen=head.indexOf("世代");
-
-  for(let i=1;i<lines.length;i++){
-    const c=lines[i].split(",");
-    familyMap[c[idxNo]?.trim()]={
-      name:c[idxName]?.trim()||"",
-      father:c[idxFather]?.trim()||"",
-      gen:parseInt(c[idxGen])||1
-    }
-  }
-
-  // 向上追溯完整祖先链
-  const chain=[];
-  let curr=targetNo;
-  while(familyMap[curr]){
-    chain.unshift(familyMap[curr]);
-    curr=familyMap[curr].father;
-    if(!curr || curr==="0") break;
-  }
-
-  document.getElementById("title").innerText=`${chain[chain.length‑1]?.name} 完整世代族谱`;
-  let html="";
-  chain.forEach(p=>{
-    html+=`<div class="line">第${p.gen}代：${p.name}</div>`
-  })
-  document.getElementById("result").innerHTML=html;
-}
-
-load().catch(e=>{
-  document.getElementById("result").innerText="加载失败："+e.message;
-})
-</script>
+<a class="btn btn‑1" href="browse.html">📖 浏览世代族谱</a>
+<a class="btn btn‑2" href="compare.html">⚖️ 两人血缘对比（找共同祖先）</a>
+</div>
 </body>
 </html>
