@@ -3,74 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>张氏家谱</title>
+<title>张氏族谱</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#111;color:#ffdd66;font-family:Microsoft YaHei,sans-serif;padding:20px}
-.container{max-width:720px;margin:0 auto;background:#222;padding:25px;border-radius:12px}
-h1,h2{text-align:center;margin-bottom:20px}
-.btn{display:block;width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;font-size:18px}
-.btn-orange{background:#ff8800;color:white}
-#browseSection{display:none;margin-top:20px}
-table{width:100%;border-collapse:collapse;margin-top:15px;font-size:12px}
-th,td{border:1px solid #555;padding:6px;text-align:left}
-th{background:#444}
-#msg{color:#ff4444;margin:10px 0}
+body{background:#121212;color:#ffdd66;font-family:"Microsoft YaHei",sans-serif;padding:20px}
+.container{max-width:800px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+h1{font-size:32px;text-align:center;flex-grow:1}
+.subTitle{text-align:center;margin-bottom:20px;color:#e6b85c}
+#searchBox{width:100%;padding:14px;font-size:18px;border-radius:8px;border:none;margin-bottom:24px}
+.genBlock{margin:20px 0}
+.genTitle{font-size:22px;color:#ff4444;margin:12px 0;border-left:4px solid #ff4444;padding-left:10px}
+.personItem{padding:10px 14px;background:#202020;border-radius:6px;margin:8px 0}
+#adminLink{color:#ff8800;text-decoration:none;font-size:16px}
+.loading{text-align:center;font-size:18px}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>张氏家谱</h1>
-<div id="msg"></div>
+<header>
+<div></div>
 <div>
-<p>本家谱收录张氏历代族人资料</p>
-<button class="btn btn-orange" id="btnBrowse">进入家谱浏览</button>
-<button class="btn btn-orange" onclick="location.href='admin.html'">管理入口（新增族人）</button>
+<h1>张氏族谱</h1>
+<div class="subTitle"><span id="totalCount">0</span> 位家人 · <span id="maxGen">0</span> 代传承</div>
 </div>
+<a id="adminLink" href="admin.html">管理入口（新增族人）</a>
+</header>
 
-<div id="browseSection">
-<h2>族人列表</h2>
-<table id="familyTable">
-<thead id="tableHead"></thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
+<input id="searchBox" placeholder="输入姓名、别名搜索">
+<div id="mainContent" class="loading">正在加载族谱……</div>
 </div>
 
 <script>
-const csvUrl="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
+const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
+let fullData=[];
 
-document.getElementById("btnBrowse").onclick=async function(){
-  const msgBox=document.getElementById("msg");
-  msgBox.innerText="正在加载家谱…";
-  this.style.display="none";
-  try{
-    const res=await fetch(csvUrl);
-    if(!res.ok) throw new Error("读取中央CSV失败");
-    const text=await res.text();
-    const lines=text.trim().split("\n");
-    if(lines.length===0) throw new Error("CSV内容是空的");
+async function loadFamily(){
+  const res=await fetch(CSV_URL);
+  const text=await res.text();
+  const lines=text.trim().split(/\r?\n/);
+  const headers=lines[0].split(",");
+  const idxName=headers.indexOf("姓名");
+  const idxNo=headers.indexOf("No");
+  const idxFather=headers.indexOf("父亲编号");
+  const idxGen=headers.indexOf("世代");
 
-    const head=lines[0].split(",");
-    let headHtml="";
-    head.forEach(h=>headHtml+=`<th>${h}</th>`);
-    document.getElementById("tableHead").innerHTML=`<tr>${headHtml}</tr>`;
-
-    let bodyHtml="";
-    for(let i=1;i<lines.length;i++){
-      const row=lines[i].split(",");
-      let cellHtml="";
-      row.forEach(c=>cellHtml+=`<td>${c}</td>`);
-      bodyHtml+=`<tr>${cellHtml}</tr>`;
-    }
-    document.getElementById("tableBody").innerHTML=bodyHtml;
-    document.getElementById("browseSection").style.display="block";
-    msgBox.innerText="";
-  }catch(err){
-    msgBox.innerText="❌ 加载失败："+err.message;
-    document.getElementById("btnBrowse").style.display="block";
+  fullData=[];
+  for(let i=1;i<lines.length;i++){
+    const cols=lines[i].split(",");
+    fullData.push({
+      name:cols[idxName]?.trim()||"",
+      no:cols[idxNo]?.trim()||"",
+      father:cols[idxFather]?.trim()||"",
+      gen:parseInt(cols[idxGen])||1
+    });
   }
+  renderList(fullData);
 }
+
+function renderList(list){
+  const mapByGen={};
+  let maxG=0;
+  list.forEach(p=>{
+    if(!mapByGen[p.gen]) mapByGen[p.gen]=[];
+    mapByGen[p.gen].push(p);
+    if(p.gen>maxG) maxG=p.gen;
+  });
+
+  let html="";
+  for(let g=1;g<=maxG;g++){
+    const arr=mapByGen[g]||[];
+    html+=`<div class="genBlock">
+      <div class="genTitle">第${g}代</div>`;
+    arr.forEach(p=>{
+      html+=`<div class="personItem">${p.name}</div>`;
+    })
+    html+=`</div>`;
+  }
+  document.getElementById("mainContent").innerHTML=html;
+  document.getElementById("totalCount").innerText=list.length;
+  document.getElementById("maxGen").innerText=maxG;
+}
+
+//搜索
+document.getElementById("searchBox").oninput=function(){
+  const kw=this.value.trim().toLowerCase();
+  const filtered=fullData.filter(p=>p.name.toLowerCase().includes(kw));
+  renderList(filtered);
+}
+
+//启动
+loadFamily().catch(e=>{
+  document.getElementById("mainContent").innerText="族谱加载失败："+e.message;
+})
 </script>
 </body>
 </html>
