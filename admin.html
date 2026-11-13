@@ -46,24 +46,25 @@ async function submitData(){
     photoLink:document.getElementById("photoLink").value,
     note:document.getElementById("note").value
   }
-  // 发送到 GitHub 仓库的 workflow dispatch 触发接口（密钥放在后台 Secrets）
-  const res=await fetch("https://api.github.com/repos/Zhang2Chong/ZhangFamily/actions/workflows/update‑family.yml/dispatches",{
+  const res=await fetch("https://api.github.com/repos/Zhang2Chong/ZhangFamily/dispatches",{
     method:"POST",
     headers:{
       "Accept":"application/vnd.github+json",
-      "Authorization":`token ${window.GITHUB_DISPATCH_TOKEN}` // 密钥不在网页源码硬编码
+      "X‑GitHub‑Api‑Version":"2022‑11‑28",
+      "Authorization":"token "+data.pwd
     },
     body:JSON.stringify({
-      ref:"main",
-      inputs:data
+      event_type:"add‑person",
+      client_payload:data
     })
   });
   if(res.ok){
-    alert("✅ 提交成功，已自动加入家谱！");
+    alert("✅ 提交成功，等待家谱自动更新！");
   }else{
     alert("❌ 提交失败，请核对家族密码");
   }
 }
+
 
 
 }
