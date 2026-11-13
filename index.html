@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>张氏家谱</title>
 <style>
-*{box‑sizing:border‑box;margin:0;padding:0}
-body{background:#111;color:#ffdd66;font‑family:Microsoft YaHei,sans‑serif;padding:20px}
-.container{max‑width:720px;margin:0 auto;background:#222;padding:25px;border‑radius:12px}
-h1,h2{text‑align:center;margin‑bottom:20px}
-.btn{display:block;width:100%;padding:12px;margin:8px 0;border:none;border‑radius:8px;font‑size:18px}
-.btn‑orange{background:#ff8800;color:white}
-#browseSection{display:none;margin‑top:20px}
-table{width:100%;border‑collapse:collapse;margin‑top:15px;font‑size:12px}
-th,td{border:1px solid #555;padding:6px;text‑align:left}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111;color:#ffdd66;font-family:Microsoft YaHei,sans-serif;padding:20px}
+.container{max-width:720px;margin:0 auto;background:#222;padding:25px;border-radius:12px}
+h1,h2{text-align:center;margin-bottom:20px}
+.btn{display:block;width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;font-size:18px}
+.btn-orange{background:#ff8800;color:white}
+#browseSection{display:none;margin-top:20px}
+table{width:100%;border-collapse:collapse;margin-top:15px;font-size:12px}
+th,td{border:1px solid #555;padding:6px;text-align:left}
 th{background:#444}
+#msg{color:#ff4444;margin:10px 0}
 </style>
 </head>
 <body>
 <div class="container">
 <h1>张氏家谱</h1>
+<div id="msg"></div>
 <div>
 <p>本家谱收录张氏历代族人资料</p>
-<button class="btn btn‑orange" id="btnBrowse">进入家谱浏览</button>
-<button class="btn btn‑orange" onclick="location.href='admin.html'">管理入口（新增族人）</button>
+<button class="btn btn-orange" id="btnBrowse">进入家谱浏览</button>
+<button class="btn btn-orange" onclick="location.href='admin.html'">管理入口（新增族人）</button>
 </div>
 
 <div id="browseSection">
@@ -39,24 +41,35 @@ th{background:#444}
 const csvUrl="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
 
 document.getElementById("btnBrowse").onclick=async function(){
+  const msgBox=document.getElementById("msg");
+  msgBox.innerText="正在加载家谱…";
   this.style.display="none";
-  document.getElementById("browseSection").style.display="block";
-  const res=await fetch(csvUrl);
-  const text=await res.text();
-  const lines=text.trim().split("\n");
-  const head=lines[0].split(",");
-  let headHtml="";
-  head.forEach(h=>headHtml+=`<th>${h}</th>`);
-  document.getElementById("tableHead").innerHTML=`<tr>${headHtml}</tr>`;
+  try{
+    const res=await fetch(csvUrl);
+    if(!res.ok) throw new Error("读取中央CSV失败");
+    const text=await res.text();
+    const lines=text.trim().split("\n");
+    if(lines.length===0) throw new Error("CSV内容是空的");
 
-  let bodyHtml="";
-  for(let i=1;i<lines.length;i++){
-    const row=lines[i].split(",");
-    let cellHtml="";
-    row.forEach(c=>cellHtml+=`<td>${c}</td>`);
-    bodyHtml+=`<tr>${cellHtml}</tr>`;
+    const head=lines[0].split(",");
+    let headHtml="";
+    head.forEach(h=>headHtml+=`<th>${h}</th>`);
+    document.getElementById("tableHead").innerHTML=`<tr>${headHtml}</tr>`;
+
+    let bodyHtml="";
+    for(let i=1;i<lines.length;i++){
+      const row=lines[i].split(",");
+      let cellHtml="";
+      row.forEach(c=>cellHtml+=`<td>${c}</td>`);
+      bodyHtml+=`<tr>${cellHtml}</tr>`;
+    }
+    document.getElementById("tableBody").innerHTML=bodyHtml;
+    document.getElementById("browseSection").style.display="block";
+    msgBox.innerText="";
+  }catch(err){
+    msgBox.innerText="❌ 加载失败："+err.message;
+    document.getElementById("btnBrowse").style.display="block";
   }
-  document.getElementById("tableBody").innerHTML=bodyHtml;
 }
 </script>
 </body>
