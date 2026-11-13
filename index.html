@@ -3,94 +3,66 @@
 <head>
 <meta charset="UTF‑8">
 <meta name="viewport" content="width=device‑width, initial‑scale=1.0">
-<title>张氏族谱</title>
+<title>单人完整族谱</title>
 <style>
 *{box‑sizing:border‑box;margin:0;padding:0}
-body{background:#1a1a1a;color:#ffdd66;font‑family:"Microsoft YaHei",sans‑serif;padding:24px}
-.container{max‑width:850px;margin:0 auto}
-header{display:flex;justify‑content:space‑between;align‑items:flex‑start;margin‑bottom:20px}
-.titleWrap{flex‑grow:1;text‑align:center}
-h1{font‑size:36px;margin‑bottom:6px;color:#ffdd66}
-.subTitle{font‑size:16px;color:#e2b558}
-#adminLink{color:#ff8800;text‑decoration:none;font‑size:16px;margin‑top:8px;display:inline‑block}
-#searchBox{width:100%;padding:14px 16px;font‑size:18px;border‑radius:8px;border:none;margin:24px 0}
-.generation{margin:26px 0}
-.genHeader{display:flex;align‑items:center;margin‑bottom:10px}
-.redBar{width:4px;height:22px;background:#ff3333;margin‑right:10px}
-.genText{font‑size:22px;color:#ff4444}
-.person{padding:12px 0 12px 14px;font‑size:20px;color:#fff;border‑bottom:1px solid #333}
-.loading{text‑align:center;font‑size:20px;margin‑top:60px}
+body{background:#1a1a1a;color:#ffdd66;font‑family:"Microsoft YaHei",sans‑serif;padding:20px}
+.back{color:#ff8800;margin‑bottom:20px;display:block}
+h2{text‑align:center;margin‑bottom:20px}
+.line{font‑size:20px;margin:10px 0}
 </style>
 </head>
 <body>
-<div class="container">
-<header>
-<div></div>
-<div class="titleWrap">
-<h1>张氏族谱</h1>
-<div class="subTitle"><span id="total">0</span> 位家人 · <span id="maxGen">0</span> 代传承</div>
-</div>
-<a id="adminLink" href="admin.html">管理入口（新增族人）</a>
-</header>
-
-<input id="searchBox" placeholder="输入姓名、别名或编号">
-<div id="content" class="loading">正在加载族谱……</div>
-</div>
+<a class="back" href="browse.html">← 返回世代列表</a>
+<h2 id="title"></h2>
+<div id="result"></div>
 
 <script>
 const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
-let allData=[];
+let familyMap={};
 
-async function loadData(){
+// 获取url里面传过来的人员编号
+const params=new URLSearchParams(location.search);
+const targetNo=params.get("no");
+
+async function load(){
   const res=await fetch(CSV_URL);
   const text=await res.text();
   const lines=text.trim().split(/\r?\n/);
   const head=lines[0].split(",");
+  const idxNo=head.indexOf("No");
   const idxName=head.indexOf("姓名");
+  const idxFather=head.indexOf("父亲编号");
   const idxGen=head.indexOf("世代");
 
-  allData=[];
   for(let i=1;i<lines.length;i++){
-    const cell=lines[i].split(",");
-    allData.push({
-      name:cell[idxName]?.trim()||"",
-      gen:parseInt(cell[idxGen])||1
-    })
+    const c=lines[i].split(",");
+    familyMap[c[idxNo]?.trim()]={
+      name:c[idxName]?.trim()||"",
+      father:c[idxFather]?.trim()||"",
+      gen:parseInt(c[idxGen])||1
+    }
   }
-  render(allData);
-}
 
-function render(list){
-  const group={};
-  let maxG=0;
-  list.forEach(p=>{
-    if(!group[p.gen]) group[p.gen]=[];
-    group[p.gen].push(p.name);
-    if(p.gen>maxG) maxG=p.gen;
-  })
+  // 向上追溯完整祖先链
+  const chain=[];
+  let curr=targetNo;
+  while(familyMap[curr]){
+    chain.unshift(familyMap[curr]);
+    curr=familyMap[curr].father;
+    if(!curr || curr==="0") break;
+  }
 
+  document.getElementById("title").innerText=`${chain[chain.length‑1]?.name} 完整世代族谱`;
   let html="";
-  for(let g=1;g<=maxG;g++){
-    const names=group[g]||[];
-    html+=`<div class="generation">
-      <div class="genHeader"><span class="redBar"></span><span class="genText">第${g}代</span></div>`;
-    names.forEach(n=>html+=`<div class="person">${n}</div>`);
-    html+=`</div>`;
-  }
-  document.getElementById("content").innerHTML=html;
-  document.getElementById("total").innerText=list.length;
-  document.getElementById("maxGen").innerText=maxG;
+  chain.forEach(p=>{
+    html+=`<div class="line">第${p.gen}代：${p.name}</div>`
+  })
+  document.getElementById("result").innerHTML=html;
 }
 
-//搜索功能
-document.getElementById("searchBox").oninput=function(){
-  const kw=this.value.trim().toLowerCase();
-  const result=allData.filter(x=>x.name.toLowerCase().includes(kw));
-  render(result);
-}
-
-loadData().catch(e=>{
-  document.getElementById("content").innerText="族谱加载失败："+e.message;
+load().catch(e=>{
+  document.getElementById("result").innerText="加载失败："+e.message;
 })
 </script>
 </body>
