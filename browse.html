@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>世代族谱列表</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a1a;font-family:"Microsoft YaHei",sans-serif;padding:20px}
+.back{color:#ff8800;margin-bottom:20px;display:block;font-size:16px;text-decoration:none}
+.genTitle{color:#ff3333;font-size:28px;margin:24px 0 8px 0;text-align:center}
+.personName{color:#ffdd66;font-size:22px;padding:8px 0 8px 16px;cursor:pointer}
+.loading{color:white;text-align:center;font-size:20px;margin-top:60px}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← 返回首页</a>
+<div id="content" class="loading">正在加载世代族谱……</div>
+
+<script>
+const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
+let familyData=[];
+
+async function loadData(){
+  const res=await fetch(CSV_URL);
+  const text=await res.text();
+  const lines=text.trim().split(/\r?\n/);
+  const head=lines[0].split(",");
+  const idxName=head.indexOf("姓名");
+  const idxNo=head.indexOf("No");
+  const idxGen=head.indexOf("世代");
+
+  familyData=[];
+  for(let i=1;i<lines.length;i++){
+    const cell=lines[i].split(",");
+    familyData.push({
+      name:cell[idxName]?.trim()||"",
+      no:cell[idxNo]?.trim()||"",
+      gen:parseInt(cell[idxGen])||1
+    })
+  }
+  renderPage();
+}
+
+function renderPage(){
+  const group={};
+  let maxGen=0;
+  familyData.forEach(p=>{
+    if(!group[p.gen]) group[p.gen]=[];
+    group[p.gen].push(p);
+    if(p.gen>maxGen) maxGen=p.gen;
+  })
+
+  let html="";
+  for(let g=1;g<=maxGen;g++){
+    const list=group[g]||[];
+    html+=`<div class="genTitle">第${g}代</div>`;
+    list.forEach(p=>{
+      html+=`<div class="personName" onclick="location.href='person.html?no=${p.no}'">${p.name}</div>`;
+    })
+  }
+  document.getElementById("content").innerHTML=html;
+}
+
+loadData().catch(e=>{
+  document.getElementById("content").innerText="加载失败："+e.message;
+})
+</script>
+</body>
+</html>
