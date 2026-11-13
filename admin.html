@@ -33,21 +33,41 @@ button{width:100%;padding:12px;background:#b8860b;color:white;border:none;border
 </div>
 <script>
 async function submitData(){
-  const data={
-    pwd:document.getElementById("pwd").value,
-    no:document.getElementById("no").value,
-    father:document.getElementById("father").value,
-    rank:document.getElementById("rank").value,
-    chineseName:document.getElementById("chineseName").value,
-    generation:document.getElementById("generation").value,
-    englishName:document.getElementById("englishName").value,
-    wife:document.getElementById("wife").value,
-    sonCount:document.getElementById("sonCount").value,
-    photoLink:document.getElementById("photoLink").value,
-    note:document.getElementById("note").value
-  }
-  alert("资料已提交等待后台校验！")
-  console.log(data)
+  const data={
+    pwd:document.getElementById("pwd").value,
+    no:document.getElementById("no").value,
+    father:document.getElementById("father").value,
+    rank:document.getElementById("rank").value,
+    chineseName:document.getElementById("chineseName").value,
+    generation:document.getElementById("generation").value,
+    englishName:document.getElementById("englishName").value,
+    wife:document.getElementById("wife").value,
+    sonCount:document.getElementById("sonCount").value,
+    photoLink:document.getElementById("photoLink").value,
+    note:document.getElementById("note").value
+  }
+  const GITHUB_USER="Zhang2Chong";
+  const GITHUB_REPO="ZhangFamily";
+  const PAT="YOUR_PAT_TOKEN"; //等拿到令牌再改这里
+  const url=`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/dispatches`;
+  const res=await fetch(url,{
+    method:"POST",
+    headers:{
+      "Accept":"application/vnd.github+json",
+      "Authorization":`token ${PAT}`
+    },
+    body:JSON.stringify({
+      event_type:"add-person",
+      client_payload:data
+    })
+  });
+  if(res.ok){
+    alert("✅ 提交成功，已加入家谱！");
+  }else{
+    alert("❌ 提交失败，请核对密码");
+  }
+}
+
 }
 </script>
 </body>
