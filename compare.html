@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>两人血缘对比</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a1a;color:#ffdd66;font-family:"Microsoft YaHei",sans-serif;padding:24px}
+.back{color:#ff8800;margin-bottom:20px;display:block;font-size:16px;text-decoration:none}
+h2{text-align:center;margin-bottom:30px}
+input{width:100%;padding:14px;font-size:18px;border-radius:6px;border:none;margin:8px 0;background:#333;color:#fff}
+button{width:100%;padding:14px;font-size:20px;border:none;border-radius:6px;background:#2288ff;color:white;margin-top:12px;cursor:pointer}
+#result{margin-top:24px;padding:16px;background:#222;border-radius:8px;white-space:pre-wrap;line-height:1.8}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← 返回首页</a>
+<h2>⚖️ 两人血缘对比</h2>
+
+<input id="nameA" placeholder="输入第一位族人姓名">
+<input id="nameB" placeholder="输入第二位族人姓名">
+<button onclick="doCompare()">开始对比，找共同祖先</button>
+
+<div id="result">输入两位族人姓名，点击按钮开始追溯……</div>
+
+<script>
+const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
+let familyMap={}; // no → {name, fatherNo, gen}
+let nameToNo={}; // name → no
+
+async function loadData(){
+  const res=await fetch(CSV_URL);
+  const text=await res.text();
+  const lines=text.trim().split(/\r?\n/);
+  const head=lines[0].split(",");
+  const idxNo=head.indexOf("No");
+  const idxName=head.indexOf("姓名");
+  const idxFather=head.indexOf("父亲编号");
+  const idxGen=head.indexOf("世代");
+
+  for(let i=1;i<lines.length;i++){
+    const c=lines[i].split(",");
+    const no=c[idxNo]?.trim();
+    const name=c[idxName]?.trim();
+    const father=c[idxFather]?.trim();
+    const gen=parseInt(c[idxGen])||1;
+    familyMap[no]={name,father,gen};
+    nameToNo[name]=no;
+  }
+}
+
+// 向上追溯完整祖先链
+function getLine(no){
+  const chain=[];
+  let curr=no;
+  while(familyMap[curr]){
+    chain.unshift(familyMap[curr]);
+    curr=familyMap[curr].father;
+    if(!curr || curr==="0") break;
+  }
+  return chain;
+}
+
+function doCompare(){
+  const elA=document.getElementById("nameA");
+  const elB=document.getElementById("nameB");
+  const elResult=document.getElementById("result");
+  const aName=elA.value.trim();
+  const bName=elB.value.trim();
+
+  if(!aName || !bName){
+    elResult.innerText="请输入两位族人的姓名";
+    return;
+  }
+
+  const noA=nameToNo[aName];
+  const noB=nameToNo[bName];
+
+  if(!noA){elResult.innerText="找不到："+aName;return}
+  if(!noB){elResult.innerText="找不到："+bName;return}
+
+  const lineA=getLine(noA);
+  const lineB=getLine(noB);
+
+  // 找共同祖先
+  let common=null;
+  for(let i=0;i<lineA.length && i<lineB.length;i++){
+    if(lineA[i].name===lineB[i].name){
+      common=lineA[i];
+    }else{
+      break;
+    }
+  }
+
+  let out="";
+  out+=`【${aName}】祖先链：\n`;
+  lineA.forEach(p=>out+=`  第${p.gen}代：${p.name}\n`);
+  out+=`\n【${bName}】祖先链：\n`;
+  lineB.forEach(p=>out+=`  第${p.gen}代：${p.name}\n`);
+  if(common){
+    out+=`\n✅ 共同祖先：${common.name}（第${common.gen}代）`;
+  }else{
+    out+=`\n❌ 未找到共同祖先`;
+  }
+  elResult.innerText=out;
+}
+
+// 页面加载时读取数据
+loadData().catch(e=>{
+  document.getElementById("result").innerText="数据加载失败："+e.message;
+})
+</script>
+</body>
+</html>
