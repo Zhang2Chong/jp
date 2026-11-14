@@ -6,33 +6,34 @@
 <title>张氏家谱</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:#1a1a1a;
-  color:#ffdd66;
-  font-family:"Microsoft YaHei",sans-serif;
-  min-height:100vh;
+html,body{
+  height:100%;
   margin:0;
 }
 .page-container{
   display:flex;
-  min-height:100vh;
+  height:100vh;
+  overflow:hidden;
 }
 .left-panel{
   width:25%;
   background:#222;
   padding:20px;
   border-right:1px solid #444;
+  overflow-y:auto;
 }
 .center-panel{
   width:50%;
-  padding:0;
-  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  background:#1a1a1a;
 }
 .right-panel{
   width:25%;
   background:#222;
   padding:20px;
   border-left:1px solid #444;
+  overflow-y:auto;
 }
 .panel-title{
   font-size:20px;
@@ -48,100 +49,45 @@ body{
   border-radius:8px;
   min-height:200px;
 }
-
-.content-wrap{
-  max-width:700px;
-  margin:0 auto;
-  padding:20px 16px 40px;
-  width:100%;
-}
-.back-link{
-  display:inline-block;
-  color:#ff8800;
-  text-decoration:none;
-  margin-bottom:16px;
-  font-size:16px;
-}
-.back-link:hover{
-  color:#ffaa33;
-}
-.header-fixed{
-  position:sticky;
-  top:0;
-  background:#1a1a1a;
-  padding:12px 0 20px;
-  z-index:10;
-  border-bottom:1px solid #333;
-  margin-bottom:20px;
-}
-h1{
-  font-size:clamp(32px,8vw,44px);
-  text-align:center;
-  margin:0 0 12px;
-  color:#ffdd66;
-  letter-spacing:6px;
-}
-.stats-line{
-  text-align:center;
-  font-size:clamp(16px,4vw,20px);
-  color:#e2b558;
-  margin-bottom:16px;
-}
-.search-box{
-  width:100%;
+.frame-nav{
   padding:12px 16px;
-  font-size:16px;
-  background:#2a2a2a;
-  color:#fff;
-  border:1px solid #444;
-  border-radius:6px;
-}
-.genTitle{
-  color:#ff3333;
-  font-size:22px;
-  margin:24px 0 6px;
+  border-bottom:1px solid #333;
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:16px;
 }
-.genTitle::before{
-  content:"";
-  width:4px;
-  height:22px;
-  background:#ff3333;
-  display:block;
+.back-link{
+  color:#ff8800;
+  text-decoration:none;
+  font-size:15px;
+  cursor:pointer;
+  flex-shrink:0;
 }
-.divider-line{
-  height:1px;
-  background:#333;
-  margin:4px 0 6px;
-}
-.personName{
+.frame-title{
   color:#ffdd66;
   font-size:18px;
-  padding:6px 0 6px 14px;
-  cursor:pointer;
+  font-weight:bold;
 }
-.personName:hover{
-  color:#fff;
-}
-.loading{
-  text-align:center;
-  color:#888;
-  padding:60px 20px;
-  font-size:16px;
+.content-frame{
+  flex:1;
+  border:none;
+  background:#1a1a1a;
 }
 
+/* 手机：直接跳转到 browse 简单版，不显示三栏 */
 @media (max-width:900px){
-  .page-container{flex-direction:column}
-  .left-panel,.center-panel,.right-panel{width:100%}
-  .left-panel,.right-panel{border:none;border-bottom:1px solid #444;min-height:150px;}
+  .page-container{display:block}
+  .left-panel,.right-panel{display:none}
+  .center-panel{width:100%;height:100vh;}
 }
 </style>
 </head>
 <body>
+
+<!-- 电脑：三栏布局 -->
 <div class="page-container">
 
+  <!-- 左边：音乐区（一直不动） -->
   <div class="left-panel">
     <h3 class="panel-title">🎵 音乐</h3>
     <div class="placeholder">
@@ -150,18 +96,16 @@ h1{
     </div>
   </div>
 
+  <!-- 中间：可以切换内容的区域 -->
   <div class="center-panel">
-    <div class="content-wrap">
-      <a class="back-link" href="index.html">← 返回首页</a>
-      <div class="header-fixed">
-        <h1>张氏家谱</h1>
-        <div class="stats-line" id="stats">正在统计……</div>
-        <input class="search-box" id="searchInput" placeholder="输入姓名、别名或编号">
-      </div>
-      <div id="content" class="loading">正在加载世代族谱……</div>
+    <div class="frame-nav">
+      <span class="back-link" onclick="switchContent('home')">← 返回</span>
+      <span class="frame-title" id="frameTitle">张氏家谱</span>
     </div>
+    <iframe id="mainFrame" class="content-frame" src="frame-home.html" title="主内容区"></iframe>
   </div>
 
+  <!-- 右边：祖先资料（一直不动） -->
   <div class="right-panel">
     <h3 class="panel-title">先祖简介</h3>
     <div class="placeholder">
@@ -173,80 +117,17 @@ h1{
 </div>
 
 <script>
-const CSV_URL="https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
-let allData=[];
-
-async function loadData(){
-  const res=await fetch(CSV_URL);
-  const text=await res.text();
-  const lines=text.trim().split(/\r?\n/);
-  const head=lines[0].split(",");
-  const idxName=head.indexOf("姓名");
-  const idxAlias=head.indexOf("别名")||head.indexOf("字");
-  const idxNo=head.indexOf("No");
-  const idxGen=head.indexOf("世代");
-
-  allData=[];
-  for(let i=1;i<lines.length;i++){
-    const cell=lines[i].split(",");
-    const name=cell[idxName]?.trim()||"";
-    const alias=idxAlias>=0 ? (cell[idxAlias]?.trim()||"") : "";
-    allData.push({
-      name:name,
-      alias:alias,
-      no:cell[idxNo]?.trim()||"",
-      gen:parseInt(cell[idxGen])||1
-    })
+function switchContent(mode){
+  const frame = document.getElementById('mainFrame');
+  const title = document.getElementById('frameTitle');
+  if(mode === 'home'){
+    frame.src = 'frame-home.html';
+    title.innerText = '张氏家谱';
+  }else if(mode === 'browse'){
+    frame.src = 'browse.html';
+    title.innerText = '世代族谱';
   }
-
-  const maxGen=Math.max(...allData.map(p=>p.gen));
-  document.getElementById("stats").innerText=
-    `${allData.length} 位家人 · ${maxGen} 代传承`;
-
-  renderList();
 }
-
-function renderList(keyword=""){
-  let list=allData;
-  if(keyword){
-    const kw=keyword.toLowerCase();
-    list=allData.filter(p=>
-      p.name.toLowerCase().includes(kw) ||
-      (p.alias && p.alias.toLowerCase().includes(kw)) ||
-      p.no===keyword
-    );
-  }
-
-  const groups={};
-  let maxGen=0;
-  list.forEach(p=>{
-    if(!groups[p.gen]) groups[p.gen]=[];
-    groups[p.gen].push(p);
-    if(p.gen>maxGen) maxGen=p.gen;
-  })
-
-  let html="";
-  for(let g=1;g<=maxGen;g++){
-    if(groups[g]){
-      html+=`<div class="genTitle">第${g}代</div>`;
-      html+=`<div class="divider-line"></div>`;
-      groups[g].forEach(p=>{
-        const display=p.alias ? `${p.name}（${p.alias}）` : p.name;
-        html+=`<div class="personName" onclick="location.href='person.html?no=${p.no}'">${display}</div>`;
-      })
-    }
-  }
-  document.getElementById("content").innerHTML=html || 
-    `<div style="text-align:center;color:#666;padding:40px;">没有找到匹配的族人</div>`;
-}
-
-document.getElementById("searchInput").addEventListener("input",e=>{
-  renderList(e.target.value.trim());
-})
-
-loadData().catch(err=>{
-  document.getElementById("content").innerText="读取数据失败："+err.message;
-})
 </script>
 
 </body>
