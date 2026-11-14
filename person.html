@@ -1,69 +1,171 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
-<title>单人完整族谱</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>族人详情</title>
 <style>
-*{box‑sizing:border‑box;margin:0;padding:0}
-body{background:#1a1a1a;color:#ffdd66;font‑family:"Microsoft YaHei",sans‑serif;padding:20px}
-.back{color:#ff8800;margin‑bottom:20px;display:block}
-h2{text‑align:center;margin‑bottom:20px}
-.line{font‑size:20px;margin:10px 0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#1a1a1a;
+  color:#ffdd66;
+  font-family:"Microsoft YaHei",sans-serif;
+  min-height:100vh;
+  padding:20px;
+}
+.container{
+  max-width:600px;
+  margin:0 auto;
+}
+.back-link{
+  display:inline-block;
+  color:#ff8800;
+  text-decoration:none;
+  margin-bottom:24px;
+  font-size:16px;
+}
+.back-link:hover{
+  color:#ffaa33;
+}
+.card{
+  background:#222;
+  border-radius:12px;
+  padding:30px 24px;
+  border:1px solid #333;
+}
+.name{
+  font-size:32px;
+  text-align:center;
+  margin-bottom:8px;
+  color:#ffdd66;
+}
+.alias{
+  text-align:center;
+  font-size:18px;
+  color:#e2b558;
+  margin-bottom:24px;
+}
+.gen-badge{
+  text-align:center;
+  display:inline-block;
+  background:#333;
+  padding:6px 16px;
+  border-radius:20px;
+  font-size:15px;
+  color:#ff8800;
+  margin-bottom:24px;
+}
+.gen-box{text-align:center;}
+.line{
+  border-bottom:1px solid #333;
+  margin:16px 0;
+}
+.label{
+  color:#999;
+  font-size:14px;
+  margin-bottom:4px;
+}
+.value{
+  font-size:16px;
+  color:#ffdd66;
+}
+.loading{
+  text-align:center;
+  color:#888;
+  padding:60px 20px;
+  font-size:16px;
+}
 </style>
 </head>
 <body>
-<a class="back" href="browse.html">← 返回世代列表</a>
-<h2 id="title"></h2>
-<div id="result"></div>
+<div class="container">
+  <a class="back-link" href="browse.html">← 返回世代列表</a>
+  
+  <div id="personView" class="loading">正在加载……</div>
+</div>
 
 <script>
-const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
-let familyMap={};
+const CSV_URL="https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
 
-// 获取url里面传过来的人员编号
-const params=new URLSearchParams(location.search);
-const targetNo=params.get("no");
+// 从网址拿到编号，比如 person.html?no=12
+const personNo = new URLSearchParams(window.location.search).get('no');
 
-async function load(){
-  const res=await fetch(CSV_URL);
-  const text=await res.text();
-  const lines=text.trim().split(/\r?\n/);
-  const head=lines[0].split(",");
-  const idxNo=head.indexOf("No");
-  const idxName=head.indexOf("姓名");
-  const idxFather=head.indexOf("父亲编号");
-  const idxGen=head.indexOf("世代");
+window.onload = async function(){
+  if(!personNo){
+    document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">缺少族人编号</div>';
+    return;
+  }
 
-  for(let i=1;i<lines.length;i++){
-    const c=lines[i].split(",");
-    familyMap[c[idxNo]?.trim()]={
-      name:c[idxName]?.trim()||"",
-      father:c[idxFather]?.trim()||"",
-      gen:parseInt(c[idxGen])||1
+  try{
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const lines = text.trim().split(/\r?\n/);
+    const head = lines[0].split(",");
+    const idxNo = head.indexOf("No");
+    const idxName = head.indexOf("姓名");
+    const idxAlias = head.indexOf("别名") || head.indexOf("字");
+    const idxGen = head.indexOf("世代");
+    const idxFather = head.indexOf("父亲编号");
+    const idxBirth = head.indexOf("出生");
+    const idxInfo = head.indexOf("备注");
+
+    // 找到这个人
+    let person = null;
+    for(let i=1;i<lines.length;i++){
+      const cell = lines[i].split(",");
+      if(cell[idxNo]?.trim() === personNo){
+        person = {
+          no: cell[idxNo]?.trim() || "",
+          name: cell[idxName]?.trim() || "",
+          alias: idxAlias>=0 ? (cell[idxAlias]?.trim() || "") : "",
+          gen: idxGen>=0 ? (cell[idxGen]?.trim() || "") : "",
+          father: idxFather>=0 ? (cell[idxFather]?.trim() || "") : "",
+          birth: idxBirth>=0 ? (cell[idxBirth]?.trim() || "") : "",
+          info: idxInfo>=0 ? (cell[idxInfo]?.trim() || "") : ""
+        };
+        break;
+      }
     }
-  }
 
-  // 向上追溯完整祖先链
-  const chain=[];
-  let curr=targetNo;
-  while(familyMap[curr]){
-    chain.unshift(familyMap[curr]);
-    curr=familyMap[curr].father;
-    if(!curr || curr==="0") break;
-  }
+    if(!person){
+      document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">未找到该族人</div>';
+      return;
+    }
 
-  document.getElementById("title").innerText=`${chain[chain.length‑1]?.name} 完整世代族谱`;
-  let html="";
-  chain.forEach(p=>{
-    html+=`<div class="line">第${p.gen}代：${p.name}</div>`
-  })
-  document.getElementById("result").innerHTML=html;
+    // 显示详情
+    const displayName = person.alias ? `${person.name}（${person.alias}）` : person.name;
+    document.getElementById('personView').innerHTML = `
+      <div class="card">
+        <h2 class="name">${displayName}</h2>
+        <div class="gen-box"><span class="gen-badge">第${person.gen}代</span></div>
+        <div class="line"></div>
+        ${person.father ? `
+          <div>
+            <div class="label">父亲编号</div>
+            <div class="value">${person.father}</div>
+          </div>
+          <div class="line"></div>
+        ` : ''}
+        ${person.birth ? `
+          <div>
+            <div class="label">出生</div>
+            <div class="value">${person.birth}</div>
+          </div>
+          <div class="line"></div>
+        ` : ''}
+        ${person.info ? `
+          <div>
+            <div class="label">备注</div>
+            <div class="value">${person.info}</div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }catch(err){
+    document.getElementById('personView').innerHTML = `<div style="text-align:center;color:red;">读取失败：${err.message}</div>`;
+  }
 }
-
-load().catch(e=>{
-  document.getElementById("result").innerText="加载失败："+e.message;
-})
 </script>
+
 </body>
 </html>
