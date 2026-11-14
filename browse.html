@@ -3,23 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>张氏家谱 - 世代浏览</title>
+<title>张氏家谱 - 世系浏览</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#1a1a1a;color:#ffdd66;font-family:"Microsoft YaHei",sans-serif;min-height:100vh;padding:16px}
 .container{max-width:700px;margin:0 auto}
-.nav-links{display:flex;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px}
+.nav-links{display:flex;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .back-link{color:#ff9933;text-decoration:none;font-size:16px}
 .back-link:hover{color:#ffcc66}
-h1{text-align:center;margin-bottom:28px;font-size:22px;color:#ffdd66}
-.generation-block{margin-bottom:28px}
-.gen-header{display:flex;align-items:baseline;border-bottom:1px solid #444;padding-bottom:8px;margin-bottom:12px}
+
+h1{text-align:center;font-size:28px;color:#ffdd66;margin-bottom:4px}
+h2{text-align:center;font-size:20px;color:#ffdd66;margin-bottom:12px;font-weight:normal}
+.summary-line{text-align:center;color:#aaa;font-size:15px;padding-bottom:12px;border-bottom:1px solid #444;margin-bottom:20px}
+
+.generation-block{margin-bottom:24px}
+.gen-header{display:flex;align-items:baseline;border-bottom:1px solid #444;padding-bottom:6px;margin-bottom:10px}
 .gen-title{font-size:18px;color:#ff6633;font-weight:bold}
 .gen-count{margin-left:10px;font-size:15px;color:#999}
-.names-grid{display:flex;flex-wrap:wrap;gap:10px 16px}
-.person-link{font-size:16px;color:#ffdd66;text-decoration:none;padding:6px 0;transition:color 0.2s;white-space:nowrap;flex:0 0 calc(25% - 12px)}
+.names-grid{display:flex;flex-wrap:wrap;gap:8px 20px}
+.person-link{font-size:16px;color:#ffdd66;text-decoration:none;padding:4px 0;transition:color 0.2s;white-space:nowrap;flex:0 0 calc(25% - 15px)}
 .person-link:hover{color:#fff;text-decoration:underline}
-@media (max-width:520px){.person-link{flex:0 0 calc(50% - 8px)}}
+@media (max-width:520px){.person-link{flex:0 0 calc(50% - 10px)}}
 .loading{text-align:center;color:#888;padding:60px 20px;font-size:16px}
 </style>
 </head>
@@ -27,9 +31,12 @@ h1{text-align:center;margin-bottom:28px;font-size:22px;color:#ffdd66}
 <div class="container">
   <div class="nav-links">
     <a class="back-link" href="index.html">← 返回首页</a>
-    <a class="back-link" href="javascript:history.back()">← 返回上一页</a>
+    <div></div>
   </div>
-  <h1>世系浏览</h1>
+
+  <h1>张氏家谱</h1>
+  <h2>世系浏览</h2>
+  <div id="summary" class="summary-line">正在统计……</div>
   <div id="content" class="loading">正在加载家谱数据……</div>
 </div>
 
@@ -49,6 +56,7 @@ window.onload = async function(){
     const idxName=header.indexOf("姓名");
     const idxGen=header.indexOf("世代");
     const peopleByGen={};
+    let totalPeople=0;
     for(let i=1;i<lines.length;i++){
       const cols=lines[i].split(",");
       let id=(idxId>=0 && cols[idxId]) ? cols[idxId].trim() : "";
@@ -58,8 +66,12 @@ window.onload = async function(){
       if(!id) id="row_"+i;
       if(!peopleByGen[gen]) peopleByGen[gen]=[];
       peopleByGen[gen].push({id,name});
+      totalPeople++;
     }
     const gens=Object.keys(peopleByGen).sort((a,b)=>parseInt(a)-parseInt(b));
+    const totalGens=gens.length;
+    document.getElementById("summary").innerHTML=`共 ${totalGens} 代 · 总计 ${totalPeople} 人`;
+    
     let html="";
     for(const gen of gens){
       const list=peopleByGen[gen];
