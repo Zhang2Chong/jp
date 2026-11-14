@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>张氏家谱 - 详情页</title>
+<title>张氏家谱</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -26,7 +26,10 @@ body{
 .center-panel{
   width:50%;
   padding:20px;
-  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:100vh;
 }
 .right-panel{
   width:25%;
@@ -48,17 +51,47 @@ body{
   border-radius:8px;
   min-height:200px;
 }
-.back-link{
-  display:inline-block;
-  color:#ff8800;
-  text-decoration:none;
-  margin-bottom:20px;
-}
-.center-title{
+
+/* === 首页样式 === */
+.home-content{
   text-align:center;
-  font-size:28px;
-  margin-bottom:30px;
+}
+h1{
+  font-size:clamp(36px,12vw,52px);
+  margin-bottom:16px;
   color:#ffdd66;
+  letter-spacing:4px;
+}
+.author{
+  font-size:clamp(20px,5vw,24px);
+  margin-bottom:60px;
+  color:#e2b558;
+}
+.btn{
+  display:block;
+  width:100%;
+  max-width:400px;
+  margin:18px auto;
+  padding:22px;
+  border:none;
+  border-radius:12px;
+  font-size:clamp(22px,6vw,28px);
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+.btn-1{background:#ff8800}
+.btn-2{background:#2288ff}
+.footer-note{
+  margin-top:60px;
+  padding-top:24px;
+  border-top:1px solid #333;
+  color:#999;
+  font-size:14px;
+  line-height:1.8;
+  max-width:400px;
+  margin-left:auto;
+  margin-right:auto;
 }
 
 /* 手机自动改成上下排列 */
@@ -81,17 +114,20 @@ body{
     </div>
   </div>
 
-  <!-- 中间 1/2：家谱主内容，直接写在这里 -->
+  <!-- 中间 1/2：就是 index.html 首页内容 -->
   <div class="center-panel">
-    <a class="back-link" href="index.html">← 返回首页</a>
-    <h2 class="center-title">世代族谱</h2>
-    
-    <!-- ✅ 你的内容直接写在这里 -->
-    <div style="text-align:center; color:#aaa; padding:40px 20px;">
-      这里直接放你的世代族谱内容<br>
-      以后我们慢慢加进来
+    <div class="home-content">
+      <h1>张氏家谱</h1>
+      <div class="author">编撰：张官来</div>
+
+      <a class="btn btn-1" href="browse.html">📖 浏览世代族谱</a>
+      <a class="btn btn-2" href="compare.html">⚖️ 两人血缘对比</a>
+
+      <div class="footer-note">
+        张氏家谱 · 编撰：张官来<br>
+        所有内容仅供张氏族人查阅传承，保留所有权利
+      </div>
     </div>
-    
   </div>
 
   <!-- 右边 1/4：祖先信息 -->
