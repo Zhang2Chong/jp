@@ -36,7 +36,7 @@ h2{
   font-size:26px;
   margin-bottom:8px;
 }
-.gen-center{text-align:center;margin-bottom:24px}
+.gen-center{text-align:center;margin-bottom:20px}
 .gen-tag{
   background:#333;
   border-radius:20px;
@@ -46,28 +46,87 @@ h2{
   display:inline-block;
 }
 
+.photo-block{
+  text-align:center;
+  margin-bottom:24px;
+}
+.person-photo{
+  max-width:180px;
+  max-height:220px;
+  border-radius:10px;
+  border:2px solid #444;
+}
+
 .info-block{
   background:#2a2a2a;
   border-radius:10px;
-  padding:20px;
+  padding:16px 20px;
   margin-bottom:16px;
   border:1px solid #383838;
 }
-.info-label{
+.section-title{
+  color:#ff9933;
+  font-size:16px;
+  margin-bottom:12px;
+  padding-bottom:6px;
+  border-bottom:1px solid #444;
+}
+.label{
   color:#999;
   font-size:14px;
   margin-bottom:4px;
 }
-.info-value{
+.value{
   font-size:16px;
   color:#ffdd66;
   line-height:1.6;
 }
-.empty{
+
+.person-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 16px;
+}
+.person-card{
+  background:#383838;
+  border-radius:8px;
+  padding:12px 10px;
+  text-align:center;
+  text-decoration:none;
+  color:#ffdd66;
+  transition:all 0.2s;
+  flex:0 0 calc(25% - 12px);
+}
+.person-card:hover{
+  background:#444;
+  color:#fff;
+  transform:translateY(-2px);
+}
+.person-name{
+  font-size:16px;
+  margin-bottom:4px;
+}
+.person-gen{
+  font-size:13px;
+  color:#ff9933;
+}
+.empty-text{
+  color:#777;
+  font-size:15px;
+  font-style:italic;
+  padding:8px 4px;
+}
+.loading{
   text-align:center;
   color:#888;
   padding:60px 20px;
   font-size:16px;
+}
+
+@media (max-width:520px){
+  .person-card{
+    flex:0 0 calc(50% - 8px);
+  }
 }
 </style>
 </head>
@@ -77,18 +136,20 @@ h2{
     <a class="back-link" href="browse.html">← 回世系浏览</a>
     <a class="back-link" href="index.html">← 回首页</a>
   </div>
-  <div id="content" class="empty">正在加载……</div>
+  <div id="content" class="loading">正在加载……</div>
 </div>
 
 <script>
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
+
+let allPeople = {};
 
 window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
   const targetId = params.get("id");
   
   if(!targetId){
-    document.getElementById("content").innerHTML = "缺少族人编号";
+    document.getElementById("content").innerHTML = "<div style='text-align:center;color:#888;'>缺少族人编号</div>";
     return;
   }
 
@@ -97,84 +158,130 @@ window.onload = async function(){
     const text = await res.text();
     const lines = text.trim().split("\n");
     const header = lines[0].split(",");
+    
     const idxId = header.indexOf("编号");
     const idxName = header.indexOf("姓名");
     const idxGen = header.indexOf("世代");
     const idxFather = header.indexOf("父亲编号");
+    const idxMother = header.indexOf("母亲") || header.indexOf("母亲编号");
+    const idxSpouse = header.indexOf("配偶") || header.indexOf("妻子") || header.indexOf("丈夫");
     const idxBirth = header.indexOf("出生");
-    const idxInfo = header.indexOf("备注");
+    const idxDeath = header.indexOf("逝世") || header.indexOf("去世");
+    const idxPhoto = header.indexOf("相片") || header.indexOf("照片");
+    const idxInfo = header.indexOf("备注") || header.indexOf("简介");
 
-    let found = null;
-    
-    // 两种方式都找：先用编号列，找不到再用行号
     for(let i=1;i<lines.length;i++){
       const col = lines[i].split(",");
+      let id = (idxId >= 0 && col[idxId]) ? col[idxId].trim() : "row_" + i;
+      const name = col[idxName] ? col[idxName].trim() : "";
+      const gen = col[idxGen] ? col[idxGen].trim() : "";
+      const father = idxFather >= 0 && col[idxFather] ? col[idxFather].trim() : "";
+      const mother = idxMother >= 0 && col[idxMother] ? col[idxMother].trim() : "";
+      const spouse = idxSpouse >= 0 && col[idxSpouse] ? col[idxSpouse].trim() : "";
+      const birth = idxBirth >= 0 && col[idxBirth] ? col[idxBirth].trim() : "";
+      const death = idxDeath >= 0 && col[idxDeath] ? col[idxDeath].trim() : "";
+      const photo = idxPhoto >= 0 && col[idxPhoto] ? col[idxPhoto].trim() : "";
+      const info = idxInfo >= 0 && col[idxInfo] ? col[idxInfo].trim() : "";
       
-      let rowId = "";
-      if(idxId >= 0 && col[idxId]) rowId = col[idxId].trim();
-      
-      const rowLineId = "row_" + i;
-      
-      if(rowId === targetId || rowLineId === targetId){
-        found = {
-          name: idxName >= 0 && col[idxName] ? col[idxName].trim() : "",
-          gen: idxGen >= 0 && col[idxGen] ? col[idxGen].trim() : "",
-          id: rowId || rowLineId,
-          father: idxFather >= 0 && col[idxFather] ? col[idxFather].trim() : "",
-          birth: idxBirth >= 0 && col[idxBirth] ? col[idxBirth].trim() : "",
-          info: idxInfo >= 0 && col[idxInfo] ? col[idxInfo].trim() : ""
-        };
-        break;
+      if(name){
+        allPeople[id] = { id, name, gen, father, mother, spouse, birth, death, photo, info, children:[] };
       }
     }
 
-    if(!found){
-      document.getElementById("content").innerHTML = "未找到该族人资料";
+    for(const pid in allPeople){
+      const p = allPeople[pid];
+      if(p.father && allPeople[p.father]){
+        allPeople[p.father].children.push(pid);
+      }
+    }
+
+    let person = allPeople[targetId];
+    if(!person){
+      for(const pid in allPeople){
+        if(pid === targetId) { person = allPeople[pid]; break; }
+      }
+    }
+
+    if(!person){
+      document.getElementById("content").innerHTML = "<div style='text-align:center;color:#f66;'>未找到该族人</div>";
       return;
     }
 
+    function cardHtml(id){
+      if(!id || !allPeople[id]) return "";
+      const p = allPeople[id];
+      return `<a class="person-card" href="person.html?id=${encodeURIComponent(p.id)}">
+        <div class="person-name">${p.name}</div>
+        <div class="person-gen">第${p.gen}代</div>
+      </a>`;
+    }
+
     let html = `
-      <h2>${found.name}</h2>
-      <div class="gen-center"><span class="gen-tag">第${found.gen}代</span></div>
+      <h2>${person.name}</h2>
+      <div class="gen-center"><span class="gen-tag">第${person.gen}代</span></div>
     `;
-    if(found.id && found.id.indexOf("row_") !== 0){
-      html += `
-      <div class="info-block">
-        <div class="info-label">编号</div>
-        <div class="info-value">${found.id}</div>
-      </div>
-      `;
+
+    if(person.photo){
+      html += `<div class="photo-block"><img class="person-photo" src="${person.photo}" alt="${person.name}" onerror="this.style.display='none'"></div>`;
     }
-    if(found.father){
-      html += `
-      <div class="info-block">
-        <div class="info-label">父亲编号</div>
-        <div class="info-value">${found.father}</div>
-      </div>
-      `;
+
+    if(person.birth || person.death){
+      html += `<div class="info-block">`;
+      if(person.birth){
+        html += `<div class="label">出生</div><div class="value">${person.birth}</div>`;
+      }
+      if(person.death){
+        html += `<div class="label" style="margin-top:8px">逝世</div><div class="value">${person.death}</div>`;
+      }
+      html += `</div>`;
     }
-    if(found.birth){
-      html += `
-      <div class="info-block">
-        <div class="info-label">出生</div>
-        <div class="info-value">${found.birth}</div>
-      </div>
-      `;
+
+    html += `<div class="section-block"><div class="section-title">👴 父亲</div><div class="person-grid">`;
+    if(person.father && allPeople[person.father]){
+      html += cardHtml(person.father);
+    }else{
+      html += `<div class="empty-text">暂无记录</div>`;
     }
-    if(found.info){
-      html += `
-      <div class="info-block">
-        <div class="info-label">备注</div>
-        <div class="info-value">${found.info}</div>
-      </div>
-      `;
+    html += `</div></div>`;
+
+    html += `<div class="section-block"><div class="section-title">👵 母亲</div><div class="person-grid">`;
+    if(person.mother){
+      html += `<div class="value">${person.mother}</div>`;
+    }else{
+      html += `<div class="empty-text">暂无记录</div>`;
+    }
+    html += `</div></div>`;
+
+    html += `<div class="section-block"><div class="section-title">💍 配偶</div><div class="person-grid">`;
+    if(person.spouse){
+      html += `<div class="value">${person.spouse}</div>`;
+    }else{
+      html += `<div class="empty-text">暂无记录</div>`;
+    }
+    html += `</div></div>`;
+
+    html += `<div class="section-block"><div class="section-title">👦👧 子女 (${person.children.length}人)</div><div class="person-grid">`;
+    if(person.children.length > 0){
+      for(const cid of person.children){
+        html += cardHtml(cid);
+      }
+    }else{
+      html += `<div class="empty-text">暂无记录</div>`;
+    }
+    html += `</div></div>`;
+
+    if(person.info){
+      html += `<div class="info-block">
+        <div class="label">备注 / 简介</div>
+        <div class="value">${person.info.replace(/\n/g,'<br>')}</div>
+      </div>`;
     }
 
     document.getElementById("content").className = "";
     document.getElementById("content").innerHTML = html;
 
   }catch(err){
-    document.getElementById("content").innerHTML = "加载失败：" + err.message;
+    document.getElementById("content").innerHTML = `<div style='text-align:center;color:#f66;'>加载失败：${err.message}</div>`;
   }
 };
 </script>
