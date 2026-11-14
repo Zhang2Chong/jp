@@ -14,7 +14,7 @@ body{
   padding:20px;
 }
 .container{
-  max-width:600px;
+  max-width:650px;
   margin:0 auto;
 }
 .back-link{
@@ -24,70 +24,187 @@ body{
   margin-bottom:24px;
   font-size:16px;
 }
-.back-link:hover{
-  color:#ffaa33;
-}
-.card{
+.back-link:hover{color:#ffaa33;}
+
+/* 名字头部 */
+.name-header{
+  text-align:center;
+  padding:30px 20px;
   background:#222;
   border-radius:12px;
-  padding:30px 24px;
   border:1px solid #333;
+  margin-bottom:24px;
 }
-.name{
-  font-size:32px;
-  text-align:center;
+.person-name{
+  font-size:36px;
   margin-bottom:8px;
   color:#ffdd66;
 }
-.alias{
-  text-align:center;
-  font-size:18px;
-  color:#e2b558;
-  margin-bottom:24px;
-}
 .gen-badge{
-  text-align:center;
   display:inline-block;
   background:#333;
-  padding:6px 16px;
+  padding:6px 20px;
   border-radius:20px;
-  font-size:15px;
+  font-size:16px;
   color:#ff8800;
+}
+
+/* 祖先链 */
+.ancestor-section{
+  background:#222;
+  border-radius:12px;
+  padding:24px;
+  border:1px solid #333;
   margin-bottom:24px;
 }
-.gen-box{text-align:center;}
-.line{
+.section-title{
+  font-size:18px;
+  color:#e2b558;
+  margin-bottom:16px;
+  padding-bottom:8px;
   border-bottom:1px solid #333;
-  margin:16px 0;
 }
-.label{
-  color:#999;
+.ancestor-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px 8px;
+  margin-bottom:12px;
+  justify-content:center;
+}
+.ancestor-item{
+  background:#2a2a2a;
+  padding:8px 12px;
+  border-radius:6px;
+  text-align:center;
+  min-width:90px;
+  border:1px solid #383838;
+}
+.ancestor-gen{
+  font-size:11px;
+  color:#888;
+  margin-bottom:2px;
+}
+.ancestor-name{
+  font-size:15px;
+  color:#ffdd66;
+}
+.ancestor-rank{
+  font-size:12px;
+  color:#ff8800;
+  margin-left:4px;
+}
+
+/* 下半部分：左右栏 */
+.two-column{
+  display:flex;
+  gap:20px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
+.left-col{
+  flex:1;
+  min-width:280px;
+}
+.right-col{
+  width:220px;
+  min-width:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.info-card{
+  background:#222;
+  border-radius:12px;
+  padding:20px;
+  border:1px solid #333;
+}
+.photo-placeholder{
+  width:100%;
+  aspect-ratio:3/4;
+  background:#2a2a2a;
+  border:1px dashed #444;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#666;
   font-size:14px;
+  text-align:center;
+  padding:10px;
+}
+.info-row{
+  margin-bottom:14px;
+  padding-bottom:14px;
+  border-bottom:1px solid #333;
+}
+.info-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.info-label{
+  font-size:13px;
+  color:#888;
   margin-bottom:4px;
 }
-.value{
+.info-value{
   font-size:16px;
   color:#ffdd66;
 }
+.add-btn{
+  display:inline-block;
+  margin-top:12px;
+  padding:8px 16px;
+  background:#2288dd;
+  color:white;
+  border-radius:6px;
+  text-decoration:none;
+  font-size:14px;
+  border:none;
+  cursor:pointer;
+}
+.add-btn:hover{background:#1a77cc;}
+
+/* 祖辈事迹区 */
+.bio-section{
+  background:#222;
+  border-radius:12px;
+  padding:24px;
+  border:1px solid #333;
+}
+.bio-content{
+  min-height:100px;
+  color:#ccc;
+  line-height:1.8;
+  font-size:15px;
+}
+.empty-note{
+  color:#555;
+  font-style:italic;
+}
+
 .loading{
   text-align:center;
   color:#888;
   padding:60px 20px;
   font-size:16px;
 }
+
+@media (max-width:600px){
+  .two-column{flex-direction:column;}
+  .right-col{width:100%;}
+  .photo-placeholder{max-width:200px;margin:0 auto;}
+}
 </style>
 </head>
 <body>
 <div class="container">
   <a class="back-link" href="browse.html">← 返回世代列表</a>
-  
+
   <div id="personView" class="loading">正在加载……</div>
 </div>
 
 <script>
 const CSV_URL="https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
+let allData=[];
 
-// 从网址拿到编号，比如 person.html?no=12
+// 拿到当前查看的族人编号
 const personNo = new URLSearchParams(window.location.search).get('no');
 
 window.onload = async function(){
@@ -106,66 +223,140 @@ window.onload = async function(){
     const idxAlias = head.indexOf("别名") || head.indexOf("字");
     const idxGen = head.indexOf("世代");
     const idxFather = head.indexOf("父亲编号");
-    const idxBirth = head.indexOf("出生");
-    const idxInfo = head.indexOf("备注");
+    const idxRank = head.indexOf("排行") || head.indexOf("第几子");
+    const idxWife = head.indexOf("妻子") || head.indexOf("配偶");
+    const idxBio = head.indexOf("事迹") || head.indexOf("备注");
+    const idxPhoto = head.indexOf("相片") || head.indexOf("照片");
 
-    // 找到这个人
-    let person = null;
+    // 读取所有人
+    allData = [];
     for(let i=1;i<lines.length;i++){
       const cell = lines[i].split(",");
-      if(cell[idxNo]?.trim() === personNo){
-        person = {
-          no: cell[idxNo]?.trim() || "",
-          name: cell[idxName]?.trim() || "",
-          alias: idxAlias>=0 ? (cell[idxAlias]?.trim() || "") : "",
-          gen: idxGen>=0 ? (cell[idxGen]?.trim() || "") : "",
-          father: idxFather>=0 ? (cell[idxFather]?.trim() || "") : "",
-          birth: idxBirth>=0 ? (cell[idxBirth]?.trim() || "") : "",
-          info: idxInfo>=0 ? (cell[idxInfo]?.trim() || "") : ""
-        };
-        break;
-      }
+      allData.push({
+        no: cell[idxNo]?.trim() || "",
+        name: cell[idxName]?.trim() || "",
+        alias: idxAlias>=0 ? (cell[idxAlias]?.trim() || "") : "",
+        gen: idxGen>=0 ? parseInt(cell[idxGen]) || 0 : 0,
+        father: idxFather>=0 ? (cell[idxFather]?.trim() || "") : "",
+        rank: idxRank>=0 ? (cell[idxRank]?.trim() || "") : "",
+        wife: idxWife>=0 ? (cell[idxWife]?.trim() || "") : "",
+        bio: idxBio>=0 ? (cell[idxBio]?.trim() || "") : "",
+        photo: idxPhoto>=0 ? (cell[idxPhoto]?.trim() || "") : ""
+      });
     }
 
+    // 找到当前这个人
+    const person = allData.find(p => p.no === personNo);
     if(!person){
       document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">未找到该族人</div>';
       return;
     }
 
-    // 显示详情
-    const displayName = person.alias ? `${person.name}（${person.alias}）` : person.name;
+    // 🔗 自动构建祖先链：从本人往上追溯到第一代
+    const ancestors = [];
+    let current = person;
+    while(current){
+      ancestors.unshift(current); // 插到前面
+      if(!current.father) break;
+      current = allData.find(p => p.no === current.father);
+    }
+
+    // 按世代分组，5个一行
+    let ancestorHTML = '';
+    for(let i=0;i<ancestors.length;i+=5){
+      const row = ancestors.slice(i,i+5);
+      ancestorHTML += '<div class="ancestor-row">';
+      row.forEach(a=>{
+        const displayName = a.alias ? `${a.name}（${a.alias}）` : a.name;
+        const rankText = a.rank ? ` · ${a.rank}` : '';
+        ancestorHTML += `
+          <div class="ancestor-item">
+            <div class="ancestor-gen">第${a.gen}代</div>
+            <div class="ancestor-name">${displayName}<span class="ancestor-rank">${rankText}</span></div>
+          </div>
+        `;
+      });
+      ancestorHTML += '</div>';
+    }
+
+    // 找到他的儿子们
+    const sons = allData.filter(p => p.father === person.no);
+    let sonsHTML = '';
+    if(sons.length>0){
+      sonsHTML += '<div class="info-row"><div class="info-label">儿子</div><div class="info-value">';
+      sons.forEach(s=>{
+        const sName = s.alias ? `${s.name}（${s.alias}）` : s.name;
+        sonsHTML += `<div>${sName}${s.rank?' · '+s.rank:''}</div>`;
+      });
+      sonsHTML += '</div></div>';
+    }
+
+    // 相片区域
+    let photoHTML = '';
+    if(person.photo){
+      photoHTML = `<img src="${person.photo}" alt="${person.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
+    }else{
+      photoHTML = `<div class="photo-placeholder">相片<br>待上传</div>`;
+    }
+
+    // 祖辈事迹
+    const bioHTML = person.bio 
+      ? `<div class="bio-content">${person.bio.replace(/\n/g,'<br>')}</div>`
+      : `<div class="bio-content empty-note">暂无详细事迹，欢迎补充……</div>`;
+
+    // 父亲显示名
+    const fatherObj = person.father ? allData.find(p=>p.no===person.father) : null;
+    const fatherDisplay = fatherObj 
+      ? (fatherObj.alias ? `${fatherObj.name}（${fatherObj.alias}）` : fatherObj.name)
+      : '无记录';
+
+    // 组装整个页面
+    const mainName = person.alias ? `${person.name}（${person.alias}）` : person.name;
     document.getElementById('personView').innerHTML = `
-      <div class="card">
-        <h2 class="name">${displayName}</h2>
-        <div class="gen-box"><span class="gen-badge">第${person.gen}代</span></div>
-        <div class="line"></div>
-        ${person.father ? `
-          <div>
-            <div class="label">父亲编号</div>
-            <div class="value">${person.father}</div>
+      <!-- 名字头部 -->
+      <div class="name-header">
+        <div class="person-name">${mainName}</div>
+        <div class="gen-badge">第${person.gen}代</div>
+      </div>
+
+      <!-- 祖先链 -->
+      <div class="ancestor-section">
+        <div class="section-title">世系源流</div>
+        ${ancestorHTML}
+      </div>
+
+      <!-- 下半部分：资料 + 相片 -->
+      <div class="two-column">
+        <div class="left-col info-card">
+          <div class="info-row">
+            <div class="info-label">父亲</div>
+            <div class="info-value">${fatherDisplay}</div>
           </div>
-          <div class="line"></div>
-        ` : ''}
-        ${person.birth ? `
-          <div>
-            <div class="label">出生</div>
-            <div class="value">${person.birth}</div>
-          </div>
-          <div class="line"></div>
-        ` : ''}
-        ${person.info ? `
-          <div>
-            <div class="label">备注</div>
-            <div class="value">${person.info}</div>
-          </div>
-        ` : ''}
+          ${person.wife ? `
+            <div class="info-row">
+              <div class="info-label">妻子</div>
+              <div class="info-value">${person.wife}</div>
+            </div>
+          ` : ''}
+          ${sonsHTML}
+          <button class="add-btn" onclick="alert('录入功能待开启：新增${person.name}的子孙')">+ 新增子孙</button>
+        </div>
+        <div class="right-col">
+          ${photoHTML}
+        </div>
+      </div>
+
+      <!-- 祖辈事迹 -->
+      <div class="bio-section">
+        <div class="section-title">祖辈事迹</div>
+        ${bioHTML}
       </div>
     `;
+
   }catch(err){
     document.getElementById('personView').innerHTML = `<div style="text-align:center;color:red;">读取失败：${err.message}</div>`;
   }
 }
 </script>
-
 </body>
 </html>
