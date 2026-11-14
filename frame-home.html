@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#1a1a1a;
+  color:#ffdd66;
+  font-family:"Microsoft YaHei",sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:40px 20px;
+}
+h1{
+  font-size:clamp(36px,8vw,48px);
+  text-align:center;
+  margin-bottom:16px;
+  color:#ffdd66;
+  letter-spacing:6px;
+}
+.author{
+  text-align:center;
+  font-size:clamp(18px,4vw,22px);
+  margin-bottom:60px;
+  color:#e2b558;
+}
+.btn{
+  display:block;
+  max-width:400px;
+  margin:16px auto;
+  padding:20px;
+  border:none;
+  border-radius:10px;
+  font-size:20px;
+  font-weight:bold;
+  text-align:center;
+  text-decoration:none;
+  color:white;
+  cursor:pointer;
+}
+.btn-1{background:#ff8800}
+.btn-2{background:#2288dd}
+.footer-note{
+  text-align:center;
+  margin-top:60px;
+  padding-top:24px;
+  border-top:1px solid #333;
+  color:#888;
+  font-size:14px;
+  line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<h1>张氏家谱</h1>
+<div class="author">编撰：张官来</div>
+
+<button class="btn btn-1" onclick="parent.switchContent('browse')">📖 浏览世代族谱</button>
+<a class="btn btn-2" href="compare.html" target="_parent">⚖️ 两人血缘对比</a>
+
+<div class="footer-note">
+张氏家谱 · 编撰：张官来<br>
+所有内容仅供张氏族人查阅传承，保留所有权利
+</div>
+
+</body>
+</html>
