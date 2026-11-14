@@ -24,58 +24,58 @@ body{
   font-size:16px;
 }
 
-.main-card{
+.name-card{
   background:#1e1e1e;
   border-radius:12px;
-  padding:32px 20px;
+  padding:30px 20px;
   text-align:center;
-  margin-bottom:24px;
+  margin-bottom:30px;
 }
-.main-name{
+.person-name{
   font-size:36px;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
-.main-gen{
+.gen-badge{
   display:inline-block;
   background:#333;
   color:#ff9f29;
-  padding:6px 24px;
+  padding:6px 22px;
   border-radius:20px;
-  font-size:18px;
+  font-size:17px;
 }
 
 .section-title{
   text-align:center;
-  font-size:22px;
+  font-size:20px;
   margin-bottom:16px;
   padding-bottom:8px;
   border-bottom:1px solid #333;
 }
 
-.grid-container{
+.line-grid{
   display:flex;
   flex-wrap:wrap;
-  gap:16px 20px;
-  margin-bottom:28px;
+  gap:16px 24px;
+  margin-bottom:30px;
 }
-.grid-item{
+.line-item{
   background:#252525;
   border-radius:8px;
-  padding:16px 10px;
+  padding:18px 12px;
   text-align:center;
   text-decoration:none;
   color:#facc54;
-  flex:0 0 calc(25% - 15px);
+  flex:0 0 calc(25% - 18px);
 }
-.grid-item .gen-label{
+.line-item .gen-num{
   font-size:14px;
   color:#999;
-  margin-bottom:4px;
+  margin-bottom:6px;
 }
-.grid-item .name{
+.line-item .name-text{
   font-size:18px;
 }
-.grid-item:hover{
+.line-item:hover{
   background:#2d2d2d;
 }
 
@@ -88,46 +88,50 @@ body{
   justify-content:space-between;
   align-items:center;
 }
-.info-label{
+.label{
   color:#888;
   font-size:15px;
   margin-bottom:4px;
 }
-.info-value{
+.value{
   font-size:17px;
 }
+.empty{
+  color:#555;
+  font-style:italic;
+}
 
-.two-column{
+.two-side{
   display:flex;
   gap:20px;
-  margin:20px 0;
+  margin:24px 0;
 }
-.col-left{
+.side-left{
   flex:1;
   background:#1e1e1e;
   border-radius:8px;
   padding:20px;
 }
-.col-right{
+.side-right{
   width:180px;
   background:#1e1e1e;
   border-radius:8px;
-  padding:10px;
+  padding:12px;
   text-align:center;
 }
-.photo-img{
+.photo-show{
   max-width:100%;
   max-height:200px;
   border-radius:6px;
 }
 
-.note-block{
+.note-area{
   background:#1e1e1e;
   border-radius:8px;
   padding:20px;
   margin-top:20px;
 }
-.note-title{
+.note-label{
   color:#888;
   font-size:15px;
   margin-bottom:8px;
@@ -137,16 +141,11 @@ body{
   line-height:1.8;
 }
 
-.empty{
-  color:#666;
-  font-style:italic;
-}
-
 @media (max-width:600px){
-  .grid-item{flex:0 0 calc(50% - 10px)}
-  .two-column{flex-wrap:wrap}
-  .col-left,.col-right{width:100%}
-  .col-right{margin-top:16px}
+  .line-item{flex:0 0 calc(50% - 12px)}
+  .two-side{flex-wrap:wrap}
+  .side-left,.side-right{width:100%}
+  .side-right{margin-top:16px}
 }
 </style>
 </head>
@@ -157,7 +156,7 @@ body{
 </div>
 
 <div id="content">
-  <div style="text-align:center;color:#888;padding:60px 20px">正在加载……</div>
+  <div style="text-align:center;color:#888;padding:80px 20px">正在加载……</div>
 </div>
 
 <script>
@@ -216,86 +215,91 @@ window.onload = async function(){
       }
     }
     if(!person){
-      document.getElementById("content").innerHTML="<div style='text-align:center;color:#888;padding:60px'>未找到该族人</div>";
+      document.getElementById("content").innerHTML="<div style='text-align:center;color:#666;padding:80px'>未找到该族人</div>";
       return;
     }
 
-    function findAncestorsUp(toGen,limit=8){
-      let chain=[],pid=person.id;
-      for(let g=parseInt(person.gen)-1;g>=toGen && g>0 && chain.length<limit;g--){
-        if(allPeople[pid] && allPeople[pid].father){
-          pid=allPeople[pid].father;
-          if(allPeople[pid]) chain.unshift(allPeople[pid]);
-        }else break;
+    function getLineageFromFirst(){
+      let chain=[];
+      let p=person;
+      while(p){
+        chain.unshift(p);
+        if(p.father && allPeople[p.father]){
+          p=allPeople[p.father];
+        }else{
+          p=null;
+        }
       }
       return chain;
     }
-    const ancestors=findAncestorsUp(1,10);
+    const lineage=getLineageFromFirst();
 
-    function cardLink(p){
-      return `<a class="grid-item" href="person.html?id=${encodeURIComponent(p.id)}"><div class="gen-label">第${p.gen}代</div><div class="name">${p.name}</div></a>`;
+    function itemCard(p){
+      return `<a class="line-item" href="person.html?id=${encodeURIComponent(p.id)}">
+        <div class="gen-num">第${p.gen}代</div>
+        <div class="name-text">${p.name}</div>
+      </a>`;
     }
 
     let html=`
-      <div class="main-card">
-        <div class="main-name">${person.name}</div>
-        <div class="main-gen">第${person.gen}代</div>
+      <div class="name-card">
+        <div class="person-name">${person.name}</div>
+        <div class="gen-badge">第${person.gen}代</div>
       </div>
 
       <div class="section-title">世系源流</div>
-      <div class="grid-container">
+      <div class="line-grid">
     `;
-    for(const a of ancestors){html+=cardLink(a);}
-    html+=cardLink(person);
+    for(const a of lineage){html+=itemCard(a);}
     html+=`</div>`;
 
     html+=`
       <div class="info-row">
         <div>
-          <div class="info-label">父亲</div>
-          <div class="info-value">${person.father&&allPeople[person.father]?'<a href="person.html?id='+encodeURIComponent(allPeople[person.father].id)+'" style="color:#facc54;text-decoration:none">'+allPeople[person.father].name+'</a>':'<span class="empty">—</span>'}</div>
+          <div class="label">父亲</div>
+          <div class="value">${person.father&&allPeople[person.father]?'<a href="person.html?id='+encodeURIComponent(allPeople[person.father].id)+'" style="color:#facc544;text-decoration:none">'+allPeople[person.father].name+'</a>':'<span class="empty">—</span>'}</div>
         </div>
         <div>
-          <div class="info-label">母亲</div>
-          <div class="info-value">${person.mother||'<span class="empty">—</span>'}</div>
+          <div class="label">母亲</div>
+          <div class="value">${person.mother||'<span class="empty">—</span>'}</div>
         </div>
       </div>
 
       <div class="info-row">
         <div>
-          <div class="info-label">妻子</div>
-          <div class="info-value">${person.spouse||'<span class="empty">—</span>'}</div>
+          <div class="label">妻子</div>
+          <div class="value">${person.spouse||'<span class="empty">—</span>'}</div>
         </div>
         <div></div>
       </div>
 
       <div class="info-row">
         <div>
-          <div class="info-label">子女 (${person.children.length}人)</div>
-          <div class="info-value" style="display:flex;gap:12px;flex-wrap:wrap">
-            ${person.children.length>0?person.children.map(cid=>'<a href="person.html?id='+encodeURIComponent(cid)+'" style="color:#facc54">'+allPeople[cid].name+'</a>').join(""):'<span class="empty">—</span>'}
+          <div class="label">子女 (${person.children.length}人)</div>
+          <div class="value" style="display:flex;gap:16px;flex-wrap:wrap">
+            ${person.children.length>0?person.children.map(cid=>'<a href="person.html?id='+encodeURIComponent(cid)+'" style="color:#facc544;text-decoration:none">'+allPeople[cid].name+'</a>').join(""):'<span class="empty">—</span>'}
           </div>
         </div>
         <div></div>
       </div>
 
-      <div class="two-column">
-        <div class="col-left">
-          <div class="info-label">父亲</div>
-          <div class="info-value" style="margin-bottom:16px">${person.father&&allPeople[person.father]?'<a href="person.html?id='+encodeURIComponent(allPeople[person.father].id)+'" style="color:#facc54;text-decoration:none">'+allPeople[person.father].name+' 第'+allPeople[person.father].gen+'代</a>':'<span class="empty">—</span>'}</div>
-          <div class="info-label">母亲</div>
-          <div class="info-value">${person.mother||'<span class="empty">—</span>'}</div>
+      <div class="two-side">
+        <div class="side-left">
+          <div class="label">父亲</div>
+          <div class="value" style="margin-bottom:20px">${person.father&&allPeople[person.father]?'<a href="person.html?id='+encodeURIComponent(allPeople[person.father].id)+'" style="color:#facc544;text-decoration:none">'+allPeople[person.father].name+' · 第'+allPeople[person.father].gen+'代</a>':'<span class="empty">—</span>'}</div>
+          <div class="label">母亲</div>
+          <div class="value">${person.mother||'<span class="empty">—</span>'}</div>
         </div>
-        <div class="col-right">
-          ${person.photo?'<img class="photo-img" src="'+person.photo+'" alt="相片">':'<div style="color:#444;padding:40px 0">暂无相片</div>'}
+        <div class="side-right">
+          ${person.photo?'<img class="photo-show" src="'+person.photo+'" alt="相片">':'<div style="color:#444;padding:50px 10px">暂无相片</div>'}
         </div>
       </div>
     `;
 
     if(person.info){
       html+=`
-        <div class="note-block">
-          <div class="note-title">备注</div>
+        <div class="note-area">
+          <div class="note-label">备注</div>
           <div class="note-text">${person.info.replace(/\n/g,'<br>')}</div>
         </div>
       `;
@@ -304,7 +308,7 @@ window.onload = async function(){
     document.getElementById("content").innerHTML=html;
 
   }catch(err){
-    document.getElementById("content").innerHTML=`<div style="text-align:center;color:#f66;padding:60px">加载失败：${err.message}</div>`;
+    document.getElementById("content").innerHTML=`<div style="text-align:center;color:#f66;padding:80px">加载失败：${err.message}</div>`;
   }
 };
 </script>
