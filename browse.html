@@ -38,12 +38,10 @@ h1 {
   color: #ffdd66;
 }
 
-/* 每一代区块 */
 .generation-block {
   margin-bottom: 28px;
 }
 
-/* 代标题 + 人数 */
 .gen-header {
   display: flex;
   align-items: baseline;
@@ -62,14 +60,12 @@ h1 {
   color: #999;
 }
 
-/* 名字网格布局 */
 .names-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 16px;
 }
 
-/* 名字按钮/链接 */
 .person-link {
   font-size: 16px;
   color: #ffdd66;
@@ -77,18 +73,13 @@ h1 {
   padding: 6px 0;
   transition: color 0.2s;
   white-space: nowrap;
+  flex: 0 0 calc(25% - 12px);
 }
 .person-link:hover {
   color: #fff;
   text-decoration: underline;
 }
 
-/* 电脑：一行4个 */
-.person-link {
-  flex: 0 0 calc(25% - 12px);
-}
-
-/* 手机：一行2个 */
 @media (max-width: 520px) {
   .person-link {
     flex: 0 0 calc(50% - 8px);
@@ -141,7 +132,7 @@ window.onload = async function() {
       const name = (cols[idxName] || "").trim();
       const gen = parseInt((cols[idxGen] || "").trim());
 
-      if (!name || isNaN(gen)) continue;
+      if (!name || isNaN(gen) || !id) continue;
       
       if (!peopleByGen[gen]) peopleByGen[gen] = [];
       peopleByGen[gen].push({ id, name });
@@ -161,7 +152,7 @@ window.onload = async function() {
         <div class="names-grid">
       `;
       for (const p of list) {
-        html += `<a class="person-link" href="person.html?id=${p.id}">${p.name}</a>`;
+        html += `<a class="person-link" href="person.html?id=${encodeURIComponent(p.id)}">${p.name}</a>`;
       }
       html += `</div></div>`;
     }
