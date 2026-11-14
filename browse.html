@@ -51,10 +51,10 @@ window.onload = async function(){
     const peopleByGen={};
     for(let i=1;i<lines.length;i++){
       const cols=lines[i].split(",");
-      let id=(idxId>=0 ? (cols[idxId]||"").trim():"");
-      const name=(cols[idxName]||"").trim();
-      const gen=parseInt((cols[idxGen]||"").trim());
-      if(!name||isNaN(gen)) continue;
+      let id=(idxId>=0 && cols[idxId]) ? cols[idxId].trim() : "";
+      const name=cols[idxName] ? cols[idxName].trim() : "";
+      const gen=cols[idxGen] ? parseInt(cols[idxGen].trim()) : NaN;
+      if(!name || isNaN(gen)) continue;
       if(!id) id="row_"+i;
       if(!peopleByGen[gen]) peopleByGen[gen]=[];
       peopleByGen[gen].push({id,name});
