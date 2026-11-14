@@ -73,12 +73,12 @@ body{
 }
 .ancestor-item{
   background:#2a2a2a;
-  padding:10px 12px;
+  padding:12px 10px;
   border-radius:6px;
   text-align:center;
   border:1px solid #383838;
-  flex:0 0 calc(20% - 8px);
-  min-width:85px;
+  flex:0 0 calc(25% - 8px);
+  min-width:90px;
 }
 @media (max-width:520px){
   .ancestor-item{
@@ -93,19 +93,20 @@ body{
 .ancestor-gen{
   font-size:11px;
   color:#888;
-  margin-bottom:3px;
+  margin-bottom:4px;
 }
 .ancestor-name{
-  font-size:14px;
+  font-size:15px;
   color:#ffdd66;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  /* 移除省略，完整显示 */
+  white-space:normal;
+  word-break:normal;
 }
 .ancestor-rank{
   font-size:12px;
   color:#ff8800;
-  margin-left:3px;
+  margin-left:4px;
+  display:inline-block;
 }
 
 /* 下半部分：资料 + 相片 */
@@ -255,6 +256,8 @@ window.onload = async function(){
     const idxBio = head.indexOf("事迹") || head.indexOf("备注");
     const idxPhoto = head.indexOf("相片") || head.indexOf("照片");
 
+    console.log("✅ 列名检查：", { idxRank, idxMother, idxWife });
+
     // 读取所有人
     allData = [];
     for(let i=1;i<lines.length;i++){
@@ -280,16 +283,18 @@ window.onload = async function(){
       return;
     }
 
+    console.log("✅ 当前人物：", person.name, "排行：", person.rank);
+
     // 🔗 自动构建祖先链：从本人往上追溯到第一代
     const ancestors = [];
     let current = person;
     while(current){
-      ancestors.unshift(current); // 插到前面
+      ancestors.unshift(current);
       if(!current.father) break;
       current = allData.find(p => p.no === current.father);
     }
 
-    // 自动排列：顺着排，满了自动换行
+    // 自动排列 + 完整显示名字
     let ancestorHTML = '<div class="ancestor-flow">';
     ancestors.forEach(a=>{
       const displayName = a.alias ? `${a.name}（${a.alias}）` : a.name;
@@ -316,12 +321,19 @@ window.onload = async function(){
       sonsHTML += '</div></div>';
     }
 
-    // 父亲和母亲信息
+    // 父亲和母亲
     const fatherObj = person.father ? allData.find(p=>p.no===person.father) : null;
     const fatherDisplay = fatherObj 
       ? (fatherObj.alias ? `${fatherObj.name}（${fatherObj.alias}）` : fatherObj.name)
       : '无记录';
-    const motherDisplay = person.mother || '无记录';
+    
+    // 母亲：优先读取当前行的「母亲」列，没有的话从父亲那行读他的「妻子」
+    let motherDisplay = person.mother || '';
+    if(!motherDisplay && fatherObj){
+      motherDisplay = fatherObj.wife || '无记录';
+    } else if(!motherDisplay){
+      motherDisplay = '无记录';
+    }
 
     // 相片区域
     let photoHTML = '';
