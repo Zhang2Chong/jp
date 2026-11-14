@@ -1,412 +1,141 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>族人详情</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:#1a1a1a;
-  color:#ffdd66;
-  font-family:"Microsoft YaHei",sans-serif;
-  min-height:100vh;
-  padding:16px;
-}
-.container{
-  max-width:650px;
-  margin:0 auto;
-}
-.nav-links{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-  gap:10px;
-}
-.back-link{
-  color:#ff8800;
-  text-decoration:none;
-  font-size:15px;
-}
-.back-link:hover{color:#ffaa33;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张氏家谱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
 
-/* 名字头部 */
-.name-header{
-  text-align:center;
-  padding:24px 16px;
-  background:#222;
-  border-radius:12px;
-  border:1px solid #333;
-  margin-bottom:20px;
-}
-.person-name{
-  font-size:clamp(28px,6vw,36px);
-  margin-bottom:8px;
-  color:#ffdd66;
-}
-.gen-badge{
-  display:inline-block;
-  background:#333;
-  padding:6px 20px;
-  border-radius:20px;
-  font-size:16px;
-  color:#ff8800;
-}
+        body {
+            background-color: #1a1a1a;
+            color: #f5d76e;
+            min-height: 100vh;
+            padding: 15px;
+        }
 
-/* 世系源流 */
-.ancestor-section{
-  background:#222;
-  border-radius:12px;
-  padding:20px;
-  border:1px solid #333;
-  margin-bottom:20px;
-}
-.section-title{
-  font-size:18px;
-  color:#e2b558;
-  margin-bottom:16px;
-  padding-bottom:8px;
-  border-bottom:1px solid #333;
-}
-.ancestor-flow{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  justify-content:flex-start;
-}
-.ancestor-item{
-  background:#2a2a2a;
-  padding:16px 12px;
-  border-radius:8px;
-  text-align:center;
-  border:1px solid #383838;
-  flex:0 0 calc(25% - 9px);
-  min-width:140px;
-  cursor:pointer;
-  transition:background 0.2s;
-}
-.ancestor-item:hover{
-  background:#333;
-}
-/* 手机：每行2个，格子更宽 */
-@media (max-width:520px){
-  .ancestor-item{
-    flex:0 0 calc(50% - 6px);
-  }
-}
-.ancestor-gen{
-  font-size:12px;
-  color:#888;
-  margin-bottom:6px;
-}
-.ancestor-name-main{
-  font-size:15px;
-  color:#ffdd66;
-  line-height:1.5;
-  white-space:nowrap;
-  overflow:visible;
-}
-.ancestor-name-alias{
-  font-size:13px;
-  color:#e2b558;
-  line-height:1.4;
-  margin-top:4px;
-  white-space:nowrap;
-}
-.ancestor-rank{
-  font-size:11px;
-  color:#ff8800;
-  margin-left:4px;
-}
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
 
-/* 下半部分：资料 + 相片 */
-.two-column{
-  display:flex;
-  gap:16px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-}
-.left-col{
-  flex:1;
-  min-width:260px;
-}
-.right-col{
-  width:200px;
-  min-width:160px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:center;
-}
-.info-card{
-  background:#222;
-  border-radius:12px;
-  padding:20px;
-  border:1px solid #333;
-}
-.photo-placeholder{
-  width:100%;
-  aspect-ratio:3/4;
-  background:#2a2a2a;
-  border:1px dashed #444;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#666;
-  font-size:14px;
-  text-align:center;
-  padding:10px;
-}
-.info-row{
-  margin-bottom:18px;
-  padding-bottom:18px;
-  border-bottom:1px solid #333;
-}
-.info-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-.info-parents{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  flex-wrap:wrap;
-}
-.info-parent{
-  flex:1;
-  min-width:120px;
-}
-.info-label{
-  font-size:13px;
-  color:#888;
-  margin-bottom:6px;
-}
-.info-value{
-  font-size:16px;
-  color:#ffdd66;
-  word-break:normal;
-  line-height:1.5;
-}
-.son-item{
-  padding:10px 0;
-  cursor:pointer;
-  border-bottom:1px dashed #333;
-  transition:color 0.2s;
-  font-size:16px;
-}
-.son-item:last-child{border-bottom:none;}
-.son-item:hover{color:#ffaa33;}
-.add-btn{
-  display:inline-block;
-  margin-top:16px;
-  padding:10px 20px;
-  background:#2288dd;
-  color:white;
-  border-radius:6px;
-  text-decoration:none;
-  font-size:15px;
-  border:none;
-  cursor:pointer;
-}
-.add-btn:hover{background:#1a77cc;}
+        .nav-links a {
+            color: #ff9f43;
+            text-decoration: none;
+            font-size: 16px;
+        }
 
-/* 祖辈事迹区 */
-.bio-section{
-  background:#222;
-  border-radius:12px;
-  padding:20px;
-  border:1px solid #333;
-}
-.bio-content{
-  min-height:80px;
-  color:#ccc;
-  line-height:1.8;
-  font-size:15px;
-  white-space:pre-wrap;
-  word-break:normal;
-}
-.empty-note{
-  color:#555;
-  font-style:italic;
-}
+        .main-card, .generation-card {
+            background-color: #2b2b2b;
+            border-radius: 12px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+        }
 
-.loading{
-  text-align:center;
-  color:#888;
-  padding:60px 20px;
-  font-size:16px;
-}
+        .name-title {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ffd369;
+        }
 
-@media (max-width:600px){
-  .two-column{flex-direction:column;}
-  .right-col{width:100%;}
-  .photo-placeholder{max-width:180px;margin:0 auto;}
-}
-</style>
+        .generation-badge {
+            text-align: center;
+        }
+
+        .generation-badge span {
+            background-color: #444;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 15px;
+            color: #ffd369;
+        }
+
+        .section-title {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffd369;
+        }
+
+        .ancestor-item {
+            background-color: #383838;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .gen-label {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .ancestor-name {
+            font-size: 17px;  /* ✅ 你要的17px */
+            color: #ffd369;
+        }
+
+        /* 桌面端微调 */
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 30px;
+            }
+            .ancestor-name {
+                font-size: 18px;  /* 桌面端恢复18px */
+            }
+            .name-title {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="nav-links">
-    <a class="back-link" href="index.html">← 返回首页</a>
-    <a class="back-link" href="javascript:history.back()">← 返回上一页</a>
-  </div>
-
-  <div id="personView" class="loading">正在加载……</div>
-</div>
-
-<script>
-const CSV_URL="https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
-let allData=[];
-
-const urlParams = new URLSearchParams(window.location.search);
-const personNo = urlParams.get('no');
-
-window.onload = async function(){
-  if(!personNo){
-    document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">缺少族人编号</div>';
-    return;
-  }
-
-  try{
-    const res = await fetch(CSV_URL);
-    const text = await res.text();
-    const lines = text.trim().split(/\r?\n/);
-    const head = lines[0].split(",");
-    const idxNo = head.indexOf("No");
-    const idxName = head.indexOf("姓名");
-    const idxAlias = head.indexOf("别名") || head.indexOf("字");
-    const idxGen = head.indexOf("世代");
-    const idxFather = head.indexOf("父亲编号");
-    const idxRank = head.indexOf("排行") || head.indexOf("第几子");
-    const idxWife = head.indexOf("妻子") || head.indexOf("配偶");
-    const idxBio = head.indexOf("事迹") || head.indexOf("备注");
-    const idxPhoto = head.indexOf("相片") || head.indexOf("照片");
-
-    allData = [];
-    for(let i=1;i<lines.length;i++){
-      const cell = lines[i].split(",");
-      allData.push({
-        no: cell[idxNo]?.trim() || "",
-        name: cell[idxName]?.trim() || "",
-        alias: idxAlias>=0 ? (cell[idxAlias]?.trim() || "") : "",
-        gen: idxGen>=0 ? parseInt(cell[idxGen]) || 0 : 0,
-        father: idxFather>=0 ? (cell[idxFather]?.trim() || "") : "",
-        rank: idxRank>=0 ? (cell[idxRank]?.trim() || "") : "",
-        wife: idxWife>=0 ? (cell[idxWife]?.trim() || "") : "",
-        bio: idxBio>=0 ? (cell[idxBio]?.trim() || "") : "",
-        photo: idxPhoto>=0 ? (cell[idxPhoto]?.trim() || "") : ""
-      });
-    }
-
-    loadPerson(personNo);
-
-  }catch(err){
-    document.getElementById('personView').innerHTML = `<div style="text-align:center;color:red;">读取失败：${err.message}</div>`;
-  }
-};
-
-function loadPerson(no){
-  const person = allData.find(p => p.no === no);
-  if(!person){
-    document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">未找到该族人</div>';
-    return;
-  }
-
-  const ancestors = [];
-  let current = person;
-  while(current){
-    ancestors.unshift(current);
-    if(!current.father) break;
-    current = allData.find(p => p.no === current.father);
-  }
-
-  let ancestorHTML = '<div class="ancestor-flow">';
-  ancestors.forEach(a=>{
-    const hasAlias = a.alias && a.alias !== '';
-    const rankText = a.rank ? ` · ${a.rank}` : '';
-    ancestorHTML += `
-      <div class="ancestor-item" onclick="loadPerson('${a.no}')">
-        <div class="ancestor-gen">第${a.gen}代</div>
-        <div class="ancestor-name-main">${a.name}<span class="ancestor-rank">${rankText}</span></div>
-        ${hasAlias ? `<div class="ancestor-name-alias">（${a.alias}）</div>` : ''}
-      </div>
-    `;
-  });
-  ancestorHTML += '</div>';
-
-  const fatherObj = person.father ? allData.find(p=>p.no===person.father) : null;
-  const fatherDisplay = fatherObj 
-    ? (fatherObj.alias ? `${fatherObj.name}（${fatherObj.alias}）` : fatherObj.name)
-    : '无记录';
-  const motherDisplay = fatherObj && fatherObj.wife ? fatherObj.wife : '无记录';
-
-  const sons = allData.filter(p => p.father === person.no);
-  let sonsHTML = '';
-  if(sons.length>0){
-    sonsHTML += '<div class="info-row"><div class="info-label">儿子</div><div class="info-value">';
-    sons.forEach(s=>{
-      const sName = s.alias ? `${s.name}（${s.alias}）` : s.name;
-      const sRank = s.rank ? ` · ${s.rank}` : '';
-      sonsHTML += `<div class="son-item" onclick="loadPerson('${s.no}')">${sName}${sRank}</div>`;
-    });
-    sonsHTML += '</div></div>';
-  }
-
-  let photoHTML = '';
-  if(person.photo){
-    photoHTML = `<img src="${person.photo}" alt="${person.name}" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;">`;
-  }else{
-    photoHTML = `<div class="photo-placeholder">相片<br>待上传</div>`;
-  }
-
-  const bioHTML = person.bio 
-    ? `<div class="bio-content">${person.bio.replace(/\n/g,'<br>')}</div>`
-    : `<div class="bio-content empty-note">暂无详细事迹，欢迎补充……</div>`;
-
-  const mainName = person.alias ? `${person.name}（${person.alias}）` : person.name;
-  document.getElementById('personView').innerHTML = `
-    <div class="name-header">
-      <div class="person-name">${mainName}</div>
-      <div class="gen-badge">第${person.gen}代</div>
+    <!-- 导航 -->
+    <div class="nav-links">
+        <a href="#">← 返回首页</a>
+        <a href="#">← 返回上一页</a>
     </div>
 
-    <div class="ancestor-section">
-      <div class="section-title">世系源流</div>
-      ${ancestorHTML}
-    </div>
-
-    <div class="two-column">
-      <div class="left-col info-card">
-        <div class="info-row info-parents">
-          <div class="info-parent">
-            <div class="info-label">父亲</div>
-            <div class="info-value">${fatherDisplay}</div>
-          </div>
-          <div class="info-parent">
-            <div class="info-label">母亲</div>
-            <div class="info-value">${motherDisplay}</div>
-          </div>
+    <!-- 主卡片 -->
+    <div class="main-card">
+        <h1 class="name-title">学容</h1>
+        <div class="generation-badge">
+            <span>第20代</span>
         </div>
-        ${person.wife ? `
-          <div class="info-row">
-            <div class="info-label">妻子</div>
-            <div class="info-value">${person.wife}</div>
-          </div>
-        ` : ''}
-        ${sonsHTML}
-        <button class="add-btn" onclick="alert('录入功能待开启：新增${person.name}的子孙')">+ 新增子孙</button>
-      </div>
-      <div class="right-col">
-        ${photoHTML}
-      </div>
     </div>
 
-    <div class="bio-section">
-      <div class="section-title">祖辈事迹</div>
-      ${bioHTML}
-    </div>
-  `;
+    <!-- 世系源流 -->
+    <div class="generation-card">
+        <h2 class="section-title">世系源流</h2>
+        
+        <div class="ancestor-item">
+            <div class="gen-label">第1代</div>
+            <div class="ancestor-name">益山（迅昌）</div>
+        </div>
 
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-</script>
+        <div class="ancestor-item">
+            <div class="gen-label">第2代</div>
+            <div class="ancestor-name">文新（法灵）</div>
+        </div>
+
+        <div class="ancestor-item">
+            <div class="gen-label">第3代</div>
+            <div class="ancestor-name">宗仁（法明）</div>
+        </div>
+
+        <div class="ancestor-item">
+            <div class="gen-label">第4代</div>
+            <div class="ancestor-name"><!-- 待补充 --></div>
+        </div>
+    </div>
 </body>
 </html>
