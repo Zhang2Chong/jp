@@ -5,179 +5,174 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>张氏家谱 - 世代浏览</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:#1a1a1a;
-  color:#ffdd66;
-  font-family:"Microsoft YaHei",sans-serif;
-  min-height:100vh;
-  padding:0 16px 40px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #1a1a1a;
+  color: #ffdd66;
+  font-family: "Microsoft YaHei", sans-serif;
+  min-height: 100vh;
+  padding: 16px;
 }
-.container{
-  max-width:600px;
-  margin:0 auto;
-  width:100%;
+.container {
+  max-width: 700px;
+  margin: 0 auto;
 }
-.back-link{
-  display:inline-block;
-  color:#ff8800;
-  text-decoration:none;
-  padding:16px 0 10px;
-  font-size:16px;
+.nav-links {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-.back-link:hover{
-  color:#ffaa33;
+.back-link {
+  color: #ff9933;
+  text-decoration: none;
+  font-size: 16px;
 }
-h1{
-  font-size:clamp(28px,6vw,38px);
-  text-align:center;
-  margin:0 0 10px;
-  color:#ffdd66;
-  letter-spacing:4px;
+.back-link:hover { color: #ffcc66; }
+
+h1 {
+  text-align: center;
+  margin-bottom: 28px;
+  font-size: 22px;
+  color: #ffdd66;
 }
-.stats-line{
-  text-align:center;
-  font-size:16px;
-  color:#e2b558;
-  margin-bottom:16px;
+
+/* 每一代区块 */
+.generation-block {
+  margin-bottom: 28px;
 }
-.search-box{
-  width:100%;
-  padding:12px 16px;
-  font-size:16px;
-  background:#2a2a2a;
-  color:#fff;
-  border:1px solid #444;
-  border-radius:6px;
-  margin-bottom:20px;
+
+/* 代标题 + 人数 */
+.gen-header {
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid #444;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
 }
-.genTitle{
-  color:#ff3333;
-  font-size:20px;
-  margin:24px 0 6px;
-  display:flex;
-  align-items:center;
-  gap:8px;
+.gen-title {
+  font-size: 18px;
+  color: #ff6633;
+  font-weight: bold;
 }
-.genTitle::before{
-  content:"";
-  width:4px;
-  height:20px;
-  background:#ff3333;
-  display:block;
-  flex-shrink:0;
+.gen-count {
+  margin-left: 10px;
+  font-size: 15px;
+  color: #999;
 }
-.divider-line{
-  height:1px;
-  background:#333;
-  margin:4px 0 6px;
+
+/* 名字网格布局 */
+.names-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
 }
-.personName{
-  color:#ffdd66;
-  font-size:18px;
-  padding:8px 0 8px 12px;
-  cursor:pointer;
-  text-align:right;
+
+/* 名字按钮/链接 */
+.person-link {
+  font-size: 16px;
+  color: #ffdd66;
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 0.2s;
+  white-space: nowrap;
 }
-.personName:hover{
-  color:#fff;
+.person-link:hover {
+  color: #fff;
+  text-decoration: underline;
 }
-.loading{
-  text-align:center;
-  color:#888;
-  padding:60px 20px;
-  font-size:16px;
+
+/* 电脑：一行4个 */
+.person-link {
+  flex: 0 0 calc(25% - 12px);
+}
+
+/* 手机：一行2个 */
+@media (max-width: 520px) {
+  .person-link {
+    flex: 0 0 calc(50% - 8px);
+  }
+}
+
+.loading {
+  text-align: center;
+  color: #888;
+  padding: 60px 20px;
+  font-size: 16px;
 }
 </style>
 </head>
 <body>
 <div class="container">
+  <div class="nav-links">
+    <a class="back-link" href="index.html">← 返回首页</a>
+    <a class="back-link" href="javascript:history.back()">← 返回上一页</a>
+  </div>
 
-  <a class="back-link" href="index.html">← 返回首页</a>
-
-  <h1>张氏家谱</h1>
-  <div class="stats-line" id="stats">正在统计……</div>
-  <input class="search-box" id="searchInput" placeholder="输入姓名、别名或编号">
-  <div id="content" class="loading">正在加载世代族谱……</div>
-
+  <h1>世系浏览</h1>
+  <div id="content" class="loading">正在加载家谱数据……</div>
 </div>
 
 <script>
-const CSV_URL="https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
-let allData=[];
+const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
 
-async function loadData(){
-  const res=await fetch(CSV_URL);
-  const text=await res.text();
-  const lines=text.trim().split(/\r?\n/);
-  const head=lines[0].split(",");
-  const idxName=head.indexOf("姓名");
-  const idxAlias=head.indexOf("别名")||head.indexOf("字");
-  const idxNo=head.indexOf("No");
-  const idxGen=head.indexOf("世代");
-
-  allData=[];
-  for(let i=1;i<lines.length;i++){
-    const cell=lines[i].split(",");
-    const name=cell[idxName]?.trim()||"";
-    const alias=idxAlias>=0 ? (cell[idxAlias]?.trim()||"") : "";
-    allData.push({
-      name:name,
-      alias:alias,
-      no:cell[idxNo]?.trim()||"",
-      gen:parseInt(cell[idxGen])||1
-    })
-  }
-
-  const maxGen=Math.max(...allData.map(p=>p.gen));
-  document.getElementById("stats").innerText=
-    `${allData.length} 位家人 · ${maxGen} 代传承`;
-  
-  renderList();
-}
-
-function renderList(keyword=""){
-  let list=allData;
-  if(keyword){
-    const kw=keyword.toLowerCase();
-    list=allData.filter(p=>
-      p.name.toLowerCase().includes(kw) ||
-      (p.alias && p.alias.toLowerCase().includes(kw)) ||
-      p.no===keyword
-    );
-  }
-
-  const groups={};
-  let maxGen=0;
-  list.forEach(p=>{
-    if(!groups[p.gen]) groups[p.gen]=[];
-    groups[p.gen].push(p);
-    if(p.gen>maxGen) maxGen=p.gen;
-  })
-
-  let html="";
-  for(let g=1;g<=maxGen;g++){
-    if(groups[g]){
-      html+=`<div class="genTitle">第${g}代</div>`;
-      html+=`<div class="divider-line"></div>`;
-      groups[g].forEach(p=>{
-        const display=p.alias ? `${p.name}（${p.alias}）` : p.name;
-        html+=`<div class="personName" onclick="location.href='person.html?no=${p.no}'">${display}</div>`;
-      })
+window.onload = async function() {
+  try {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const lines = text.trim().split("\n");
+    
+    if (lines.length < 2) {
+      document.getElementById("content").innerHTML = "<div style='text-align:center;color:#888;'>暂无家谱数据</div>";
+      return;
     }
+
+    const header = lines[0].split(",");
+    const idxId = header.indexOf("编号");
+    const idxName = header.indexOf("姓名");
+    const idxGen = header.indexOf("世代");
+
+    const peopleByGen = {};
+
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(",");
+      const id = (cols[idxId] || "").trim();
+      const name = (cols[idxName] || "").trim();
+      const gen = parseInt((cols[idxGen] || "").trim());
+
+      if (!name || isNaN(gen)) continue;
+      
+      if (!peopleByGen[gen]) peopleByGen[gen] = [];
+      peopleByGen[gen].push({ id, name });
+    }
+
+    const gens = Object.keys(peopleByGen).sort((a, b) => parseInt(a) - parseInt(b));
+
+    let html = "";
+    for (const gen of gens) {
+      const list = peopleByGen[gen];
+      html += `
+      <div class="generation-block">
+        <div class="gen-header">
+          <div class="gen-title">第${gen}代</div>
+          <div class="gen-count">${list.length}人</div>
+        </div>
+        <div class="names-grid">
+      `;
+      for (const p of list) {
+        html += `<a class="person-link" href="person.html?id=${p.id}">${p.name}</a>`;
+      }
+      html += `</div></div>`;
+    }
+
+    document.getElementById("content").className = "";
+    document.getElementById("content").innerHTML = html;
+
+  } catch (err) {
+    document.getElementById("content").innerHTML = `<div style='text-align:center;color:#f66;'>加载失败：${err.message}</div>`;
   }
-  document.getElementById("content").innerHTML=html || 
-    `<div style="text-align:center;color:#666;padding:40px;">没有找到匹配的族人</div>`;
-}
-
-document.getElementById("searchInput").addEventListener("input",e=>{
-  renderList(e.target.value.trim());
-})
-
-loadData().catch(err=>{
-  document.getElementById("content").innerText="读取数据失败："+err.message;
-})
+};
 </script>
-
 </body>
 </html>
