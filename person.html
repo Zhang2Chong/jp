@@ -17,12 +17,17 @@ body{
   max-width:650px;
   margin:0 auto;
 }
+.nav-links{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+  gap:10px;
+}
 .back-link{
-  display:inline-block;
   color:#ff8800;
   text-decoration:none;
-  margin-bottom:20px;
-  font-size:16px;
+  font-size:15px;
 }
 .back-link:hover{color:#ffaa33;}
 
@@ -39,7 +44,6 @@ body{
   font-size:clamp(28px,6vw,36px);
   margin-bottom:8px;
   color:#ffdd66;
-  word-break:break-all;
 }
 .gen-badge{
   display:inline-block;
@@ -73,12 +77,17 @@ body{
 }
 .ancestor-item{
   background:#2a2a2a;
-  padding:12px 10px;
+  padding:10px 8px;
   border-radius:6px;
   text-align:center;
   border:1px solid #383838;
   flex:0 0 calc(25% - 8px);
-  min-width:90px;
+  min-width:85px;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+.ancestor-item:hover{
+  background:#333;
 }
 @media (max-width:520px){
   .ancestor-item{
@@ -96,17 +105,14 @@ body{
   margin-bottom:4px;
 }
 .ancestor-name{
-  font-size:15px;
+  font-size:14px;
   color:#ffdd66;
-  /* 移除省略，完整显示 */
-  white-space:normal;
-  word-break:normal;
+  line-height:1.4;
 }
 .ancestor-rank{
-  font-size:12px;
+  font-size:11px;
   color:#ff8800;
-  margin-left:4px;
-  display:inline-block;
+  margin-left:2px;
 }
 
 /* 下半部分：资料 + 相片 */
@@ -171,7 +177,6 @@ body{
 .info-value{
   font-size:16px;
   color:#ffdd66;
-  word-break:break-all;
 }
 .add-btn{
   display:inline-block;
@@ -222,7 +227,10 @@ body{
 </head>
 <body>
 <div class="container">
-  <a class="back-link" href="browse.html">← 返回世代列表</a>
+  <div class="nav-links">
+    <a class="back-link" href="index.html">← 返回首页</a>
+    <a class="back-link" href="browse.html">← 返回世代列表</a>
+  </div>
 
   <div id="personView" class="loading">正在加载……</div>
 </div>
@@ -232,7 +240,8 @@ const CSV_URL="https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/Zh
 let allData=[];
 
 // 拿到当前查看的族人编号
-const personNo = new URLSearchParams(window.location.search).get('no');
+const urlParams = new URLSearchParams(window.location.search);
+const personNo = urlParams.get('no');
 
 window.onload = async function(){
   if(!personNo){
@@ -251,12 +260,9 @@ window.onload = async function(){
     const idxGen = head.indexOf("世代");
     const idxFather = head.indexOf("父亲编号");
     const idxRank = head.indexOf("排行") || head.indexOf("第几子");
-    const idxMother = head.indexOf("母亲") || head.indexOf("婆婆");
     const idxWife = head.indexOf("妻子") || head.indexOf("配偶");
     const idxBio = head.indexOf("事迹") || head.indexOf("备注");
     const idxPhoto = head.indexOf("相片") || head.indexOf("照片");
-
-    console.log("✅ 列名检查：", { idxRank, idxMother, idxWife });
 
     // 读取所有人
     allData = [];
@@ -269,137 +275,134 @@ window.onload = async function(){
         gen: idxGen>=0 ? parseInt(cell[idxGen]) || 0 : 0,
         father: idxFather>=0 ? (cell[idxFather]?.trim() || "") : "",
         rank: idxRank>=0 ? (cell[idxRank]?.trim() || "") : "",
-        mother: idxMother>=0 ? (cell[idxMother]?.trim() || "") : "",
         wife: idxWife>=0 ? (cell[idxWife]?.trim() || "") : "",
         bio: idxBio>=0 ? (cell[idxBio]?.trim() || "") : "",
         photo: idxPhoto>=0 ? (cell[idxPhoto]?.trim() || "") : ""
       });
     }
 
-    // 找到当前这个人
-    const person = allData.find(p => p.no === personNo);
-    if(!person){
-      document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">未找到该族人</div>';
-      return;
-    }
-
-    console.log("✅ 当前人物：", person.name, "排行：", person.rank);
-
-    // 🔗 自动构建祖先链：从本人往上追溯到第一代
-    const ancestors = [];
-    let current = person;
-    while(current){
-      ancestors.unshift(current);
-      if(!current.father) break;
-      current = allData.find(p => p.no === current.father);
-    }
-
-    // 自动排列 + 完整显示名字
-    let ancestorHTML = '<div class="ancestor-flow">';
-    ancestors.forEach(a=>{
-      const displayName = a.alias ? `${a.name}（${a.alias}）` : a.name;
-      const rankText = a.rank ? ` · ${a.rank}` : '';
-      ancestorHTML += `
-        <div class="ancestor-item">
-          <div class="ancestor-gen">第${a.gen}代</div>
-          <div class="ancestor-name">${displayName}<span class="ancestor-rank">${rankText}</span></div>
-        </div>
-      `;
-    });
-    ancestorHTML += '</div>';
-
-    // 找到他的儿子们
-    const sons = allData.filter(p => p.father === person.no);
-    let sonsHTML = '';
-    if(sons.length>0){
-      sonsHTML += '<div class="info-row"><div class="info-label">儿子</div><div class="info-value">';
-      sons.forEach(s=>{
-        const sName = s.alias ? `${s.name}（${s.alias}）` : s.name;
-        const sRank = s.rank ? ` · ${s.rank}` : '';
-        sonsHTML += `<div>${sName}${sRank}</div>`;
-      });
-      sonsHTML += '</div></div>';
-    }
-
-    // 父亲和母亲
-    const fatherObj = person.father ? allData.find(p=>p.no===person.father) : null;
-    const fatherDisplay = fatherObj 
-      ? (fatherObj.alias ? `${fatherObj.name}（${fatherObj.alias}）` : fatherObj.name)
-      : '无记录';
-    
-    // 母亲：优先读取当前行的「母亲」列，没有的话从父亲那行读他的「妻子」
-    let motherDisplay = person.mother || '';
-    if(!motherDisplay && fatherObj){
-      motherDisplay = fatherObj.wife || '无记录';
-    } else if(!motherDisplay){
-      motherDisplay = '无记录';
-    }
-
-    // 相片区域
-    let photoHTML = '';
-    if(person.photo){
-      photoHTML = `<img src="${person.photo}" alt="${person.name}" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;">`;
-    }else{
-      photoHTML = `<div class="photo-placeholder">相片<br>待上传</div>`;
-    }
-
-    // 祖辈事迹
-    const bioHTML = person.bio 
-      ? `<div class="bio-content">${person.bio.replace(/\n/g,'<br>')}</div>`
-      : `<div class="bio-content empty-note">暂无详细事迹，欢迎补充……</div>`;
-
-    // 组装整个页面
-    const mainName = person.alias ? `${person.name}（${person.alias}）` : person.name;
-    document.getElementById('personView').innerHTML = `
-      <!-- 名字头部 -->
-      <div class="name-header">
-        <div class="person-name">${mainName}</div>
-        <div class="gen-badge">第${person.gen}代</div>
-      </div>
-
-      <!-- 世系源流 -->
-      <div class="ancestor-section">
-        <div class="section-title">世系源流</div>
-        ${ancestorHTML}
-      </div>
-
-      <!-- 下半部分：资料 + 相片 -->
-      <div class="two-column">
-        <div class="left-col info-card">
-          <div class="info-row info-parents">
-            <div class="info-parent">
-              <div class="info-label">父亲</div>
-              <div class="info-value">${fatherDisplay}</div>
-            </div>
-            <div class="info-parent">
-              <div class="info-label">母亲</div>
-              <div class="info-value">${motherDisplay}</div>
-            </div>
-          </div>
-          ${person.wife ? `
-            <div class="info-row">
-              <div class="info-label">妻子</div>
-              <div class="info-value">${person.wife}</div>
-            </div>
-          ` : ''}
-          ${sonsHTML}
-          <button class="add-btn" onclick="alert('录入功能待开启：新增${person.name}的子孙')">+ 新增子孙</button>
-        </div>
-        <div class="right-col">
-          ${photoHTML}
-        </div>
-      </div>
-
-      <!-- 祖辈事迹 -->
-      <div class="bio-section">
-        <div class="section-title">祖辈事迹</div>
-        ${bioHTML}
-      </div>
-    `;
+    loadPerson(personNo);
 
   }catch(err){
     document.getElementById('personView').innerHTML = `<div style="text-align:center;color:red;">读取失败：${err.message}</div>`;
   }
+};
+
+// 加载指定人物
+function loadPerson(no){
+  const person = allData.find(p => p.no === no);
+  if(!person){
+    document.getElementById('personView').innerHTML = '<div style="text-align:center;color:#888;">未找到该族人</div>';
+    return;
+  }
+
+  // 自动构建祖先链
+  const ancestors = [];
+  let current = person;
+  while(current){
+    ancestors.unshift(current);
+    if(!current.father) break;
+    current = allData.find(p => p.no === current.father);
+  }
+
+  // 生成世系源流HTML，每个人可点击
+  let ancestorHTML = '<div class="ancestor-flow">';
+  ancestors.forEach(a=>{
+    const displayName = a.alias ? `${a.name}（${a.alias}）` : a.name;
+    const rankText = a.rank ? ` · ${a.rank}` : '';
+    ancestorHTML += `
+      <div class="ancestor-item" onclick="loadPerson('${a.no}')">
+        <div class="ancestor-gen">第${a.gen}代</div>
+        <div class="ancestor-name">${displayName}<span class="ancestor-rank">${rankText}</span></div>
+      </div>
+    `;
+  });
+  ancestorHTML += '</div>';
+
+  // 父亲和母亲
+  const fatherObj = person.father ? allData.find(p=>p.no===person.father) : null;
+  const fatherDisplay = fatherObj 
+    ? (fatherObj.alias ? `${fatherObj.name}（${fatherObj.alias}）` : fatherObj.name)
+    : '无记录';
+  const motherDisplay = fatherObj && fatherObj.wife ? fatherObj.wife : '无记录';
+
+  // 儿子们
+  const sons = allData.filter(p => p.father === person.no);
+  let sonsHTML = '';
+  if(sons.length>0){
+    sonsHTML += '<div class="info-row"><div class="info-label">儿子</div><div class="info-value">';
+    sons.forEach(s=>{
+      const sName = s.alias ? `${s.name}（${s.alias}）` : s.name;
+      const sRank = s.rank ? ` · ${s.rank}` : '';
+      sonsHTML += `<div>${sName}${sRank}</div>`;
+    });
+    sonsHTML += '</div></div>';
+  }
+
+  // 相片
+  let photoHTML = '';
+  if(person.photo){
+    photoHTML = `<img src="${person.photo}" alt="${person.name}" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;">`;
+  }else{
+    photoHTML = `<div class="photo-placeholder">相片<br>待上传</div>`;
+  }
+
+  // 事迹
+  const bioHTML = person.bio 
+    ? `<div class="bio-content">${person.bio.replace(/\n/g,'<br>')}</div>`
+    : `<div class="bio-content empty-note">暂无详细事迹，欢迎补充……</div>`;
+
+  // 组装页面
+  const mainName = person.alias ? `${person.name}（${person.alias}）` : person.name;
+  document.getElementById('personView').innerHTML = `
+    <!-- 名字头部 -->
+    <div class="name-header">
+      <div class="person-name">${mainName}</div>
+      <div class="gen-badge">第${person.gen}代</div>
+    </div>
+
+    <!-- 世系源流 -->
+    <div class="ancestor-section">
+      <div class="section-title">世系源流</div>
+      ${ancestorHTML}
+    </div>
+
+    <!-- 下半部分：资料 + 相片 -->
+    <div class="two-column">
+      <div class="left-col info-card">
+        <div class="info-row info-parents">
+          <div class="info-parent">
+            <div class="info-label">父亲</div>
+            <div class="info-value">${fatherDisplay}</div>
+          </div>
+          <div class="info-parent">
+            <div class="info-label">母亲</div>
+            <div class="info-value">${motherDisplay}</div>
+          </div>
+        </div>
+        ${person.wife ? `
+          <div class="info-row">
+            <div class="info-label">妻子</div>
+            <div class="info-value">${person.wife}</div>
+          </div>
+        ` : ''}
+        ${sonsHTML}
+        <button class="add-btn" onclick="alert('录入功能待开启：新增${person.name}的子孙')">+ 新增子孙</button>
+      </div>
+      <div class="right-col">
+        ${photoHTML}
+      </div>
+    </div>
+
+    <!-- 祖辈事迹 -->
+    <div class="bio-section">
+      <div class="section-title">祖辈事迹</div>
+      ${bioHTML}
+    </div>
+  `;
+
+  // 滚动到页面顶部
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
 </body>
