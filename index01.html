@@ -15,8 +15,23 @@ body{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  padding:20px;
+  padding:16px 20px;
 }
+.top-nav{
+  position:fixed;
+  top:16px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-between;
+  padding:0 20px;
+}
+.nav-link{
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:16px;
+}
+
 h1{
   font-size:42px;
   margin-bottom:12px;
@@ -71,6 +86,11 @@ h1{
 </style>
 </head>
 <body>
+<div class="top-nav">
+  <a class="nav-link" href="index.html">← 返回首页</a>
+  <a class="nav-link" href="javascript:history.back()">← 返回上一页</a>
+</div>
+
 <h1>张氏家谱</h1>
 <div class="editor">编撰：张官来</div>
 
