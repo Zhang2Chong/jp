@@ -126,7 +126,10 @@ window.onload = async function(){
     const res = await fetch(CSV_URL);
     const text = await res.text();
     const lines = text.trim().split("\n");
-    const header = lines[0].split(",");
+    
+    // 自动检测分隔符：逗号 或 制表符
+    const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+    const header = lines[0].split(sep);
     
     const idxNo = header.indexOf("No");
     const idxName = header.indexOf("姓名");
@@ -135,12 +138,11 @@ window.onload = async function(){
     const gens = {};
     let total=0, maxGen=0;
 
-    for(let i=2;i<lines.length;i++){
-      const col = lines[i].split(",");
+    for(let i=1;i<lines.length;i++){
+      const col = lines[i].split(sep);
       const no = idxNo>=0 && col[idxNo] ? col[idxNo].trim() : "";
       const name = idxName>=0 && col[idxName] ? col[idxName].trim() : "";
-      const genRaw = idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "";
-      const gen = genRaw.replace(/"/g, ''); // 去掉可能的引号
+      const gen = idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "";
       
       if(!no || !name || !gen) continue;
       
