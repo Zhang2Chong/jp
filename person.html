@@ -297,6 +297,7 @@ h2{
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
 const ACCESS_PASSWORD = "771395";
 let pendingUrl = "";
+let currentPersonId = null;
 
 function openModal(url){
   pendingUrl = url;
@@ -330,8 +331,6 @@ document.addEventListener('keydown', function(e){
     checkPassword();
   }
 });
-
-let currentPersonId = null;
 
 document.getElementById('addPersonLink').addEventListener('click', function(){
   if(currentPersonId){
