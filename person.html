@@ -213,7 +213,7 @@ h2{
 
 <div class="btn-row">
   <a href="admin.html" class="btn btn-secondary">修改资料</a>
-  <a href="admin.html" class="btn btn-primary">➕ 新增人员</a>
+  <a href="#" class="btn btn-primary" id="addPersonLink">➕ 新增人员</a>
 </div>
 
 </div>
@@ -342,6 +342,12 @@ window.onload = async function(){
       </div>`;
     }
     document.getElementById("ancestorGrid").innerHTML = html;
+
+    // 新增人员链接：自动带上当前ID
+    const addLink = document.getElementById('addPersonLink');
+    if(addLink && targetId){
+      addLink.href = 'add.html?fatherId=' + targetId;
+    }
 
   }catch(err){
     console.error(err);
