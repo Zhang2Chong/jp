@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>修改族人资料</title>
+<title>修改资料</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -59,11 +59,6 @@ h1{
   font-size:15px;
   outline:none;
 }
-.form-input:read-only{
-  background:#222;
-  color:#999;
-  border-color:#333;
-}
 .form-original{
   width:40%;
   padding:10px 12px;
@@ -75,16 +70,11 @@ h1{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-.full-row .form-input{
-  width:100%;
-}
-.full-row .form-original{
-  width:40%;
-}
 .tip-text{
   font-size:12px;
   color:#777;
   margin-bottom:4px;
+  margin-left:100px;
 }
 .btn-block{
   margin-top:24px;
@@ -119,11 +109,11 @@ h1{
 <div class="wrapper">
 
 <div class="top-links">
-  <a href="index.html">← 返回首页</a>
+  <a href="index.html">← 返回主页</a>
   <a href="javascript:history.back()">← 返回上一页</a>
 </div>
 
-<h1>修改族人资料</h1>
+<h1>修改资料</h1>
 
 <div id="loadingBox" class="loading">正在加载资料...</div>
 <div id="formBox" style="display:none;">
@@ -138,17 +128,13 @@ h1{
 
   <div class="form-row">
     <div class="form-label">父亲</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_father" readonly style="background:#222; color:#999;" placeholder="不可改">
-    </div>
+    <div style="flex:1;"></div>
     <div class="form-original" id="orig_father">—</div>
   </div>
 
   <div class="form-row">
     <div class="form-label">公公</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_grandpa" readonly style="background:#222; color:#999;" placeholder="不可改">
-    </div>
+    <div style="flex:1;"></div>
     <div class="form-original" id="orig_grandpa">—</div>
   </div>
 
@@ -162,9 +148,7 @@ h1{
 
   <div class="form-row">
     <div class="form-label">世代</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_gen" readonly style="background:#222; color:#999;" placeholder="不可改">
-    </div>
+    <div style="flex:1;"></div>
     <div class="form-original" id="orig_gen">—</div>
   </div>
 
@@ -185,7 +169,7 @@ h1{
   </div>
 
   <div class="tip-text">相片链接：多个用逗号或换行分开，最多8张，不改则留空</div>
-  <div class="form-row full-row">
+  <div class="form-row">
     <div class="form-label">相片链接</div>
     <div class="form-input-wrap">
       <textarea class="form-input" id="input_photoLinks" rows="3" placeholder="不改则留空"></textarea>
@@ -193,10 +177,10 @@ h1{
     <div class="form-original" id="orig_photoLinks">—</div>
   </div>
 
-  <div class="form-row full-row">
+  <div class="form-row">
     <div class="form-label">备注</div>
     <div class="form-input-wrap">
-      <textarea class="form-input" id="input_note" rows="3" placeholder="输入新备注，不改则留空"></textarea>
+      <textarea class="form-input" id="input_note" rows="4" placeholder="输入新备注，不改则留空"></textarea>
     </div>
     <div class="form-original" id="orig_note">—</div>
   </div>
@@ -282,7 +266,6 @@ window.onload = async function(){
     const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
     const grandpa = father && father.fatherId && father.fatherId !== "0" ? people[father.fatherId] : null;
 
-    // 显示原值
     document.getElementById('orig_name').textContent = withSurname(originalData.name);
     document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
     document.getElementById('orig_grandpa').textContent = grandpa ? withSurname(grandpa.name) : "—";
@@ -294,11 +277,6 @@ window.onload = async function(){
     const photoCount = originalData.photoLinks ? originalData.photoLinks.split(/[,\n]+/).filter(s=>s.trim()).length : 0;
     document.getElementById('orig_photoLinks').textContent = photoCount > 0 ? `已存${photoCount}张` : "暂无相片";
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
-
-    // 只读框赋值
-    document.getElementById('input_father').value = father ? withSurname(father.name) : "";
-    document.getElementById('input_grandpa').value = grandpa ? withSurname(grandpa.name) : "";
-    document.getElementById('input_gen').value = '第' + originalData.gen + '代';
 
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('formBox').style.display = 'block';
