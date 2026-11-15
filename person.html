@@ -190,7 +190,7 @@ h2{
   padding:12px;
   font-size:20px;
   text-align:center;
-  letter-spacing:8px;
+  letter-spacing:6px;
   background:#333;
   border:1px solid #555;
   border-radius:4px;
@@ -274,7 +274,7 @@ h2{
 </div>
 
 <div class="btn-row">
-  <a href="admin.html" class="btn btn-secondary" id="modifyLink">修改资料</a>
+  <a href="#" class="btn btn-secondary" id="modifyLink">修改资料</a>
   <a href="#" class="btn btn-primary" id="addPersonLink">➕ 新增人员</a>
 </div>
 
@@ -284,7 +284,7 @@ h2{
 <div class="password-modal" id="passwordModal">
   <div class="password-box">
     <h3>请输入密码</h3>
-    <input type="password" id="passwordInput" maxlength="4" placeholder="输入4位数字">
+    <input type="password" id="passwordInput" maxlength="6" placeholder="输入6位数字">
     <div>
       <button class="btn-cancel" onclick="closeModal()">取消</button>
       <button class="btn-confirm" onclick="checkPassword()">确认</button>
@@ -295,7 +295,7 @@ h2{
 
 <script>
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
-const ACCESS_PASSWORD = "1395";  // 第一道门密码
+const ACCESS_PASSWORD = "771395";
 let pendingUrl = "";
 
 function openModal(url){
@@ -325,7 +325,6 @@ function checkPassword(){
   }
 }
 
-// 回车键确认
 document.addEventListener('keydown', function(e){
   if(e.key === 'Enter' && document.getElementById('passwordModal').style.display === 'flex'){
     checkPassword();
@@ -403,7 +402,6 @@ window.onload = async function(){
     document.getElementById("personName").textContent = withSurname(person.name);
     document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
     
-    // 父亲
     let fatherObj = null;
     if(person.father && person.father !== "0" && people[person.father]){
       fatherObj = people[person.father];
@@ -413,7 +411,6 @@ window.onload = async function(){
       document.getElementById("fatherName").textContent = "—";
     }
 
-    // 母亲：本人有就用本人的，没有就用父亲的妻子
     if(person.mother){
       document.getElementById("motherName").textContent = person.mother;
     } else if(fatherObj && fatherObj.wife){
@@ -425,7 +422,6 @@ window.onload = async function(){
     document.getElementById("wifeName").textContent = person.wife || "—";
     document.getElementById("noteText").textContent = person.note || "—";
 
-    // 找儿子
     const sons = [];
     for(const no in people){
       if(people[no].father === targetId){
@@ -449,7 +445,6 @@ window.onload = async function(){
       document.getElementById("sonsName").textContent = "—";
     }
 
-    // 世系源流
     const ancestors = [];
     let currId = targetId;
     while(currId && people[currId]){
