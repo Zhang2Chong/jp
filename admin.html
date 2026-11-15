@@ -10,17 +10,7 @@ body{
   background:#1a1a1a;
   color:#facc54;
   font-family:"Microsoft YaHei",sans-serif;
-  padding:20px 10px;
-}
-.top-links{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:25px;
-}
-.top-links a{
-  color:#ff9f29;
-  text-decoration:none;
-  font-size:16px;
+  padding:20px 15px;
 }
 
 .form-container{
@@ -28,8 +18,22 @@ body{
   margin:0 auto;
   background:#2b2b2b;
   border-radius:8px;
-  padding:25px 15px;
+  padding:20px;
 }
+
+.top-links{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:15px;
+  padding-bottom:15px;
+  border-bottom:1px solid #444;
+}
+.top-links a{
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:15px;
+}
+
 h2{
   text-align:center;
   font-size:20px;
@@ -39,28 +43,38 @@ h2{
 
 .form-row{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   margin-bottom:14px;
-  padding-left:5ch;
 }
 .form-label{
   width:90px;
   color:#ddd;
   flex-shrink:0;
+  padding-top:10px;
 }
 .form-input{
   flex:1;
-  padding:8px 10px;
-  border:1px solid:#555;
+  padding:10px 12px;
+  border:1px solid #555;
   border-radius:4px;
   background:#333;
   color:#fff;
-  font-size:15px;
+  font-size:16px;
+  width:100%;
 }
-.form-input:read-only{
-  background:#2a2a2a;
-  color:#aaa;
-  border-color:#444;
+.form-input:focus{
+  outline:none;
+  border-color:#ff9f29;
+}
+.form-text{
+  flex:1;
+  padding:10px 12px;
+  color:#facc54;
+  font-size:16px;
+}
+textarea.form-input{
+  min-height:70px;
+  resize:none;
 }
 
 .btn-submit{
@@ -78,33 +92,34 @@ h2{
 </head>
 <body>
 
-<div class="top-links">
-  <a href="index.html">← 返回主页</a>
-  <a href="javascript:history.back()">← 返回上一页</a>
-</div>
-
 <div class="form-container">
+
+  <div class="top-links">
+    <a href="index.html">← 返回主页</a>
+    <a href="javascript:history.back()">← 返回上一页</a>
+  </div>
+
   <h2>新增族人资料</h2>
 
   <form id="addForm">
     <div class="form-row">
       <div class="form-label">华文名字</div>
-      <input type="text" class="form-input" id="name" maxlength="2" required>
+      <input type="text" class="form-input" id="name" maxlength="2" required placeholder="最多2个字">
     </div>
 
     <div class="form-row">
-      <div class="form-label">父亲名字</div>
-      <input type="text" class="form-input" id="fatherName" readonly>
+      <div class="form-label">父亲</div>
+      <div class="form-text" id="fatherFullName">—</div>
     </div>
 
     <div class="form-row">
       <div class="form-label">排行</div>
-      <input type="text" class="form-input" id="birthOrder" placeholder="如：1、2、Ⅰ、Ⅱ">
+      <input type="text" class="form-input" id="birthOrder" placeholder="如：1、2、3、4、5">
     </div>
 
     <div class="form-row">
       <div class="form-label">世代</div>
-      <input type="text" class="form-input" id="generation" readonly>
+      <input type="text" class="form-input" id="generation" readonly style="background:#2a2a2a; color:#aaa; border-color:#444;">
     </div>
 
     <div class="form-row">
@@ -119,7 +134,7 @@ h2{
 
     <div class="form-row">
       <div class="form-label">备注</div>
-      <input type="text" class="form-input" id="notes" placeholder="可空">
+      <textarea class="form-input" id="notes" placeholder="可空"></textarea>
     </div>
 
     <button type="submit" class="btn-submit">提交资料</button>
@@ -127,23 +142,32 @@ h2{
 </div>
 
 <script>
-// 读取 URL 参数传过来的父亲信息
 const params = new URLSearchParams(window.location.search);
 const fatherId = params.get('fatherId');
-const fatherName = params.get('fatherName');
+const fatherName = params.get('fatherName') || '';
 const fatherGen = params.get('generation');
 
-if(fatherName){
-  document.getElementById('fatherName').value = fatherName;
+function withSurname(name){
+  if(!name) return '—';
+  const n = name.trim();
+  if(n.startsWith('张')) return n;
+  return '张' + n;
 }
+
+document.getElementById('fatherFullName').textContent = withSurname(fatherName);
+
 if(fatherGen){
   document.getElementById('generation').value = parseInt(fatherGen) + 1;
 }
 
-// 提交
 document.getElementById('addForm').addEventListener('submit', function(e){
   e.preventDefault();
-  alert('资料已提交！\n名字：' + document.getElementById('name').value);
+  const name = document.getElementById('name').value;
+  if(!name){
+    alert('请输入华文名字');
+    return;
+  }
+  alert('资料已提交！\n名字：' + name + '\n父亲：' + withSurname(fatherName));
   history.back();
 });
 </script>
