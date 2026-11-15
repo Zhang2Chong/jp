@@ -343,7 +343,7 @@ window.onload = async function(){
     }
     document.getElementById("ancestorGrid").innerHTML = html;
 
-    // 新增人员链接：自动带上当前ID
+    // ✅ 新增人员链接：自动把当前ID传给add.html
     const addLink = document.getElementById('addPersonLink');
     if(addLink && targetId){
       addLink.href = 'add.html?fatherId=' + targetId;
