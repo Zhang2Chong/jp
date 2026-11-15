@@ -68,7 +68,7 @@ h2{
 .form-text{
   flex:1;
   padding:10px 12px;
-  color:#facc54;
+  color:#fff;
   font-size:16px;
 }
 textarea.form-input{
@@ -118,7 +118,7 @@ textarea.form-input{
 
     <div class="form-row">
       <div class="form-label">世代</div>
-      <input type="text" class="form-input" id="generation" readonly style="background:#333; color:#fff; border:1px solid #555;">
+      <div class="form-text" id="generationText">—</div>
     </div>
 
     <div class="form-row">
@@ -156,6 +156,7 @@ function withSurname(name){
 async function loadFatherInfo() {
   if (!fatherId) {
     document.getElementById('fatherFullName').textContent = '未指定';
+    document.getElementById('generationText').textContent = '—';
     return;
   }
 
@@ -175,18 +176,20 @@ async function loadFatherInfo() {
       
       if (no === fatherId) {
         const name = idxName >= 0 ? cols[idxName].trim() : '';
-        const gen = idxGen >= 0 ? cols[idxGen].trim() : '';
+        const gen = idxGen >= 0 ? parseInt(cols[idxGen].trim()) : 0;
         
         document.getElementById('fatherFullName').textContent = withSurname(name);
-        document.getElementById('generation').value = parseInt(gen) + 1;
+        document.getElementById('generationText').textContent = gen + 1;
         return;
       }
     }
     
     document.getElementById('fatherFullName').textContent = '查无此人';
+    document.getElementById('generationText').textContent = '—';
   } catch (err) {
     console.error('读取失败:', err);
     document.getElementById('fatherFullName').textContent = '读取失败';
+    document.getElementById('generationText').textContent = '—';
   }
 }
 
