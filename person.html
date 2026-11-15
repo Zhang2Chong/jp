@@ -213,17 +213,18 @@ h2{
 
 <div class="btn-row">
   <a href="admin.html" class="btn btn-secondary">修改资料</a>
-  <a id="addPersonBtn" href="#" class="btn btn-primary">➕ 新增人员</a>
+  <a href="admin.html" class="btn btn-primary">➕ 新增人员</a>
 </div>
 
 <script>
-// 这段放在 person.html 的 script 区域最后面
-const addBtn = document.getElementById('addPersonBtn');
-if (addBtn && typeof person !== 'undefined') {
-  addBtn.href = `admin.html?fatherId=${person.no}&fatherName=${person.name}&generation=${person.gen}`;
-}
-</script>
+const CSV_URL = "data.csv";
 
+function withSurname(name){
+  if(!name) return "—";
+  const n = name.trim();
+  if(n.startsWith("张")) return n;
+  return "张" + n;
+}
 
 const params = new URLSearchParams(location.search);
 const targetId = params.get("id");
@@ -268,9 +269,8 @@ window.onload = async function(){
     }
 
     document.getElementById("personName").textContent = withSurname(person.name);
-    document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
+    document.getElementById("personGen").textContent = `第${person.gen}代`;
     
-    // 父亲
     let fatherObj = null;
     if(person.father && person.father !== "0" && people[person.father]){
       fatherObj = people[person.father];
@@ -280,7 +280,6 @@ window.onload = async function(){
       document.getElementById("fatherName").textContent = "—";
     }
 
-    // 母亲：本人有就用本人的，没有就用父亲的妻子
     if(person.mother){
       document.getElementById("motherName").textContent = person.mother;
     } else if(fatherObj && fatherObj.wife){
@@ -292,7 +291,6 @@ window.onload = async function(){
     document.getElementById("wifeName").textContent = person.wife || "—";
     document.getElementById("noteText").textContent = person.note || "—";
 
-    // 找儿子
     const sons = [];
     for(const no in people){
       if(people[no].father === targetId){
@@ -316,7 +314,6 @@ window.onload = async function(){
       document.getElementById("sonsName").textContent = "—";
     }
 
-    // 世系源流
     const ancestors = [];
     let currId = targetId;
     while(currId && people[currId]){
@@ -346,5 +343,6 @@ window.onload = async function(){
 };
 </script>
 
+</div>
 </body>
 </html>
