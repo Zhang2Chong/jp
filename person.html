@@ -65,6 +65,7 @@ h2{
   border-radius:6px;
   padding:10px 8px;
   text-align:center;
+  cursor:pointer;
 }
 .ancestor-gen{
   font-size:14px;
@@ -80,45 +81,88 @@ h2{
   color:#888;
 }
 
+.info-container{
+  display:flex;
+  gap:16px;
+  margin-bottom:16px;
+}
+.info-left{
+  flex:1;
+}
 .info-row{
   background:#2b2b2b;
   border-radius:6px;
-  padding:12px 16px;
-  margin-bottom:8px;
+  padding:10px 14px;
+  margin-bottom:6px;
   display:flex;
+  align-items:center;
 }
 .info-label{
   width:60px;
   color:#aaa;
+  flex-shrink:0;
 }
 .info-value{
   flex:1;
 }
-
-.photo-area{
-  margin-top:16px;
-  text-align:center;
-  color:#666;
-  border:1px dashed #444;
-  border-radius:6px;
-  padding:30px;
-}
-
-.add-btn{
-  margin-top:16px;
-  text-align:right;
-}
-.add-btn a{
-  display:inline-block;
-  background:#e64a19;
-  color:#fff;
+.info-value a{
+  color:#facc54;
   text-decoration:none;
+}
+
+.son-item a{
+  color:#facc54;
+  text-decoration:none;
+}
+.son-pos{
+  font-size:12px;
+  color:#888;
+}
+
+.photo-box{
+  width:160px;
+  background:#2b2b2b;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#666;
+  font-size:14px;
+  min-height:180px;
+}
+
+.note-row{
+  background:#2b2b2b;
+  border-radius:6px;
+  padding:12px 14px;
+  margin-bottom:16px;
+  min-height:60px;
+}
+
+.btn-row{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+}
+.btn{
   padding:8px 20px;
   border-radius:6px;
+  text-decoration:none;
+  font-size:15px;
+}
+.btn-primary{
+  background:#e64a19;
+  color:#fff;
+}
+.btn-secondary{
+  background:#444;
+  color:#ddd;
 }
 
 @media (max-width:480px){
   .ancestor-grid{grid-template-columns:repeat(2, 1fr);}
+  .info-container{flex-direction:column;}
+  .photo-box{width:100%; min-height:120px;}
 }
 </style>
 </head>
@@ -140,27 +184,36 @@ h2{
 <div class="ancestor-grid" id="ancestorGrid">
 </div>
 
-<div class="info-row">
-  <div class="info-label">父亲</div>
-  <div class="info-value" id="fatherName">—</div>
-</div>
-<div class="info-row">
-  <div class="info-label">母亲</div>
-  <div class="info-value" id="motherName">—</div>
-</div>
-<div class="info-row">
-  <div class="info-label">妻子</div>
-  <div class="info-value" id="wifeName">—</div>
-</div>
-<div class="info-row">
-  <div class="info-label">儿子</div>
-  <div class="info-value" id="sonName">—</div>
+<div class="info-container">
+  <div class="info-left">
+    <div class="info-row">
+      <div class="info-label">父亲</div>
+      <div class="info-value" id="fatherName">—</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">母亲</div>
+      <div class="info-value" id="motherName">—</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">妻子</div>
+      <div class="info-value" id="wifeName">—</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">儿子</div>
+      <div class="info-value" id="sonsName">—</div>
+    </div>
+  </div>
+  <div class="photo-box" id="photoBox">暂无相片</div>
 </div>
 
-<div class="photo-area">暂无照片</div>
+<div class="note-row">
+  <div class="info-label" style="width:auto; display:inline">备注</div>
+  <div id="noteText" style="margin-top:4px; color:#ddd;">—</div>
+</div>
 
-<div class="add-btn">
-  <a href="admin.html">➕ 新增人员</a>
+<div class="btn-row">
+  <a href="admin.html" class="btn btn-secondary">修改资料</a>
+  <a href="admin.html" class="btn btn-primary">➕ 新增人员</a>
 </div>
 
 </div>
@@ -193,6 +246,7 @@ window.onload = async function(){
     const idxBroRank = header.indexOf("兄弟排名");
     const idxMother = header.indexOf("母亲");
     const idxWife = header.indexOf("妻子");
+    const idxNote = header.indexOf("备注");
 
     const people = {};
     for(let i=1;i<lines.length;i++){
@@ -205,7 +259,8 @@ window.onload = async function(){
         father: idxFather>=0 && col[idxFather] ? col[idxFather].trim() : "",
         broRank: idxBroRank>=0 && col[idxBroRank] ? col[idxBroRank].trim() : "",
         mother: idxMother>=0 && col[idxMother] ? col[idxMother].trim() : "",
-        wife: idxWife>=0 && col[idxWife] ? col[idxWife].trim() : ""
+        wife: idxWife>=0 && col[idxWife] ? col[idxWife].trim() : "",
+        note: idxNote>=0 && col[idxNote] ? col[idxNote].trim() : ""
       };
     }
 
@@ -218,15 +273,53 @@ window.onload = async function(){
     document.getElementById("personName").textContent = withSurname(person.name);
     document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
     
+    // 父亲
+    let fatherObj = null;
     if(person.father && person.father !== "0" && people[person.father]){
-      document.getElementById("fatherName").textContent = withSurname(people[person.father].name);
+      fatherObj = people[person.father];
+      document.getElementById("fatherName").innerHTML = 
+        `<a href="person.html?id=${person.father}">${withSurname(fatherObj.name)}</a>`;
     } else {
       document.getElementById("fatherName").textContent = "—";
     }
-    document.getElementById("motherName").textContent = person.mother || "—";
-    document.getElementById("wifeName").textContent = person.wife || "—";
-    document.getElementById("sonName").textContent = "多个（详见下代）";
 
+    // 母亲：本人有就用本人的，没有就用父亲的妻子
+    if(person.mother){
+      document.getElementById("motherName").textContent = person.mother;
+    } else if(fatherObj && fatherObj.wife){
+      document.getElementById("motherName").textContent = fatherObj.wife;
+    } else {
+      document.getElementById("motherName").textContent = "—";
+    }
+
+    document.getElementById("wifeName").textContent = person.wife || "—";
+    document.getElementById("noteText").textContent = person.note || "—";
+
+    // 找儿子
+    const sons = [];
+    for(const no in people){
+      if(people[no].father === targetId){
+        sons.push({
+          no: no,
+          name: people[no].name,
+          broRank: people[no].broRank
+        });
+      }
+    }
+    if(sons.length > 0){
+      let sonHtml = "";
+      for(const s of sons){
+        sonHtml += `<span class="son-item">
+          <a href="person.html?id=${s.no}">${withSurname(s.name)}</a>
+          <span class="son-pos">·第${s.broRank}子</span>
+        </span> `;
+      }
+      document.getElementById("sonsName").innerHTML = sonHtml;
+    } else {
+      document.getElementById("sonsName").textContent = "—";
+    }
+
+    // 世系源流
     const ancestors = [];
     let currId = targetId;
     while(currId && people[currId]){
@@ -242,7 +335,7 @@ window.onload = async function(){
 
     let html = "";
     for(const a of ancestors){
-      html += `<div class="ancestor-item">
+      html += `<div class="ancestor-item" onclick="location.href='person.html?id=${a.no}'">
         <div class="ancestor-gen">第${a.gen}代</div>
         <div class="ancestor-name">${withSurname(a.name)}</div>
         <div class="ancestor-pos">第${a.broRank}子</div>
