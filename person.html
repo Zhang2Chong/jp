@@ -183,6 +183,10 @@ function withSurname(name){
 window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
   let targetId = params.get("id");
+  
+  if(targetId && targetId.startsWith("row_")){
+    targetId = targetId.replace("row_","");
+  }
 
   try{
     const res = await fetch(CSV_URL);
@@ -229,7 +233,7 @@ window.onload = async function(){
       person=allPeople[targetId];
     }
     if(!person){
-      document.getElementById("content").innerHTML="<div style='text-align:center;color:#666;padding:80px'>未找到该族人</div>";
+      document.getElementById("content").innerHTML="<div style='text-align:center;color:#666;padding:80px'>未找到该族人<br><small>ID:"+targetId+"</small></div>";
       return;
     }
 
@@ -248,7 +252,7 @@ window.onload = async function(){
     }
     const lineage=getLineage();
 
-    function itemCard(p,isCurrent){
+    function itemCard(p){
       let rankText="";
       if(p.rank && p.rank!=="" && p.father!=="0"){
         rankText=`<div class="rank-text">第${p.rank}子</div>`;
@@ -276,7 +280,7 @@ window.onload = async function(){
       <div class="section-title">世系源流</div>
       <div class="line-grid">
     `;
-    for(const a of lineage){html+=itemCard(a,a.no===person.no);}
+    for(const a of lineage){html+=itemCard(a);}
     html+=`</div>`;
 
     html+=`<div class="two-column">
