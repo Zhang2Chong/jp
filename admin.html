@@ -141,21 +141,41 @@ textarea.form-input{
 </div>
 
 <script>
+const CSV_URL = 'family_data.csv';
+
 const params = new URLSearchParams(window.location.search);
-const fatherName = params.get('fatherName');
-const fatherGen = params.get('generation');
+const fatherId = params.get('fatherId');
 
-function withSurname(name){
-  if(!name) return '—';
-  const n = name.trim();
-  if(n.startsWith('张')) return n;
-  return '张' + n;
-}
+let allData = [];
 
-document.getElementById('fatherFullName').textContent = withSurname(fatherName);
-
-if(fatherGen){
-  document.getElementById('generation').value = parseInt(fatherGen) + 1;
+async function loadData() {
+  try {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const lines = text.trim().split(/\r?\n/);
+    const header = lines[0].split(',');
+    const idxId = header.indexOf('编号');
+    const idxName = header.indexOf('姓名');
+    const idxGen = header.indexOf('世代');
+    
+    for(let i=1; i<lines.length; i++){
+      const cols = lines[i].split(',');
+      allData.push({
+        id: cols[idxId]?.trim(),
+        name: cols[idxName]?.trim(),
+        generation: cols[idxGen]?.trim()
+      });
+    }
+    
+    const father = allData.find(p => p.id === fatherId || String(p.id) === String(fatherId));
+    if(father){
+      document.getElementById('fatherFullName').textContent = father.name;
+      document.getElementById('generation').value = parseInt(father.generation) + 1;
+    }
+  } catch(err) {
+    console.error('读取失败:', err);
+    document.getElementById('fatherFullName').textContent = '读取失败';
+  }
 }
 
 document.getElementById('addForm').addEventListener('submit', function(e){
@@ -165,9 +185,11 @@ document.getElementById('addForm').addEventListener('submit', function(e){
     alert('请输入华文名字');
     return;
   }
-  alert('资料已提交！\n名字：' + name + '\n父亲：' + withSurname(fatherName));
+  alert('资料已提交！\n名字：' + name);
   history.back();
 });
+
+loadData();
 </script>
 
 </body>
