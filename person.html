@@ -110,6 +110,15 @@ h2{
   text-decoration:none;
 }
 
+.son-item a{
+  color:#facc54;
+  text-decoration:none;
+}
+.son-pos{
+  font-size:12px;
+  color:#888;
+}
+
 .photo-box{
   width:160px;
   background:#2b2b2b;
@@ -264,17 +273,29 @@ window.onload = async function(){
     document.getElementById("personName").textContent = withSurname(person.name);
     document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
     
+    // 父亲
+    let fatherObj = null;
     if(person.father && person.father !== "0" && people[person.father]){
+      fatherObj = people[person.father];
       document.getElementById("fatherName").innerHTML = 
-        `<a href="person.html?id=${person.father}">${withSurname(people[person.father].name)}</a>`;
+        `<a href="person.html?id=${person.father}">${withSurname(fatherObj.name)}</a>`;
     } else {
       document.getElementById("fatherName").textContent = "—";
     }
-    document.getElementById("motherName").textContent = person.mother || "—";
+
+    // 母亲：本人有就用本人的，没有就用父亲的妻子
+    if(person.mother){
+      document.getElementById("motherName").textContent = person.mother;
+    } else if(fatherObj && fatherObj.wife){
+      document.getElementById("motherName").textContent = fatherObj.wife;
+    } else {
+      document.getElementById("motherName").textContent = "—";
+    }
+
     document.getElementById("wifeName").textContent = person.wife || "—";
     document.getElementById("noteText").textContent = person.note || "—";
 
-    // 找儿子：父亲编号 = 本人No
+    // 找儿子
     const sons = [];
     for(const no in people){
       if(people[no].father === targetId){
@@ -288,14 +309,17 @@ window.onload = async function(){
     if(sons.length > 0){
       let sonHtml = "";
       for(const s of sons){
-        sonHtml += `<a href="person.html?id=${s.no}">${withSurname(s.name)}</a>·第${s.broRank}子 `;
+        sonHtml += `<span class="son-item">
+          <a href="person.html?id=${s.no}">${withSurname(s.name)}</a>
+          <span class="son-pos">·第${s.broRank}子</span>
+        </span> `;
       }
       document.getElementById("sonsName").innerHTML = sonHtml;
     } else {
       document.getElementById("sonsName").textContent = "—";
     }
 
-    // 世系源流：从本人往上追到第一代
+    // 世系源流
     const ancestors = [];
     let currId = targetId;
     while(currId && people[currId]){
