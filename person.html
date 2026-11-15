@@ -213,13 +213,23 @@ h2{
 
 <div class="btn-row">
   <a href="admin.html" class="btn btn-secondary">修改资料</a>
-  <a href="#" class="btn btn-primary" id="addPersonLink">➕ 新增人员</a>
+  <a href="#" class="btn btn-primary" id="addPersonLink" onclick="goToAdd(); return false;">➕ 新增人员</a>
 </div>
 
 </div>
 
 <script>
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
+
+let currentPersonId = null;
+
+function goToAdd(){
+  if(currentPersonId){
+    window.location.href = 'add.html?fatherId=' + currentPersonId;
+  }else{
+    alert('请先等待页面加载完成');
+  }
+}
 
 function withSurname(name){
   if(!name) return "";
@@ -230,6 +240,7 @@ function withSurname(name){
 
 const params = new URLSearchParams(location.search);
 const targetId = params.get("id");
+currentPersonId = targetId;
 
 window.onload = async function(){
   try{
@@ -342,12 +353,6 @@ window.onload = async function(){
       </div>`;
     }
     document.getElementById("ancestorGrid").innerHTML = html;
-
-    // ✅ 新增人员链接：自动把当前ID传给add.html
-    const addLink = document.getElementById('addPersonLink');
-    if(addLink && targetId){
-      addLink.href = 'add.html?fatherId=' + targetId;
-    }
 
   }catch(err){
     console.error(err);
