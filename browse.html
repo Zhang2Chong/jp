@@ -139,13 +139,17 @@ window.onload = async function(){
       const col = lines[i].split(",");
       const no = idxNo>=0 && col[idxNo] ? col[idxNo].trim() : "";
       const name = idxName>=0 && col[idxName] ? col[idxName].trim() : "";
-      const gen = idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "";
+      const genRaw = idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "";
+      const gen = genRaw.replace(/"/g, ''); // 去掉可能的引号
+      
       if(!no || !name || !gen) continue;
       
       if(!gens[gen]) gens[gen]=[];
       gens[gen].push({no,name});
       total++;
-      if(parseInt(gen)>maxGen) maxGen=parseInt(gen);
+      
+      const genNum = parseInt(gen);
+      if(genNum>maxGen) maxGen=genNum;
     }
 
     document.getElementById("totalGen").textContent = maxGen;
