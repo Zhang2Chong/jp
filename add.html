@@ -118,7 +118,7 @@ textarea.form-input{
 
     <div class="form-row">
       <div class="form-label">世代</div>
-      <input type="text" class="form-input" id="generation" readonly style="background:#2a2a2a; color:#aaa; border-color:#444;">
+      <input type="text" class="form-input" id="generation" readonly style="background:#333; color:#fff; border:1px solid #555;">
     </div>
 
     <div class="form-row">
@@ -146,6 +146,13 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/
 const params = new URLSearchParams(window.location.search);
 const fatherId = params.get('fatherId');
 
+function withSurname(name){
+  if(!name) return "";
+  const n = name.trim();
+  if(n.startsWith("张")) return n;
+  return "张" + n;
+}
+
 async function loadFatherInfo() {
   if (!fatherId) {
     document.getElementById('fatherFullName').textContent = '未指定';
@@ -170,7 +177,7 @@ async function loadFatherInfo() {
         const name = idxName >= 0 ? cols[idxName].trim() : '';
         const gen = idxGen >= 0 ? cols[idxGen].trim() : '';
         
-        document.getElementById('fatherFullName').textContent = name;
+        document.getElementById('fatherFullName').textContent = withSurname(name);
         document.getElementById('generation').value = parseInt(gen) + 1;
         return;
       }
