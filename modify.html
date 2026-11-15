@@ -3,208 +3,348 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新增族人资料</title>
+<title>修改族人资料</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   background:#1a1a1a;
   color:#facc54;
   font-family:"Microsoft YaHei",sans-serif;
-  padding:20px 15px;
+  padding:16px;
 }
-
-.form-container{
-  max-width:420px;
+.wrapper{
+  max-width:600px;
   margin:0 auto;
-  background:#2b2b2b;
-  border-radius:8px;
-  padding:20px;
+  width:100%;
 }
-
 .top-links{
   display:flex;
   justify-content:space-between;
-  margin-bottom:15px;
-  padding-bottom:15px;
+  margin-bottom:24px;
+  padding-bottom:12px;
   border-bottom:1px solid #444;
 }
 .top-links a{
   color:#ff9f29;
   text-decoration:none;
-  font-size:15px;
+  font-size:16px;
 }
-
-h2{
+h1{
   text-align:center;
-  font-size:20px;
-  margin-bottom:25px;
+  font-size:26px;
+  margin-bottom:24px;
   color:#ffcc44;
 }
-
 .form-row{
   display:flex;
   align-items:center;
-  margin-bottom:14px;
+  margin-bottom:12px;
+  gap:10px;
 }
 .form-label{
   width:90px;
   color:#ddd;
   flex-shrink:0;
 }
-.form-input{
+.form-input-wrap{
   flex:1;
+}
+.form-input{
+  width:100%;
   padding:10px 12px;
+  background:#2b2b2b;
   border:1px solid #555;
   border-radius:4px;
-  background:#333;
   color:#fff;
-  font-size:16px;
-  width:100%;
-}
-.form-input:focus{
+  font-size:15px;
   outline:none;
-  border-color:#ff9f29;
 }
-.form-text{
-  flex:1;
+.form-input:read-only{
+  background:#222;
+  color:#999;
+  border-color:#333;
+}
+.form-original{
+  width:40%;
   padding:10px 12px;
-  color:#fff;
-  font-size:16px;
+  background:#222;
+  border-radius:4px;
+  color:#aaa;
+  font-size:14px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
-textarea.form-input{
-  min-height:70px;
-  resize:none;
-}
-
-.btn-submit{
+.full-row .form-input{
   width:100%;
-  padding:12px;
+}
+.full-row .form-original{
+  width:40%;
+}
+.tip-text{
+  font-size:12px;
+  color:#777;
+  margin-bottom:4px;
+}
+.btn-block{
+  margin-top:24px;
+}
+.submit-btn{
+  width:100%;
+  padding:14px;
   background:#e64a19;
   color:#fff;
   border:none;
   border-radius:6px;
-  font-size:17px;
-  margin-top:10px;
+  font-size:18px;
   cursor:pointer;
+}
+.info-box{
+  background:#2b2b2b;
+  padding:12px;
+  border-radius:4px;
+  margin-bottom:16px;
+  color:#888;
+  font-size:14px;
+  display:none;
+}
+.loading{
+  text-align:center;
+  padding:40px;
+  color:#aaa;
 }
 </style>
 </head>
 <body>
+<div class="wrapper">
 
-<div class="form-container">
+<div class="top-links">
+  <a href="index.html">← 返回首页</a>
+  <a href="javascript:history.back()">← 返回上一页</a>
+</div>
 
-  <div class="top-links">
-    <a href="index.html">← 返回主页</a>
-    <a href="javascript:history.back()">← 返回上一页</a>
+<h1>修改族人资料</h1>
+
+<div id="loadingBox" class="loading">正在加载资料...</div>
+<div id="formBox" style="display:none;">
+
+  <div class="form-row">
+    <div class="form-label">华文名字</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_name" placeholder="输入新名字，不改则留空">
+    </div>
+    <div class="form-original" id="orig_name">—</div>
   </div>
 
-  <h2>新增族人资料</h2>
-
-  <form id="addForm">
-    <div class="form-row">
-      <div class="form-label">华文名字</div>
-      <input type="text" class="form-input" id="name" maxlength="2" required placeholder="最多2个字">
+  <div class="form-row">
+    <div class="form-label">父亲</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_father" readonly style="background:#222; color:#999;" placeholder="不可改">
     </div>
+    <div class="form-original" id="orig_father">—</div>
+  </div>
 
-    <div class="form-row">
-      <div class="form-label">父亲</div>
-      <div class="form-text" id="fatherFullName">—</div>
+  <div class="form-row">
+    <div class="form-label">公公</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_grandpa" readonly style="background:#222; color:#999;" placeholder="不可改">
     </div>
+    <div class="form-original" id="orig_grandpa">—</div>
+  </div>
 
-    <div class="form-row">
-      <div class="form-label">排行</div>
-      <input type="text" class="form-input" id="birthOrder" placeholder="如：1、2、3、4、5">
+  <div class="form-row">
+    <div class="form-label">排行</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_rank" placeholder="输入新排行，不改则留空">
     </div>
+    <div class="form-original" id="orig_rank">—</div>
+  </div>
 
-    <div class="form-row">
-      <div class="form-label">世代</div>
-      <div class="form-text" id="generationText">—</div>
+  <div class="form-row">
+    <div class="form-label">世代</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_gen" readonly style="background:#222; color:#999;" placeholder="不可改">
     </div>
+    <div class="form-original" id="orig_gen">—</div>
+  </div>
 
-    <div class="form-row">
-      <div class="form-label">妻子名字</div>
-      <input type="text" class="form-input" id="wifeName" placeholder="可空">
+  <div class="form-row">
+    <div class="form-label">妻子名字</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_wife" placeholder="输入新妻子名，不改则留空">
     </div>
+    <div class="form-original" id="orig_wife">—</div>
+  </div>
 
-    <div class="form-row">
-      <div class="form-label">儿子数量</div>
-      <input type="number" class="form-input" id="sonCount" min="0" value="0">
+  <div class="form-row">
+    <div class="form-label">儿子数量</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_sonCount" placeholder="输入新数量，不改则留空">
     </div>
+    <div class="form-original" id="orig_sonCount">—</div>
+  </div>
 
-    <div class="form-row">
-      <div class="form-label">备注</div>
-      <textarea class="form-input" id="notes" placeholder="可空"></textarea>
+  <div class="tip-text">相片链接：多个用逗号或换行分开，最多8张，不改则留空</div>
+  <div class="form-row full-row">
+    <div class="form-label">相片链接</div>
+    <div class="form-input-wrap">
+      <textarea class="form-input" id="input_photoLinks" rows="3" placeholder="不改则留空"></textarea>
     </div>
+    <div class="form-original" id="orig_photoLinks">—</div>
+  </div>
 
-    <button type="submit" class="btn-submit">提交资料</button>
-  </form>
+  <div class="form-row full-row">
+    <div class="form-label">备注</div>
+    <div class="form-input-wrap">
+      <textarea class="form-input" id="input_note" rows="3" placeholder="输入新备注，不改则留空"></textarea>
+    </div>
+    <div class="form-original" id="orig_note">—</div>
+  </div>
+
+  <div class="info-box" id="infoBox"></div>
+
+  <div class="btn-block">
+    <button class="submit-btn" id="submitBtn">提交资料</button>
+  </div>
+
+</div>
+
 </div>
 
 <script>
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
-
-const params = new URLSearchParams(window.location.search);
-const fatherId = params.get('fatherId');
+let targetId = null;
+let people = {};
+let originalData = null;
 
 function withSurname(name){
   if(!name) return "";
-  const n = name.trim();
+  const n=name.trim();
   if(n.startsWith("张")) return n;
-  return "张" + n;
+  return "张"+n;
 }
 
-async function loadFatherInfo() {
-  if (!fatherId) {
-    document.getElementById('fatherFullName').textContent = '未指定';
-    document.getElementById('generationText').textContent = '—';
+function showInfo(msg, isError=false){
+  const box = document.getElementById('infoBox');
+  box.style.display = 'block';
+  box.style.color = isError ? '#ff6b6b' : '#88ff88';
+  box.textContent = msg;
+}
+
+function parseCSV(text){
+  const lines = text.trim().split("\n");
+  const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+  const header = lines[0].split(sep);
+  const idx = {};
+  ['No','姓名','父亲编号','兄弟排名','世代','妻子','儿子数量','相片链接','备注'].forEach(col=>{
+    idx[col] = header.indexOf(col);
+  });
+  const data = {};
+  for(let i=1;i<lines.length;i++){
+    const col = lines[i].split(sep);
+    const no = idx['No']>=0 && col[idx['No']] ? col[idx['No']].trim() : "";
+    if(!no) continue;
+    data[no] = {
+      no: no,
+      name: idx['姓名']>=0 && col[idx['姓名']] ? col[idx['姓名']].trim() : "",
+      fatherId: idx['父亲编号']>=0 && col[idx['父亲编号']] ? col[idx['父亲编号']].trim() : "",
+      rank: idx['兄弟排名']>=0 && col[idx['兄弟排名']] ? col[idx['兄弟排名']].trim() : "",
+      gen: idx['世代']>=0 && col[idx['世代']] ? col[idx['世代']].trim() : "",
+      wife: idx['妻子']>=0 && col[idx['妻子']] ? col[idx['妻子']].trim() : "",
+      sonCount: idx['儿子数量']>=0 && col[idx['儿子数量']] ? col[idx['儿子数量']].trim() : "",
+      photoLinks: idx['相片链接']>=0 && col[idx['相片链接']] ? col[idx['相片链接']].trim() : "",
+      note: idx['备注']>=0 && col[idx['备注']] ? col[idx['备注']].trim() : ""
+    };
+  }
+  return data;
+}
+
+window.onload = async function(){
+  const params = new URLSearchParams(location.search);
+  targetId = params.get("id")?.replace(/#.*$/, "") || null;
+  
+  if(!targetId){
+    document.getElementById('loadingBox').textContent = '缺少编号参数';
     return;
   }
 
-  try {
+  try{
     const res = await fetch(CSV_URL);
     const text = await res.text();
-    const lines = text.trim().split('\n');
-    const header = lines[0].split(',');
+    people = parseCSV(text);
     
-    const idxNo = header.indexOf('No');
-    const idxName = header.indexOf('姓名');
-    const idxGen = header.indexOf('世代');
-    
-    for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(',');
-      const no = idxNo >= 0 && cols[idxNo] ? cols[idxNo].trim() : '';
-      
-      if (no === fatherId) {
-        const name = idxName >= 0 ? cols[idxName].trim() : '';
-        const gen = idxGen >= 0 ? parseInt(cols[idxGen].trim()) : 0;
-        
-        document.getElementById('fatherFullName').textContent = withSurname(name);
-        document.getElementById('generationText').textContent = gen + 1;
-        return;
-      }
+    originalData = people[targetId];
+    if(!originalData){
+      document.getElementById('loadingBox').textContent = '查无此记录：' + targetId;
+      return;
     }
-    
-    document.getElementById('fatherFullName').textContent = '查无此人';
-    document.getElementById('generationText').textContent = '—';
-  } catch (err) {
-    console.error('读取失败:', err);
-    document.getElementById('fatherFullName').textContent = '读取失败';
-    document.getElementById('generationText').textContent = '—';
-  }
-}
 
-document.getElementById('addForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const name = document.getElementById('name').value;
-  if(!name){
-    alert('请输入华文名字');
+    const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
+    const grandpa = father && father.fatherId && father.fatherId !== "0" ? people[father.fatherId] : null;
+
+    // 显示原值
+    document.getElementById('orig_name').textContent = withSurname(originalData.name);
+    document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
+    document.getElementById('orig_grandpa').textContent = grandpa ? withSurname(grandpa.name) : "—";
+    document.getElementById('orig_rank').textContent = originalData.rank || "—";
+    document.getElementById('orig_gen').textContent = '第' + originalData.gen + '代';
+    document.getElementById('orig_wife').textContent = originalData.wife || "—";
+    document.getElementById('orig_sonCount').textContent = originalData.sonCount || "0";
+    
+    const photoCount = originalData.photoLinks ? originalData.photoLinks.split(/[,\n]+/).filter(s=>s.trim()).length : 0;
+    document.getElementById('orig_photoLinks').textContent = photoCount > 0 ? `已存${photoCount}张` : "暂无相片";
+    document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
+
+    // 只读框赋值
+    document.getElementById('input_father').value = father ? withSurname(father.name) : "";
+    document.getElementById('input_grandpa').value = grandpa ? withSurname(grandpa.name) : "";
+    document.getElementById('input_gen').value = '第' + originalData.gen + '代';
+
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('formBox').style.display = 'block';
+
+  }catch(err){
+    console.error(err);
+    document.getElementById('loadingBox').textContent = '加载失败：' + err.message;
+  }
+};
+
+document.getElementById('submitBtn').addEventListener('click', function(){
+  const changes = {};
+  
+  const newName = document.getElementById('input_name').value.trim();
+  const newRank = document.getElementById('input_rank').value.trim();
+  const newWife = document.getElementById('input_wife').value.trim();
+  const newSonCount = document.getElementById('input_sonCount').value.trim();
+  const newPhotos = document.getElementById('input_photoLinks').value.trim();
+  const newNote = document.getElementById('input_note').value.trim();
+
+  if(newName && newName !== originalData.name) changes.name = newName;
+  if(newRank && newRank !== originalData.rank) changes.rank = newRank;
+  if(newWife !== '' && newWife !== originalData.wife) changes.wife = newWife;
+  if(newSonCount !== '' && newSonCount !== originalData.sonCount) changes.sonCount = newSonCount;
+  if(newPhotos && newPhotos !== originalData.photoLinks) changes.photoLinks = newPhotos;
+  if(newNote !== '' && newNote !== originalData.note) changes.note = newNote;
+
+  if(Object.keys(changes).length === 0){
+    showInfo('您没有修改任何内容', true);
     return;
   }
-  alert('资料已提交！\n名字：' + name);
-  history.back();
-});
 
-loadFatherInfo();
+  console.log('准备更新 ID=' + targetId, changes);
+  
+  let summary = '即将更新：';
+  const fields = [];
+  if(changes.name) fields.push('名字');
+  if(changes.rank) fields.push('排行');
+  if(changes.wife) fields.push('妻子');
+  if(changes.sonCount) fields.push('儿子数量');
+  if(changes.photoLinks) fields.push('相片链接');
+  if(changes.note) fields.push('备注');
+  summary += fields.join('、');
+  
+  showInfo(summary + '\n\n⚠️ 请直接在 CSV 文件中手动保存这些修改，然后刷新页面查看更新。\n\n已修改字段：' + JSON.stringify(changes, null, 2).replace(/"/g, ''));
+});
 </script>
 
 </body>
