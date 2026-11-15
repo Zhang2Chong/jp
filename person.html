@@ -12,6 +12,11 @@ body{
   font-family:"Microsoft YaHei",sans-serif;
   padding:16px;
 }
+.wrapper{
+  max-width:600px;
+  margin:0 auto;
+  width:100%;
+}
 .top-links{
   display:flex;
   justify-content:space-between;
@@ -118,6 +123,7 @@ h2{
 </style>
 </head>
 <body>
+<div class="wrapper">
 
 <div class="top-links">
   <a href="index.html">← 返回首页</a>
@@ -146,11 +152,17 @@ h2{
   <div class="info-label">妻子</div>
   <div class="info-value" id="wifeName">—</div>
 </div>
+<div class="info-row">
+  <div class="info-label">儿子</div>
+  <div class="info-value" id="sonName">—</div>
+</div>
 
 <div class="photo-area">暂无照片</div>
 
 <div class="add-btn">
   <a href="admin.html">➕ 新增人员</a>
+</div>
+
 </div>
 
 <script>
@@ -205,11 +217,15 @@ window.onload = async function(){
 
     document.getElementById("personName").textContent = withSurname(person.name);
     document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
-    document.getElementById("fatherName").textContent = person.father && person.father !== "0" && people[person.father] 
-      ? withSurname(people[person.father].name) 
-      : "—";
+    
+    if(person.father && person.father !== "0" && people[person.father]){
+      document.getElementById("fatherName").textContent = withSurname(people[person.father].name);
+    } else {
+      document.getElementById("fatherName").textContent = "—";
+    }
     document.getElementById("motherName").textContent = person.mother || "—";
     document.getElementById("wifeName").textContent = person.wife || "—";
+    document.getElementById("sonName").textContent = "多个（详见下代）";
 
     const ancestors = [];
     let currId = targetId;
