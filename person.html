@@ -3,213 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>族人详情</title>
+<title>单人详情</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   background:#1a1a1a;
   color:#facc54;
   font-family:"Microsoft YaHei",sans-serif;
-  min-height:100vh;
   padding:16px;
 }
-.wrapper{
-  max-width:600px;
-  margin:0 auto;
-}
-.top-nav{
+.top-links{
   display:flex;
   justify-content:space-between;
   margin-bottom:20px;
 }
-.nav-link{
+.top-links a{
   color:#ff9f29;
   text-decoration:none;
-  font-size:15px;
+  font-size:16px;
 }
 
 .name-card{
-  background:#252525;
-  border-radius:10px;
-  padding:24px 16px;
+  background:#2b2b2b;
+  border-radius:8px;
+  padding:24px;
   text-align:center;
   margin-bottom:24px;
 }
-.person-name{
+.name-card h1{
   font-size:32px;
   margin-bottom:8px;
 }
 .gen-badge{
   display:inline-block;
-  background:#333;
-  color:#ff9f29;
-  padding:4px 18px;
-  border-radius:16px;
+  background:#444;
+  padding:4px 16px;
+  border-radius:20px;
   font-size:16px;
 }
 
-.section-title{
+h2{
   text-align:center;
-  font-size:17px;
-  color:#ff9f29;
-  margin-bottom:12px;
+  font-size:20px;
+  margin-bottom:16px;
+  color:#ff6b35;
 }
 
-.line-grid{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px 12px;
-  justify-content:center;
-  margin-bottom:28px;
+.ancestor-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:10px;
+  margin-bottom:24px;
 }
-.line-item{
-  background:#2d2d2d;
+.ancestor-item{
+  background:#383838;
   border-radius:6px;
-  padding:10px 6px;
+  padding:10px 8px;
   text-align:center;
-  text-decoration:none;
-  color:#facc54;
-  width:calc(25% - 10px);
-  min-width:110px;
-  max-width:140px;
 }
-.line-item .gen-num{
-  font-size:13px;
-  color:#999;
+.ancestor-gen{
+  font-size:14px;
+  color:#aaa;
+  margin-bottom:4px;
+}
+.ancestor-name{
+  font-size:16px;
   margin-bottom:2px;
 }
-.line-item .name-text{
-  font-size:16px;
-}
-.line-item .rank-text{
+.ancestor-pos{
   font-size:12px;
-  color:#777;
-  margin-top:2px;
-}
-.line-item:hover{
-  background:#383838;
+  color:#888;
 }
 
-.two-column{
-  display:flex;
-  gap:16px;
-  margin-bottom:20px;
-}
-.col-left{
-  flex:1;
-}
-.col-right{
-  width:140px;
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.photo-box{
-  background:#252525;
-  border-radius:6px;
-  padding:8px;
-  text-align:center;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:160px;
-  max-height:180px;
-}
-.photo-img{
-  max-width:100%;
-  max-height:160px;
-  border-radius:4px;
-  object-fit:contain;
-}
-
-.btn{
-  display:block;
-  width:100%;
-  padding:10px 8px;
-  font-size:15px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  text-align:center;
-  text-decoration:none;
-}
-.btn-add{
-  background:#c0392b;
-  color:#fff;
-}
-.btn-edit{
-  background:#e67e22;
-  color:#fff;
-}
-
-.info-block{
-  background:#252525;
+.info-row{
+  background:#2b2b2b;
   border-radius:6px;
   padding:12px 16px;
   margin-bottom:8px;
+  display:flex;
 }
 .info-label{
-  font-size:14px;
-  color:#888;
-  margin-bottom:4px;
+  width:60px;
+  color:#aaa;
 }
 .info-value{
-  font-size:16px;
-  line-height:1.5;
-}
-.info-value a{
-  color:#facc54;
-  text-decoration:none;
-}
-.info-value a .son-rank{
-  color:#777;
-  font-size:14px;
-}
-.empty{
-  color:#555;
-  font-style:italic;
+  flex:1;
 }
 
-.note-block{
-  background:#252525;
-  border-radius:6px;
-  padding:16px;
+.photo-area{
   margin-top:16px;
+  text-align:center;
+  color:#666;
+  border:1px dashed #444;
+  border-radius:6px;
+  padding:30px;
 }
-.note-label{
-  font-size:14px;
-  color:#888;
-  margin-bottom:6px;
+
+.add-btn{
+  margin-top:16px;
+  text-align:right;
 }
-.note-text{
-  font-size:15px;
-  line-height:1.7;
-  white-space:pre-wrap;
+.add-btn a{
+  display:inline-block;
+  background:#e64a19;
+  color:#fff;
+  text-decoration:none;
+  padding:8px 20px;
+  border-radius:6px;
 }
 
 @media (max-width:480px){
-  .wrapper{max-width:100%}
-  .line-item{width:calc(50% - 6px);max-width:160px}
-  .col-right{width:120px}
+  .ancestor-grid{grid-template-columns:repeat(2, 1fr);}
 }
 </style>
 </head>
 <body>
-<div class="wrapper">
-  <div class="top-nav">
-    <a class="nav-link" href="index.html">← 返回首页</a>
-    <a class="nav-link" href="javascript:history.back()">← 返回上一页</a>
-  </div>
 
-  <div id="content">
-    <div style="text-align:center;color:#888;padding:60px 20px">正在加载……</div>
-  </div>
+<div class="top-links">
+  <a href="index.html">← 返回首页</a>
+  <a href="javascript:history.back()">← 返回上一页</a>
+</div>
+
+<div class="name-card">
+  <h1 id="personName">—</h1>
+  <div class="gen-badge" id="personGen">—</div>
+</div>
+
+<h2>世系源流</h2>
+
+<div class="ancestor-grid" id="ancestorGrid">
+</div>
+
+<div class="info-row">
+  <div class="info-label">父亲</div>
+  <div class="info-value" id="fatherName">—</div>
+</div>
+<div class="info-row">
+  <div class="info-label">母亲</div>
+  <div class="info-value" id="motherName">—</div>
+</div>
+<div class="info-row">
+  <div class="info-label">妻子</div>
+  <div class="info-value" id="wifeName">—</div>
+</div>
+
+<div class="photo-area">暂无照片</div>
+
+<div class="add-btn">
+  <a href="admin.html">➕ 新增人员</a>
 </div>
 
 <script>
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
-let allPeople = {};
 
 function withSurname(name){
   if(!name) return "";
@@ -218,168 +163,82 @@ function withSurname(name){
   return "张"+n;
 }
 
-window.onload = async function(){
-  const params = new URLSearchParams(window.location.search);
-  let targetId = params.get("id");
-  
-  if(targetId && targetId.startsWith("row_")){
-    targetId = targetId.replace("row_","");
-  }
+const params = new URLSearchParams(location.search);
+const targetId = params.get("id");
 
+window.onload = async function(){
   try{
     const res = await fetch(CSV_URL);
     const text = await res.text();
     const lines = text.trim().split("\n");
-    const header = lines[0].split(",");
+    const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+    const header = lines[0].split(sep);
     
     const idxNo = header.indexOf("No");
     const idxName = header.indexOf("姓名");
-    const idxFather = header.indexOf("父亲编号");
-    const idxRank = header.indexOf("兄弟排名");
     const idxGen = header.indexOf("世代");
+    const idxFather = header.indexOf("父亲编号");
+    const idxBroRank = header.indexOf("兄弟排名");
+    const idxMother = header.indexOf("母亲");
     const idxWife = header.indexOf("妻子");
-    const idxPhoto = header.indexOf("相片链接");
-    const idxNote = header.indexOf("备注");
 
-    for(let i=2;i<lines.length;i++){
-      const col = lines[i].split(",");
+    const people = {};
+    for(let i=1;i<lines.length;i++){
+      const col = lines[i].split(sep);
       const no = idxNo>=0 && col[idxNo] ? col[idxNo].trim() : "";
-      const name = idxName>=0 && col[idxName] ? col[idxName].trim() : "";
-      if(!no || !name) continue;
-      const father = idxFather>=0 && col[idxFather] ? col[idxFather].trim() : "";
-      const rank = idxRank>=0 && col[idxRank] ? col[idxRank].trim() : "";
-      const gen = idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "";
-      const wife = idxWife>=0 && col[idxWife] ? col[idxWife].trim() : "";
-      const photo = idxPhoto>=0 && col[idxPhoto] ? col[idxPhoto].trim() : "";
-      const note = idxNote>=0 && col[idxNote] ? col[idxNote].trim() : "";
-      
-      allPeople[no]={
-        no, name, father, rank, gen, wife, photo, note,
-        children:[]
+      if(!no) continue;
+      people[no] = {
+        name: idxName>=0 && col[idxName] ? col[idxName].trim() : "",
+        gen: idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "",
+        father: idxFather>=0 && col[idxFather] ? col[idxFather].trim() : "",
+        broRank: idxBroRank>=0 && col[idxBroRank] ? col[idxBroRank].trim() : "",
+        mother: idxMother>=0 && col[idxMother] ? col[idxMother].trim() : "",
+        wife: idxWife>=0 && col[idxWife] ? col[idxWife].trim() : ""
       };
     }
 
-    for(const no in allPeople){
-      const p=allPeople[no];
-      if(p.father && p.father!=="0" && allPeople[p.father]){
-        allPeople[p.father].children.push(no);
-      }
-    }
-
-    let person=null;
-    if(targetId && allPeople[targetId]){
-      person=allPeople[targetId];
-    }
+    const person = people[targetId];
     if(!person){
-      document.getElementById("content").innerHTML="<div style='text-align:center;color:#666;padding:80px'>未找到该族人<br><small>ID:"+targetId+"</small></div>";
+      document.querySelector(".name-card").innerHTML = "<h2>查无此人</h2>";
       return;
     }
 
-    function getLineage(){
-      let chain=[];
-      let p=person;
-      while(p){
-        chain.unshift(p);
-        if(p.father && p.father!=="0" && allPeople[p.father]){
-          p=allPeople[p.father];
-        }else{
-          p=null;
-        }
-      }
-      return chain;
-    }
-    const lineage=getLineage();
+    document.getElementById("personName").textContent = withSurname(person.name);
+    document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
+    document.getElementById("fatherName").textContent = person.father && person.father !== "0" && people[person.father] 
+      ? withSurname(people[person.father].name) 
+      : "—";
+    document.getElementById("motherName").textContent = person.mother || "—";
+    document.getElementById("wifeName").textContent = person.wife || "—";
 
-    function itemCard(p){
-      let rankText="";
-      if(p.rank && p.rank!=="" && p.father!=="0"){
-        rankText=`<div class="rank-text">第${p.rank}子</div>`;
-      }
-      return `<a class="line-item" href="person.html?id=${encodeURIComponent(p.no)}">
-        <div class="gen-num">第${p.gen}代</div>
-        <div class="name-text">${withSurname(p.name)}</div>
-        ${rankText}
-      </a>`;
+    const ancestors = [];
+    let currId = targetId;
+    while(currId && people[currId]){
+      const p = people[currId];
+      ancestors.unshift({
+        no: currId,
+        name: p.name,
+        gen: p.gen,
+        broRank: p.broRank
+      });
+      currId = p.father;
     }
 
-    function personLink(no,name){
-      if(no && allPeople[no]){
-        return `<a href="person.html?id=${encodeURIComponent(no)}">${withSurname(allPeople[no].name)}</a>`;
-      }
-      return `<span class="empty">—</span>`;
+    let html = "";
+    for(const a of ancestors){
+      html += `<div class="ancestor-item">
+        <div class="ancestor-gen">第${a.gen}代</div>
+        <div class="ancestor-name">${withSurname(a.name)}</div>
+        <div class="ancestor-pos">第${a.broRank}子</div>
+      </div>`;
     }
-
-    let html=`
-      <div class="name-card">
-        <div class="person-name">${withSurname(person.name)}</div>
-        <div class="gen-badge">第${person.gen}代${person.rank && person.father!=="0" ? ' · 第'+person.rank+'子' : ''}</div>
-      </div>
-
-      <div class="section-title">世系源流</div>
-      <div class="line-grid">
-    `;
-    for(const a of lineage){html+=itemCard(a);}
-    html+=`</div>`;
-
-    html+=`<div class="two-column">
-      <div class="col-left">
-        <div class="info-block">
-          <div class="info-label">父亲</div>
-          <div class="info-value">
-            ${person.father && person.father!=="0"
-              ? personLink(person.father, allPeople[person.father]?.name)
-              : '<span class="empty">—</span>'}
-          </div>
-        </div>
-        <div class="info-block">
-          <div class="info-label">母亲</div>
-          <div class="info-value">
-            ${person.father && person.father!=="0" && allPeople[person.father]?.wife
-              ? allPeople[person.father].wife
-              : '<span class="empty">—</span>'}
-          </div>
-        </div>
-        <div class="info-block">
-          <div class="info-label">妻子</div>
-          <div class="info-value">${person.wife||'<span class="empty">—</span>'}</div>
-        </div>
-        <div class="info-block">
-          <div class="info-label">儿子 (${person.children.length}人)</div>
-          <div class="info-value" style="display:flex;gap:12px;flex-wrap:wrap">
-            ${person.children.length>0
-              ?person.children.map(cno=>{
-                  const c=allPeople[cno];
-                  const r=c.rank&&c.rank!==""?`<span class="son-rank">· 第${c.rank}子</span>`:"";
-                  return `<a href="person.html?id=${encodeURIComponent(cno)}">${withSurname(c.name)}${r}</a>`;
-                }).join("")
-              :'<span class="empty">—</span>'}
-          </div>
-        </div>
-      </div>
-      <div class="col-right">
-        <div class="photo-box">
-          ${person.photo
-            ?`<img class="photo-img" src="${person.photo}" alt="${withSurname(person.name)}">`
-            :`<div style="color:#444;font-size:14px">暂无相片</div>`}
-        </div>
-        <a href="admin.html" class="btn btn-add">➕ 新增人员</a>
-        <a href="admin.html?id=${encodeURIComponent(person.no)}" class="btn btn-edit">✏️ 修改资料</a>
-      </div>
-    </div>`;
-
-    html+=`
-      <div class="note-block">
-        <div class="note-label">备注</div>
-        <div class="note-text">${person.note||'<span class="empty">—</span>'}</div>
-      </div>
-    `;
-
-    document.getElementById("content").innerHTML=html;
+    document.getElementById("ancestorGrid").innerHTML = html;
 
   }catch(err){
-    document.getElementById("content").innerHTML=`<div style="text-align:center;color:#f66;padding:80px">加载失败：${err.message}</div>`;
+    console.error(err);
   }
 };
 </script>
+
 </body>
 </html>
