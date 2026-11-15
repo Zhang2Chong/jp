@@ -356,7 +356,7 @@ function withSurname(name){
 }
 
 const params = new URLSearchParams(location.search);
-const targetId = params.get("id");
+const targetId = params.get("id")?.replace(/#.*$/, "") || null;
 currentPersonId = targetId;
 
 window.onload = async function(){
