@@ -1,72 +1,152 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
-<title>新增张氏族人</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增族人资料</title>
 <style>
-*{box‑sizing:border‑box;margin:0;padding:0}
-body{background:#111;color:#ffdd66;font‑family:Microsoft YaHei,sans‑serif;padding:20px 10px}
-.container{max‑width:720px;margin:0 auto;background:#222;padding:25px;border‑radius:12px}
-h2{text‑align:center;margin‑bottom:20px}
-input,select,textarea{width:100%;padding:10px;margin:8px 0 16px 0;border‑none;border‑radius:6px}
-button{width:100%;padding:12px;background:#b8860b;color:white;border:none;border‑radius:6px;font‑size:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#1a1a1a;
+  color:#facc54;
+  font-family:"Microsoft YaHei",sans-serif;
+  padding:20px 10px;
+}
+.top-links{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:25px;
+}
+.top-links a{
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:16px;
+}
+
+.form-container{
+  max-width:420px;
+  margin:0 auto;
+  background:#2b2b2b;
+  border-radius:8px;
+  padding:25px 15px;
+}
+h2{
+  text-align:center;
+  font-size:20px;
+  margin-bottom:25px;
+  color:#ffcc44;
+}
+
+.form-row{
+  display:flex;
+  align-items:center;
+  margin-bottom:14px;
+  padding-left:5ch;
+}
+.form-label{
+  width:90px;
+  color:#ddd;
+  flex-shrink:0;
+}
+.form-input{
+  flex:1;
+  padding:8px 10px;
+  border:1px solid:#555;
+  border-radius:4px;
+  background:#333;
+  color:#fff;
+  font-size:15px;
+}
+.form-input:read-only{
+  background:#2a2a2a;
+  color:#aaa;
+  border-color:#444;
+}
+
+.btn-submit{
+  width:100%;
+  padding:12px;
+  background:#e64a19;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:17px;
+  margin-top:10px;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
-<div class="container">
-<h2>🔐 输入家族密码</h2>
-<input type="password" id="pwd" placeholder="请输入家族密码">
-<hr>
-<h2>👤 新增族人资料</h2>
-<input type="text" id="chineseName" placeholder="华文名字">
-<input type="text" id="no" placeholder="人员编号">
-<input type="text" id="father" placeholder="父亲编号">
-<input type="text" id="rank" placeholder="排行">
-<input type="text" id="generation" placeholder="字辈">
-<input type="text" id="wife" placeholder="妻子名字">
-<input type="number" id="sonCount" placeholder="儿子数量">
-<input type="text" id="photoLink" placeholder="相片链接">
-<textarea id="note" placeholder="备注"></textarea>
-<button onclick="submitData()">提交资料</button>
+
+<div class="top-links">
+  <a href="index.html">← 返回主页</a>
+  <a href="javascript:history.back()">← 返回上一页</a>
 </div>
+
+<div class="form-container">
+  <h2>新增族人资料</h2>
+
+  <form id="addForm">
+    <div class="form-row">
+      <div class="form-label">华文名字</div>
+      <input type="text" class="form-input" id="name" maxlength="2" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-label">父亲名字</div>
+      <input type="text" class="form-input" id="fatherName" readonly>
+    </div>
+
+    <div class="form-row">
+      <div class="form-label">排行</div>
+      <input type="text" class="form-input" id="birthOrder" placeholder="如：1、2、Ⅰ、Ⅱ">
+    </div>
+
+    <div class="form-row">
+      <div class="form-label">世代</div>
+      <input type="text" class="form-input" id="generation" readonly>
+    </div>
+
+    <div class="form-row">
+      <div class="form-label">妻子名字</div>
+      <input type="text" class="form-input" id="wifeName" placeholder="可空">
+    </div>
+
+    <div class="form-row">
+      <div class="form-label">儿子数量</div>
+      <input type="number" class="form-input" id="sonCount" min="0" value="0">
+    </div>
+
+    <div class="form-row">
+      <div class="form-label">备注</div>
+      <input type="text" class="form-input" id="notes" placeholder="可空">
+    </div>
+
+    <button type="submit" class="btn-submit">提交资料</button>
+  </form>
+</div>
+
 <script>
-async function submitData(){
-  const data={
-    pwd:document.getElementById("pwd").value,
-    no:document.getElementById("no").value,
-    father:document.getElementById("father").value,
-    rank:document.getElementById("rank").value,
-    chineseName:document.getElementById("chineseName").value,
-    generation:document.getElementById("generation").value,
-    englishName:document.getElementById("englishName").value,
-    wife:document.getElementById("wife").value,
-    sonCount:document.getElementById("sonCount").value,
-    photoLink:document.getElementById("photoLink").value,
-    note:document.getElementById("note").value
-  }
-  const res=await fetch("https://api.github.com/repos/Zhang2Chong/ZhangFamily/dispatches",{
-    method:"POST",
-    headers:{
-      "Accept":"application/vnd.github+json",
-      "X‑GitHub‑Api‑Version":"2022‑11‑28",
-      "Authorization":"token "+data.pwd
-    },
-    body:JSON.stringify({
-      event_type:"add‑person",
-      client_payload:data
-    })
-  });
-  if(res.ok){
-    alert("✅ 提交成功，等待家谱自动更新！");
-  }else{
-    alert("❌ 提交失败，请核对家族密码");
-  }
+// 读取 URL 参数传过来的父亲信息
+const params = new URLSearchParams(window.location.search);
+const fatherId = params.get('fatherId');
+const fatherName = params.get('fatherName');
+const fatherGen = params.get('generation');
+
+if(fatherName){
+  document.getElementById('fatherName').value = fatherName;
+}
+if(fatherGen){
+  document.getElementById('generation').value = parseInt(fatherGen) + 1;
 }
 
-
-
-}
+// 提交
+document.getElementById('addForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  alert('资料已提交！\n名字：' + document.getElementById('name').value);
+  history.back();
+});
 </script>
+
 </body>
 </html>
