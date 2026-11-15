@@ -43,14 +43,13 @@ h2{
 
 .form-row{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   margin-bottom:14px;
 }
 .form-label{
   width:90px;
   color:#ddd;
   flex-shrink:0;
-  padding-top:10px;
 }
 .form-input{
   flex:1;
@@ -143,8 +142,7 @@ textarea.form-input{
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const fatherId = params.get('fatherId');
-const fatherName = params.get('fatherName') || '';
+const fatherName = params.get('fatherName');
 const fatherGen = params.get('generation');
 
 function withSurname(name){
