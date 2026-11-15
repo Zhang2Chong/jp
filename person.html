@@ -334,7 +334,7 @@ document.addEventListener('keydown', function(e){
 
 document.getElementById('addPersonLink').addEventListener('click', function(){
   if(currentPersonId){
-    openModal('add.html?fatherId=' + currentPersonId);
+    openModal('add.html?fatherId=' + encodeURIComponent(currentPersonId));
   }else{
     alert('请先等待页面加载完成');
   }
@@ -342,7 +342,7 @@ document.getElementById('addPersonLink').addEventListener('click', function(){
 
 document.getElementById('modifyLink').addEventListener('click', function(){
   if(currentPersonId){
-    openModal('modify.html?id=' + currentPersonId);
+    openModal('modify.html?id=' + encodeURIComponent(currentPersonId));
   }else{
     alert('请先等待页面加载完成');
   }
@@ -405,7 +405,7 @@ window.onload = async function(){
     if(person.father && person.father !== "0" && people[person.father]){
       fatherObj = people[person.father];
       document.getElementById("fatherName").innerHTML = 
-        `<a href="person.html?id=${person.father}">${withSurname(fatherObj.name)}</a>`;
+        `<a href="person.html?id=${encodeURIComponent(person.father)}">${withSurname(fatherObj.name)}</a>`;
     } else {
       document.getElementById("fatherName").textContent = "—";
     }
@@ -435,7 +435,7 @@ window.onload = async function(){
       let sonHtml = "";
       for(const s of sons){
         sonHtml += `<span class="son-item">
-          <a href="person.html?id=${s.no}">${withSurname(s.name)}</a>
+          <a href="person.html?id=${encodeURIComponent(s.no)}">${withSurname(s.name)}</a>
           <span class="son-pos">·第${s.broRank}子</span>
         </span> `;
       }
@@ -459,7 +459,7 @@ window.onload = async function(){
 
     let html = "";
     for(const a of ancestors){
-      html += `<div class="ancestor-item" onclick="location.href='person.html?id=${a.no}'">
+      html += `<div class="ancestor-item" onclick="location.href='person.html?id=${encodeURIComponent(a.no)}'">
         <div class="ancestor-gen">第${a.gen}代</div>
         <div class="ancestor-name">${withSurname(a.name)}</div>
         <div class="ancestor-pos">第${a.broRank}子</div>
