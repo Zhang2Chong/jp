@@ -7,70 +7,78 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  background:#1a1a1a;
-  color:#facc54;
-  font-family:"Microsoft YaHei",sans-serif;
-  padding:16px;
+background:#1a1a1a;
+color:#facc54;
+font-family:"Microsoft YaHei",sans-serif;
+padding:16px;
 }
 .wrapper{
-  max-width:600px;
-  margin:0 auto;
-  width:100%;
+max-width:600px;
+margin:0 auto;
+width:100%;
 }
 .top-links{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:20px;
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
 }
 .top-links a{
-  color:#ff9f29;
-  text-decoration:none;
-  font-size:16px;
+color:#ff9f29;
+text-decoration:none;
+font-size:16px;
 }
 
 .name-card{
-  background:#2b2b2b;
-  border-radius:8px;
-  padding:24px;
-  text-align:center;
-  margin-bottom:24px;
+background:#2b2b2b;
+border-radius:8px;
+padding:24px;
+text-align:center;
+margin-bottom:24px;
 }
 .name-card h1{
-  font-size:32px;
-  margin-bottom:8px;
+font-size:32px;
+margin-bottom:8px;
 }
 .gen-badge{
-  display:inline-block;
-  background:#444;
-  padding:4px 16px;
-  border-radius:20px;
-  font-size:16px;
+display:inline-block;
+background:#444;
+padding:4px 16px;
+border-radius:20px;
+font-size:16px;
 }
 
 h2{
-  text-align:center;
-  font-size:20px;
-  margin-bottom:16px;
-  color:#ff6b35;
+text-align:center;
+font-size:20px;
+margin-bottom:16px;
+color:#ff6b35;
 }
 
 .ancestor-grid{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:10px;
-  margin-bottom:24px;
+display:grid;
+grid-template-columns:repeat(4, 1fr);
+gap:10px;
+margin-bottom:24px;
 }
 .ancestor-item{
-  background:#383838;
-  border-radius:6px;
-  padding:10px 8px;
-  text-align:center;
+background:#383838;
+border-radius:6px;
+padding:10px 8px;
+text-align:center;
   cursor:pointer;
 }
 .ancestor-gen{
-  font-size:14px;
-@@ -80,45 +81,79 @@
-  color:#888;
+font-size:14px;
+color:#aaa;
+margin-bottom:4px;
+}
+.ancestor-name{
+font-size:16px;
+margin-bottom:2px;
+}
+.ancestor-pos{
+font-size:12px;
+color:#888;
 }
 
 .info-container{
@@ -82,22 +90,22 @@ h2{
   flex:1;
 }
 .info-row{
-  background:#2b2b2b;
-  border-radius:6px;
+background:#2b2b2b;
+border-radius:6px;
   padding:12px 16px;
   margin-bottom:8px;
   padding:10px 14px;
   margin-bottom:6px;
-  display:flex;
+display:flex;
   align-items:center;
 }
 .info-label{
-  width:60px;
-  color:#aaa;
+width:60px;
+color:#aaa;
   flex-shrink:0;
 }
 .info-value{
-  flex:1;
+flex:1;
 }
 .info-value a{
   color:#facc54;
@@ -114,7 +122,7 @@ h2{
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#666;
+color:#666;
   border:1px dashed #444;
   font-size:14px;
   min-height:180px;
@@ -122,7 +130,7 @@ h2{
 
 .note-row{
   background:#2b2b2b;
-  border-radius:6px;
+border-radius:6px;
   padding:30px;
   padding:12px 14px;
   margin-bottom:16px;
@@ -143,8 +151,8 @@ h2{
   color:#fff;
   text-decoration:none;
 .btn{
-  padding:8px 20px;
-  border-radius:6px;
+padding:8px 20px;
+border-radius:6px;
   text-decoration:none;
   font-size:15px;
 }
@@ -158,13 +166,27 @@ h2{
 }
 
 @media (max-width:480px){
-  .ancestor-grid{grid-template-columns:repeat(2, 1fr);}
+.ancestor-grid{grid-template-columns:repeat(2, 1fr);}
   .info-container{flex-direction:column;}
   .photo-box{width:100%; min-height:120px;}
 }
 </style>
 </head>
-@@ -140,27 +175,36 @@
+<body>
+<div class="wrapper">
+
+<div class="top-links">
+<a href="index.html">← 返回首页</a>
+<a href="javascript:history.back()">← 返回上一页</a>
+</div>
+
+<div class="name-card">
+<h1 id="personName">—</h1>
+<div class="gen-badge" id="personGen">—</div>
+</div>
+
+<h2>世系源流</h2>
+
 <div class="ancestor-grid" id="ancestorGrid">
 </div>
 
@@ -219,36 +241,72 @@ h2{
 </div>
 
 </div>
-@@ -193,6 +237,7 @@
-    const idxBroRank = header.indexOf("兄弟排名");
-    const idxMother = header.indexOf("母亲");
-    const idxWife = header.indexOf("妻子");
+
+<script>
+const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
+
+function withSurname(name){
+if(!name) return "";
+const n=name.trim();
+if(n.startsWith("张")) return n;
+return "张"+n;
+}
+
+const params = new URLSearchParams(location.search);
+const targetId = params.get("id");
+
+window.onload = async function(){
+try{
+const res = await fetch(CSV_URL);
+const text = await res.text();
+const lines = text.trim().split("\n");
+const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+const header = lines[0].split(sep);
+
+const idxNo = header.indexOf("No");
+const idxName = header.indexOf("姓名");
+const idxGen = header.indexOf("世代");
+const idxFather = header.indexOf("父亲编号");
+const idxBroRank = header.indexOf("兄弟排名");
+const idxMother = header.indexOf("母亲");
+const idxWife = header.indexOf("妻子");
     const idxNote = header.indexOf("备注");
 
-    const people = {};
-    for(let i=1;i<lines.length;i++){
-@@ -205,7 +250,8 @@
-        father: idxFather>=0 && col[idxFather] ? col[idxFather].trim() : "",
-        broRank: idxBroRank>=0 && col[idxBroRank] ? col[idxBroRank].trim() : "",
-        mother: idxMother>=0 && col[idxMother] ? col[idxMother].trim() : "",
+const people = {};
+for(let i=1;i<lines.length;i++){
+const col = lines[i].split(sep);
+const no = idxNo>=0 && col[idxNo] ? col[idxNo].trim() : "";
+if(!no) continue;
+people[no] = {
+name: idxName>=0 && col[idxName] ? col[idxName].trim() : "",
+gen: idxGen>=0 && col[idxGen] ? col[idxGen].trim() : "",
+father: idxFather>=0 && col[idxFather] ? col[idxFather].trim() : "",
+broRank: idxBroRank>=0 && col[idxBroRank] ? col[idxBroRank].trim() : "",
+mother: idxMother>=0 && col[idxMother] ? col[idxMother].trim() : "",
         wife: idxWife>=0 && col[idxWife] ? col[idxWife].trim() : ""
         wife: idxWife>=0 && col[idxWife] ? col[idxWife].trim() : "",
         note: idxNote>=0 && col[idxNote] ? col[idxNote].trim() : ""
-      };
-    }
+};
+}
 
-@@ -219,14 +265,37 @@
-    document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
+const person = people[targetId];
+if(!person){
+document.querySelector(".name-card").innerHTML = "<h2>查无此人</h2>";
+return;
+}
 
-    if(person.father && person.father !== "0" && people[person.father]){
+document.getElementById("personName").textContent = withSurname(person.name);
+document.getElementById("personGen").textContent = `第${person.gen}代 · 第${person.broRank}子`;
+
+if(person.father && person.father !== "0" && people[person.father]){
       document.getElementById("fatherName").textContent = withSurname(people[person.father].name);
       document.getElementById("fatherName").innerHTML = 
         `<a href="person.html?id=${person.father}">${withSurname(people[person.father].name)}</a>`;
-    } else {
-      document.getElementById("fatherName").textContent = "—";
-    }
-    document.getElementById("motherName").textContent = person.mother || "—";
-    document.getElementById("wifeName").textContent = person.wife || "—";
+} else {
+document.getElementById("fatherName").textContent = "—";
+}
+document.getElementById("motherName").textContent = person.mother || "—";
+document.getElementById("wifeName").textContent = person.wife || "—";
     document.getElementById("sonName").textContent = "多个（详见下代）";
     document.getElementById("noteText").textContent = person.note || "—";
 
@@ -274,25 +332,33 @@ h2{
     }
 
     // 世系源流：从本人往上追到第一代
-    const ancestors = [];
-    let currId = targetId;
-    while(currId && people[currId]){
-@@ -242,19 +311,19 @@
+const ancestors = [];
+let currId = targetId;
+while(currId && people[currId]){
+const p = people[currId];
+ancestors.unshift({
+no: currId,
+name: p.name,
+gen: p.gen,
+broRank: p.broRank
+});
+currId = p.father;
+}
 
-    let html = "";
-    for(const a of ancestors){
+let html = "";
+for(const a of ancestors){
       html += `<div class="ancestor-item">
       html += `<div class="ancestor-item" onclick="location.href='person.html?id=${a.no}'">
-        <div class="ancestor-gen">第${a.gen}代</div>
-        <div class="ancestor-name">${withSurname(a.name)}</div>
-        <div class="ancestor-pos">第${a.broRank}子</div>
-      </div>`;
-    }
-    document.getElementById("ancestorGrid").innerHTML = html;
+       <div class="ancestor-gen">第${a.gen}代</div>
+       <div class="ancestor-name">${withSurname(a.name)}</div>
+       <div class="ancestor-pos">第${a.broRank}子</div>
+     </div>`;
+}
+document.getElementById("ancestorGrid").innerHTML = html;
 
-  }catch(err){
-    console.error(err);
-  }
+}catch(err){
+console.error(err);
+}
 };
 </script>
 
