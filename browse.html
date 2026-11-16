@@ -50,7 +50,81 @@ h1{
 .divider-header{
   height:1px;
   background:#555;
+  margin-bottom:12px;
+}
+
+.search-bar{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+  align-items:center;
+}
+.search-input{
+  flex:1;
+  padding:10px 12px;
+  background:#2b2b2b;
+  border:1px solid #555;
+  border-radius:4px;
+  color:#fff;
+  font-size:15px;
+  outline:none;
+}
+.search-input:focus{
+  border-color:#ff9f29;
+}
+.search-btn{
+  padding:10px 20px;
+  background:#e64a19;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  font-size:15px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.reset-btn{
+  padding:10px 16px;
+  background:#555;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  font-size:15px;
+  cursor:pointer;
+  white-space:nowrap;
+  display:none;
+}
+
+.search-result{
+  margin-bottom:12px;
+  padding:12px;
+  background:#2b2b2b;
+  border-radius:6px;
+  display:none;
+}
+.search-result-title{
+  font-size:14px;
+  color:#888;
   margin-bottom:8px;
+}
+.search-item{
+  padding:8px 12px;
+  margin-bottom:4px;
+  background:#333;
+  border-radius:4px;
+}
+.search-item a{
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:16px;
+}
+.search-item a:hover{
+  text-decoration:underline;
+}
+.no-result{
+  color:#888;
+  font-size:15px;
+  text-align:center;
+  padding:10px;
 }
 
 .scroll-content{
@@ -100,9 +174,21 @@ h1{
 
 <div class="wrapper">
   <div class="header-fixed">
-    <a href="index.html" class="back-link">← 返回首页</a>
+    <a href="index.html" class="back-link">← 返回主页</a>
     <h1>张氏家谱</h1>
     <p class="subtitle">世系浏览 · 共<span id="totalGen">0</span>代 · 总计<span id="totalCount">0</span>人</p>
+    
+    <div class="search-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="输入名字（最多2个字）" maxlength="2">
+      <button id="searchBtn" class="search-btn">寻找</button>
+      <button id="resetBtn" class="reset-btn">返回全部</button>
+    </div>
+    
+    <div id="searchResult" class="search-result">
+      <div class="search-result-title">找到以下族人：</div>
+      <div id="searchResultList"></div>
+    </div>
+    
     <div class="divider-header"></div>
   </div>
 
@@ -121,13 +207,59 @@ function withSurname(name){
   return "张"+n;
 }
 
+let allPeople = [];
+let gens = {};
+let maxGen = 0;
+
+function showAllContent(){
+  let html="";
+  for(let g=1;g<=maxGen;g++){
+    const gStr = String(g);
+    const list = gens[gStr]||[];
+    html += `<div class="generation-block">
+      <div class="gen-title">第${gStr}代 ${list.length}人</div>
+      <div class="names-grid">`;
+    for(const p of list){
+      html += `<div class="person-item"><a href="person.html?id=${p.no}">${withSurname(p.name)}</a></div>`;
+    }
+    html += `</div><div class="divider-gen"></div></div>`;
+  }
+  document.getElementById("content").innerHTML = html;
+}
+
+function searchName(keyword){
+  if(!keyword.trim()){
+    resetSearch();
+    return;
+  }
+  const results = allPeople.filter(p=> p.name.includes(keyword));
+  const resultDiv = document.getElementById("searchResult");
+  const listDiv = document.getElementById("searchResultList");
+  if(results.length === 0){
+    listDiv.innerHTML = `<div class="no-result">没有找到匹配的族人</div>`;
+  }else{
+    listDiv.innerHTML = results.map(p=>
+      `<div class="search-item">第${p.gen}代 — <a href="person.html?id=${p.no}">${withSurname(p.name)}</a></div>`
+    ).join("");
+  }
+  resultDiv.style.display = "block";
+  document.getElementById("resetBtn").style.display = "inline-block";
+  document.getElementById("content").style.display = "none";
+}
+
+function resetSearch(){
+  document.getElementById("searchResult").style.display = "none";
+  document.getElementById("resetBtn").style.display = "none";
+  document.getElementById("searchInput").value = "";
+  document.getElementById("content").style.display = "block";
+}
+
 window.onload = async function(){
   try{
     const res = await fetch(CSV_URL);
     const text = await res.text();
     const lines = text.trim().split("\n");
     
-    // 自动检测分隔符：逗号 或 制表符
     const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
     const header = lines[0].split(sep);
     
@@ -135,8 +267,10 @@ window.onload = async function(){
     const idxName = header.indexOf("姓名");
     const idxGen = header.indexOf("世代");
 
-    const gens = {};
-    let total=0, maxGen=0;
+    gens = {};
+    allPeople = [];
+    let total=0;
+    maxGen=0;
 
     for(let i=1;i<lines.length;i++){
       const col = lines[i].split(sep);
@@ -148,6 +282,7 @@ window.onload = async function(){
       
       if(!gens[gen]) gens[gen]=[];
       gens[gen].push({no,name});
+      allPeople.push({no,name,gen});
       total++;
       
       const genNum = parseInt(gen);
@@ -156,20 +291,15 @@ window.onload = async function(){
 
     document.getElementById("totalGen").textContent = maxGen;
     document.getElementById("totalCount").textContent = total;
+    showAllContent();
 
-    let html="";
-    for(let g=1;g<=maxGen;g++){
-      const gStr = String(g);
-      const list = gens[gStr]||[];
-      html += `<div class="generation-block">
-        <div class="gen-title">第${gStr}代 ${list.length}人</div>
-        <div class="names-grid">`;
-      for(const p of list){
-        html += `<div class="person-item"><a href="person.html?id=${p.no}">${withSurname(p.name)}</a></div>`;
-      }
-      html += `</div><div class="divider-gen"></div></div>`;
-    }
-    document.getElementById("content").innerHTML = html;
+    document.getElementById("searchBtn").addEventListener("click", ()=>{
+      searchName(document.getElementById("searchInput").value);
+    });
+    document.getElementById("searchInput").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") searchName(document.getElementById("searchInput").value);
+    });
+    document.getElementById("resetBtn").addEventListener("click", resetSearch);
 
   }catch(err){
     document.getElementById("content").innerHTML = `<div style="text-align:center;color:#f66;padding:40px">加载失败：${err.message}</div>`;
