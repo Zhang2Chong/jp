@@ -262,9 +262,7 @@ function showInfo(msg, isError=false){
 function parseCSV(text){
   const lines = text.trim().split("\n");
   const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
-  const header = lines[0].split(sep);
-  
-  console.log("✅ CSV表头:", header);
+  const header = lines[0].split(sep).map(h => h.trim());
   
   const idx = {
     name: header.indexOf('姓名'),
@@ -283,29 +281,27 @@ function parseCSV(text){
     deathYear: header.indexOf('去世年份')
   };
   
-  console.log("📌 列位置索引:", idx);
-  
   const data = {};
   for(let i=1;i<lines.length;i++){
-    const col = lines[i].split(sep);
-    const no = idx.no >= 0 && col[idx.no] ? col[idx.no].trim() : "";
+    const col = lines[i].split(sep).map(c => c.trim());
+    const no = idx.no >= 0 && col[idx.no] ? col[idx.no] : "";
     if(!no) continue;
     
     data[no] = {
-      name: idx.name >= 0 && col[idx.name] ? col[idx.name].trim() : "",
+      name: idx.name >= 0 && col[idx.name] ? col[idx.name] : "",
       no: no,
-      fatherId: idx.fatherId >= 0 && col[idx.fatherId] ? col[idx.fatherId].trim() : "",
-      rank: idx.rank >= 0 && col[idx.rank] ? col[idx.rank].trim() : "",
-      generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation].trim() : "",
-      zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi].trim() : "",
-      wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife].trim() : "",
-      sonCount: idx.sonCount >= 0 && col[idx.sonCount] ? col[idx.sonCount].trim() : "",
-      photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks].trim() : "",
-      note: idx.note >= 0 && col[idx.note] ? col[idx.note].trim() : "",
-      residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence].trim() : "",
-      burialPlace: idx.burialPlace >= 0 && col[idx.burialPlace] ? col[idx.burialPlace].trim() : "",
-      birthYear: idx.birthYear >= 0 && col[idx.birthYear] ? col[idx.birthYear].trim() : "",
-      deathYear: idx.deathYear >= 0 && col[idx.deathYear] ? col[idx.deathYear].trim() : ""
+      fatherId: idx.fatherId >= 0 && col[idx.fatherId] ? col[idx.fatherId] : "",
+      rank: idx.rank >= 0 && col[idx.rank] ? col[idx.rank] : "",
+      generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation] : "",
+      zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi] : "",
+      wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife] : "",
+      sonCount: idx.sonCount >= 0 && col[idx.sonCount] ? col[idx.sonCount] : "",
+      photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks] : "",
+      note: idx.note >= 0 && col[idx.note] ? col[idx.note] : "",
+      residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence] : "",
+      burialPlace: idx.burialPlace >= 0 && col[idx.burialPlace] ? col[idx.burialPlace] : "",
+      birthYear: idx.birthYear >= 0 && col[idx.birthYear] ? col[idx.birthYear] : "",
+      deathYear: idx.deathYear >= 0 && col[idx.deathYear] ? col[idx.deathYear] : ""
     };
   }
   return data;
@@ -329,16 +325,11 @@ window.onload = async function(){
     const text = await res.text();
     people = parseCSV(text);
     
-    console.log("📌 所有人记录数:", Object.keys(people).length);
-    console.log("📌 查找编号:", targetId);
-    
     originalData = people[targetId];
     if(!originalData){
       document.getElementById('loadingBox').textContent = '查无此记录：' + targetId;
       return;
     }
-    
-    console.log("✅ 找到记录:", originalData);
 
     const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
 
@@ -348,8 +339,6 @@ window.onload = async function(){
     document.getElementById('orig_gen').textContent = '第' + originalData.generation + '代';
     document.getElementById('orig_wife').textContent = originalData.wife || "—";
     document.getElementById('orig_sonCount').textContent = originalData.sonCount || "0";
-    
-    // 直接显示相片链接内容，不再统计张数
     document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
     document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
