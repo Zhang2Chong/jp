@@ -94,9 +94,12 @@ h1{
   padding:12px;
   border-radius:4px;
   margin-bottom:16px;
-  color:#888;
+  color:#88ff88;
   font-size:14px;
   display:none;
+}
+.info-box.error{
+  color:#ff6b6b;
 }
 .loading{
   text-align:center;
@@ -110,7 +113,7 @@ h1{
 
 <div class="top-links">
   <a href="index.html">← 返回主页</a>
-  <a href="javascript:history.back()">← 返回上一页</a>
+  <a id="backToPerson" href="#">← 返回上一页</a>
 </div>
 
 <h1>修改资料</h1>
@@ -168,7 +171,7 @@ h1{
     <div class="form-original" id="orig_sonCount">—</div>
   </div>
 
-  <div class="tip-text">相片链接：多个用逗号或换行分开，最多8张，不改则留空</div>
+  <div class="tip-text">相片链接：多个用逗号分开，不改则留空</div>
   <div class="form-row">
     <div class="form-label">相片链接</div>
     <div class="form-input-wrap">
@@ -211,8 +214,18 @@ function withSurname(name){
 function showInfo(msg, isError=false){
   const box = document.getElementById('infoBox');
   box.style.display = 'block';
-  box.style.color = isError ? '#ff6b6b' : '#88ff88';
+  if(isError){
+    box.classList.add('error');
+  }else{
+    box.classList.remove('error');
+  }
   box.textContent = msg;
+  
+  if(isError){
+    setTimeout(()=>{
+      box.style.display = 'none';
+    }, 2500);
+  }
 }
 
 function parseCSV(text){
@@ -247,6 +260,11 @@ window.onload = async function(){
   const params = new URLSearchParams(location.search);
   targetId = params.get("id")?.replace(/#.*$/, "") || null;
   
+  // 返回上一页直接回 person.html，带 ID
+  document.getElementById('backToPerson').href = targetId 
+    ? "person.html?id=" + encodeURIComponent(targetId) 
+    : "index.html";
+  
   if(!targetId){
     document.getElementById('loadingBox').textContent = '缺少编号参数';
     return;
@@ -274,8 +292,14 @@ window.onload = async function(){
     document.getElementById('orig_wife').textContent = originalData.wife || "—";
     document.getElementById('orig_sonCount').textContent = originalData.sonCount || "0";
     
-    const photoCount = originalData.photoLinks ? originalData.photoLinks.split(/[,\n]+/).filter(s=>s.trim()).length : 0;
+    const photoCount = originalData.photoLinks ? originalData.photoLinks.split(/[,，]+/).filter(s=>s.trim()).length : 0;
     document.getElementById('orig_photoLinks').textContent = photoCount > 0 ? `已存${photoCount}张` : "暂无相片";
+    
+    // 相片输入框提示：63A.jpg, 63B.jpg — ID自动替换
+    const exampleId = targetId;
+    document.getElementById('input_photoLinks').setAttribute('placeholder', 
+      `例如：${exampleId}A.jpg, ${exampleId}B.jpg, ${exampleId}C.jpg`);
+    
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
 
     document.getElementById('loadingBox').style.display = 'none';
@@ -309,19 +333,25 @@ document.getElementById('submitBtn').addEventListener('click', function(){
     return;
   }
 
-  console.log('准备更新 ID=' + targetId, changes);
-  
-  let summary = '即将更新：';
-  const fields = [];
-  if(changes.name) fields.push('名字');
-  if(changes.rank) fields.push('排行');
-  if(changes.wife) fields.push('妻子');
-  if(changes.sonCount) fields.push('儿子数量');
-  if(changes.photoLinks) fields.push('相片链接');
-  if(changes.note) fields.push('备注');
-  summary += fields.join('、');
-  
-  showInfo(summary + '\n\n⚠️ 请直接在 CSV 文件中手动保存这些修改，然后刷新页面查看更新。\n\n已修改字段：' + JSON.stringify(changes, null, 2).replace(/"/g, ''));
+  // 有修改 → 全部资料带去 verify.html，type=4
+  window.location.href = "verify.html?type=4" +
+    "&id=" + encodeURIComponent(targetId) +
+    "&name=" + encodeURIComponent(changes.name || originalData.name) +
+    "&fatherName=" + encodeURIComponent(
+      (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId])
+        ? people[originalData.fatherId].name : ""
+    ) +
+    "&grandpaName=" + encodeURIComponent(
+      (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId] && 
+       people[originalData.fatherId].fatherId && people[originalData.fatherId].fatherId !== "0")
+        ? (people[people[originalData.fatherId].fatherId] || {}).name || "" : ""
+    ) +
+    "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
+    "&gen=" + encodeURIComponent(originalData.gen) +
+    "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
+    "&sonCount=" + encodeURIComponent(changes.sonCount || originalData.sonCount) +
+    "&photo=" + encodeURIComponent(changes.photoLinks || originalData.photoLinks) +
+    "&note=" + encodeURIComponent(changes.note || originalData.note);
 });
 </script>
 
