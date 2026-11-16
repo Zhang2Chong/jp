@@ -41,22 +41,10 @@ h1{
   margin-bottom:12px;
   gap:10px;
 }
-.form-row.two-col{
-  justify-content:space-between;
-}
-.form-row.two-col > div{
-  width:48%;
-  display:flex;
-  align-items:center;
-}
 .form-label{
   width:90px;
   color:#ddd;
   flex-shrink:0;
-}
-.form-label.small{
-  width:70px;
-  font-size:14px;
 }
 .form-input-wrap{
   flex:1;
@@ -75,7 +63,7 @@ h1{
   border-color:#ff9f29;
 }
 .form-input.short{
-  max-width:100px;
+  max-width:120px;
 }
 .form-original{
   width:40%;
@@ -200,34 +188,36 @@ h1{
     <div class="form-original" id="orig_note">—</div>
   </div>
 
-  <!-- 新增：现居地+出生年份 -->
-  <div class="form-row two-col">
-    <div>
-      <div class="form-label small">现居地</div>
-      <div class="form-input-wrap">
-        <input type="text" class="form-input" id="input_residence" placeholder="不改则留空">
-      </div>
+  <div class="form-row">
+    <div class="form-label">现居地</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_residence" placeholder="不改则留空">
     </div>
-    <div>
-      <div class="form-label small">出生年份</div>
-      <div class="form-input-wrap">
-        <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
-      </div>
-    </div>
+    <div class="form-original" id="orig_residence">—</div>
   </div>
-  <div class="form-row two-col" style="margin-top:4px;">
-    <div>
-      <div class="form-label small">安葬地</div>
-      <div class="form-input-wrap">
-        <input type="text" class="form-input" id="input_burialPlace" placeholder="不改则留空">
-      </div>
+
+  <div class="form-row">
+    <div class="form-label">安葬地</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_burialPlace" placeholder="不改则留空">
     </div>
-    <div>
-      <div class="form-label small">去世年份</div>
-      <div class="form-input-wrap">
-        <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
-      </div>
+    <div class="form-original" id="orig_burialPlace">—</div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-label">出生年份</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
     </div>
+    <div class="form-original" id="orig_birthYear">—</div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-label">去世年份</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
+    </div>
+    <div class="form-original" id="orig_deathYear">—</div>
   </div>
 
   <div class="info-box" id="infoBox"></div>
@@ -344,11 +334,14 @@ window.onload = async function(){
     
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
     
-    // 加载新字段原值到输入框
     document.getElementById('input_residence').value = originalData.residence || "";
+    document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
     document.getElementById('input_burialPlace').value = originalData.burialPlace || "";
+    document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
     document.getElementById('input_birthYear').value = originalData.birthYear || "";
+    document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
     document.getElementById('input_deathYear').value = originalData.deathYear || "";
+    document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
 
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('formBox').style.display = 'block';
