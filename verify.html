@@ -26,7 +26,7 @@ body{
   background:#2b2b2b;
   border-radius:10px;
   width:100%;
-  max-width:400px;
+  max-width:420px;
   padding:24px;
   text-align:center;
   display:flex;
@@ -59,17 +59,21 @@ body{
   text-align:center;
   font-size:15px;
   color:#ffcc44;
-  margin-bottom:14px;
+  margin-bottom:16px;
 }
-.preview-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px 12px;
+.preview-row{
+  padding:4px 0;
   font-size:15px;
+  line-height:1.6;
 }
-.preview-row.full{
-  grid-column:1 / -1;
-  margin-top:4px;
+.preview-row.triple{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.preview-row.triple > div{
+  white-space:nowrap;
 }
 .preview-label{
   color:#aaa;
@@ -148,44 +152,35 @@ h2{
     <!-- 资料预览区 type=3/4 才显示 -->
     <div class="preview-section" id="previewSection">
       <div class="preview-title" id="previewTitle">📋 请核对以下资料</div>
-      <div class="preview-grid">
-        <div>
-          <span class="preview-label">华文名字：</span>
-          <span id="pName">—</span>
-        </div>
-        <div>
-          <span class="preview-label">世代：</span>
-          <span id="pGen">—</span>
-        </div>
-        <div>
-          <span class="preview-label">父亲：</span>
-          <span id="pFather">—</span>
-        </div>
-        <div>
-          <span class="preview-label">公公：</span>
-          <span id="pGrandpa">—</span>
-        </div>
-        <div>
-          <span class="preview-label">排行：</span>
-          <span id="pRank">—</span>
-        </div>
-        <div>
-          <span class="preview-label">妻子：</span>
-          <span id="pWife">—</span>
-        </div>
-        <div>
-          <span class="preview-label">儿子数量：</span>
-          <span id="pSon">—</span>
-        </div>
-        <div></div>
-        <div class="preview-row full">
-          <span class="preview-label">相片：</span>
-          <span id="pPhoto">无</span>
-        </div>
-        <div class="preview-row full">
-          <span class="preview-label">备注：</span>
-          <span id="pNote">无</span>
-        </div>
+      
+      <div class="preview-row">
+        <span class="preview-label">华文名字：</span>
+        <span id="pName">—</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">父亲：</span>
+        <span id="pFather">—</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">公公：</span>
+        <span id="pGrandpa">—</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">妻子：</span>
+        <span id="pWife">无</span>
+      </div>
+      <div class="preview-row triple">
+        <div><span class="preview-label">世代：</span><span id="pGen">—</span></div>
+        <div><span class="preview-label">排行：</span><span id="pRank">—</span></div>
+        <div><span class="preview-label">儿子数量：</span><span id="pSon">—</span></div>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">相片：</span>
+        <span id="pPhoto">无</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">备注：</span>
+        <span id="pNote">无</span>
       </div>
     </div>
 
@@ -289,11 +284,9 @@ function checkPassword(){
     }else if(type === "3"){
       successMsg.textContent = "✅ 验证通过！正在生成新记录...";
       document.getElementById("passwordInput").disabled = true;
-      // TODO: 后续接 CSV 写入逻辑
     }else if(type === "4"){
       successMsg.textContent = "✅ 验证通过！正在保存修改...";
       document.getElementById("passwordInput").disabled = true;
-      // TODO: 后续接 CSV 更新逻辑
     }else{
       errorMsg.textContent = "❌ 无效的操作类型";
     }
