@@ -191,7 +191,7 @@ h1{
   <div class="form-row">
     <div class="form-label">现居地</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_residence" placeholder="不改则留空">
+      <input type="text" class="form-input" id="input_residence" placeholder="例如：深圳、斗湖">
     </div>
     <div class="form-original" id="orig_residence">—</div>
   </div>
@@ -199,7 +199,7 @@ h1{
   <div class="form-row">
     <div class="form-label">安葬地</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_burialPlace" placeholder="不改则留空">
+      <input type="text" class="form-input" id="input_burialPlace" placeholder="例如：深圳、斗湖">
     </div>
     <div class="form-original" id="orig_burialPlace">—</div>
   </div>
@@ -265,7 +265,7 @@ function parseCSV(text){
   const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
   const header = lines[0].split(sep);
   const idx = {};
-  ['No','姓名','父亲编号','兄弟排名','世代','妻子','儿子数量','相片链接','备注','现居地','安葬地','出生年份','去世年份'].forEach(col=>{
+  ['No','姓名','父亲编号','兄弟排名','字辈','世代','妻子','儿子数量','相片链接','备注','现居地','安葬地','出生年份','去世年份'].forEach(col=>{
     idx[col] = header.indexOf(col);
   });
   const data = {};
@@ -334,13 +334,13 @@ window.onload = async function(){
     
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
     
-    document.getElementById('input_residence').value = originalData.residence || "";
+    document.getElementById('input_residence').value = "";
     document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
-    document.getElementById('input_burialPlace').value = originalData.burialPlace || "";
+    document.getElementById('input_burialPlace').value = "";
     document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
-    document.getElementById('input_birthYear').value = originalData.birthYear || "";
+    document.getElementById('input_birthYear').value = "";
     document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
-    document.getElementById('input_deathYear').value = originalData.deathYear || "";
+    document.getElementById('input_deathYear').value = "";
     document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
 
     document.getElementById('loadingBox').style.display = 'none';
