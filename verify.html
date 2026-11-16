@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>验证密码</title>
+<title>确认资料</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -19,14 +19,14 @@ body{
   align-items:center;
   justify-content:center;
   min-height:100vh;
+  padding:20px 0;
 }
 
 .password-card{
   background:#2b2b2b;
   border-radius:10px;
   width:100%;
-  max-width:340px;
-  min-height:380px;
+  max-width:400px;
   padding:24px;
   text-align:center;
   display:flex;
@@ -36,7 +36,7 @@ body{
 .card-top-links{
   display:flex;
   justify-content:space-between;
-  margin-bottom:30px;
+  margin-bottom:16px;
 }
 .card-top-links a{
   color:#ff9f29;
@@ -44,10 +44,41 @@ body{
   font-size:15px;
 }
 
-.password-card h2{
-  font-size:22px;
-  margin-bottom:30px;
-  margin-top:10px;
+.preview-section{
+  background:#383838;
+  border-radius:6px;
+  padding:16px;
+  margin-bottom:20px;
+  text-align:left;
+  display:none;
+}
+.preview-section.show{
+  display:block;
+}
+.preview-title{
+  text-align:center;
+  font-size:15px;
+  color:#ffcc44;
+  margin-bottom:14px;
+}
+.preview-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 12px;
+  font-size:15px;
+}
+.preview-row.full{
+  grid-column:1 / -1;
+  margin-top:4px;
+}
+.preview-label{
+  color:#aaa;
+}
+
+h2{
+  font-size:20px;
+  margin-bottom:16px;
+  margin-top:8px;
   color:#ffcc44;
 }
 
@@ -61,7 +92,7 @@ body{
   border:2px solid #555;
   border-radius:6px;
   color:#fff;
-  margin-bottom:20px;
+  margin-bottom:16px;
   outline:none;
 }
 .password-input:focus{
@@ -71,7 +102,13 @@ body{
 .error-msg{
   color:#ff6b6b;
   font-size:15px;
-  margin-bottom:20px;
+  margin-bottom:12px;
+  min-height:24px;
+}
+.success-msg{
+  color:#4ade80;
+  font-size:15px;
+  margin-bottom:12px;
   min-height:24px;
 }
 
@@ -79,13 +116,12 @@ body{
   display:flex;
   gap:12px;
   justify-content:center;
-  margin-top:auto;
-  margin-bottom:10px;
+  margin-top:8px;
 }
 .btn{
-  padding:12px 28px;
+  padding:12px 24px;
   border-radius:6px;
-  font-size:17px;
+  font-size:16px;
   border:none;
   cursor:pointer;
   text-decoration:none;
@@ -106,13 +142,59 @@ body{
   <div class="password-card">
     <div class="card-top-links">
       <a href="index.html">← 返回首页</a>
-      <a href="javascript:history.back()">← 返回上一页</a>
+      <a href="javascript:goBack()">← 返回上一页</a>
     </div>
-    <h2>请输入密码</h2>
+
+    <!-- 资料预览区 type=3/4 才显示 -->
+    <div class="preview-section" id="previewSection">
+      <div class="preview-title" id="previewTitle">📋 请核对以下资料</div>
+      <div class="preview-grid">
+        <div>
+          <span class="preview-label">华文名字：</span>
+          <span id="pName">—</span>
+        </div>
+        <div>
+          <span class="preview-label">世代：</span>
+          <span id="pGen">—</span>
+        </div>
+        <div>
+          <span class="preview-label">父亲：</span>
+          <span id="pFather">—</span>
+        </div>
+        <div>
+          <span class="preview-label">公公：</span>
+          <span id="pGrandpa">—</span>
+        </div>
+        <div>
+          <span class="preview-label">排行：</span>
+          <span id="pRank">—</span>
+        </div>
+        <div>
+          <span class="preview-label">妻子：</span>
+          <span id="pWife">—</span>
+        </div>
+        <div>
+          <span class="preview-label">儿子数量：</span>
+          <span id="pSon">—</span>
+        </div>
+        <div></div>
+        <div class="preview-row full">
+          <span class="preview-label">相片：</span>
+          <span id="pPhoto">无</span>
+        </div>
+        <div class="preview-row full">
+          <span class="preview-label">备注：</span>
+          <span id="pNote">无</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="titleText">请输入密码</h2>
     <input type="password" class="password-input" id="passwordInput" maxlength="6" placeholder="6位数字">
     <div class="error-msg" id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
     <div class="btn-row">
-      <button class="btn btn-cancel" onclick="history.back()">取消</button>
+      <button class="btn btn-cancel" onclick="goBack()">取消</button>
       <button class="btn btn-confirm" onclick="checkPassword()">确认</button>
     </div>
   </div>
@@ -120,27 +202,98 @@ body{
 
 <script>
 const ACCESS_PASSWORD = "771395";
-
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
 const id = params.get("id")?.replace(/#.*$/, "") || "";
+const fatherId = params.get("fatherId")?.replace(/#.*$/, "") || "";
+
+// 资料字段
+const formData = {
+  fatherName: params.get("fatherName") || "",
+  grandpaName: params.get("grandpaName") || "",
+  name: params.get("name") || "",
+  rank: params.get("rank") || "",
+  gen: params.get("gen") || "",
+  wife: params.get("wife") || "",
+  sonCount: params.get("sonCount") || "",
+  photo: params.get("photo") || "",
+  note: params.get("note") || ""
+};
+
+function goBack(){
+  if(type === "1"){
+    if(fatherId){
+      window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
+    }else{
+      history.back();
+    }
+  }else if(type === "2"){
+    if(id){
+      window.location.href = "person.html?id=" + encodeURIComponent(id);
+    }else{
+      history.back();
+    }
+  }else if(type === "3"){
+    window.location.href = "add.html?fatherId=" + encodeURIComponent(fatherId);
+  }else if(type === "4"){
+    window.location.href = "modify.html?id=" + encodeURIComponent(id);
+  }else{
+    history.back();
+  }
+}
+
+function fillPreview(){
+  if(type === "3" || type === "4"){
+    document.getElementById("previewSection").classList.add("show");
+    document.getElementById("previewTitle").textContent = 
+      type === "3" ? "📋 请核对新增资料" : "📋 请核对修改资料";
+    document.getElementById("titleText").textContent = "确认无误，请输入密码提交";
+    
+    // 显示资料
+    document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
+    document.getElementById("pGen").textContent = formData.gen || "—";
+    document.getElementById("pFather").textContent = formData.fatherName ? "张" + formData.fatherName : "—";
+    document.getElementById("pGrandpa").textContent = formData.grandpaName ? "张" + formData.grandpaName : "—";
+    document.getElementById("pRank").textContent = formData.rank || "—";
+    document.getElementById("pWife").textContent = formData.wife || "无";
+    document.getElementById("pSon").textContent = formData.sonCount || "0";
+    
+    // 相片：多张用逗号分开，显示数量
+    if(formData.photo && formData.photo.trim()){
+      const photos = formData.photo.split(/[,，]/).filter(p=>p.trim());
+      document.getElementById("pPhoto").textContent = photos.length + " 张相片";
+    }else{
+      document.getElementById("pPhoto").textContent = "无";
+    }
+    
+    document.getElementById("pNote").textContent = formData.note || "无";
+  }else{
+    document.getElementById("previewSection").classList.remove("show");
+    document.getElementById("titleText").textContent = "请输入密码";
+  }
+}
 
 function checkPassword(){
   const input = document.getElementById("passwordInput").value;
   const errorMsg = document.getElementById("errorMsg");
+  const successMsg = document.getElementById("successMsg");
+  
+  errorMsg.textContent = "";
+  successMsg.textContent = "";
   
   if(input === ACCESS_PASSWORD){
-    errorMsg.textContent = "";
     if(type === "1"){
       window.location.href = "add.html?fatherId=" + encodeURIComponent(id);
     }else if(type === "2"){
       window.location.href = "modify.html?id=" + encodeURIComponent(id);
     }else if(type === "3"){
-      errorMsg.textContent = "✅ 验证通过，正在处理新增...";
-      errorMsg.style.color = "#4ade80";
+      successMsg.textContent = "✅ 验证通过！正在生成新记录...";
+      document.getElementById("passwordInput").disabled = true;
+      // TODO: 后续接 CSV 写入逻辑
     }else if(type === "4"){
-      errorMsg.textContent = "✅ 验证通过，正在保存修改...";
-      errorMsg.style.color = "#4ade80";
+      successMsg.textContent = "✅ 验证通过！正在保存修改...";
+      document.getElementById("passwordInput").disabled = true;
+      // TODO: 后续接 CSV 更新逻辑
     }else{
       errorMsg.textContent = "❌ 无效的操作类型";
     }
@@ -157,6 +310,7 @@ document.addEventListener("keydown", function(e){
   }
 });
 
+fillPreview();
 document.getElementById("passwordInput").focus();
 </script>
 
