@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>验证密码</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#1a1a1a;
+  color:#facc54;
+  font-family:"Microsoft YaHei",sans-serif;
+  min-height:100vh;
+  padding:16px;
+}
+.top-links{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:30px;
+  padding-top:10px;
+}
+.top-links a{
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:16px;
+}
+
+.center-box-wrapper{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:calc(100vh - 80px);
+}
+
+.password-card{
+  background:#2b2b2b;
+  border-radius:10px;
+  width:100%;
+  max-width:340px;
+  min-height:340px;
+  padding:30px 24px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.password-card h2{
+  font-size:22px;
+  margin-bottom:30px;
+  color:#ffcc44;
+}
+
+.password-input{
+  width:100%;
+  padding:14px;
+  font-size:24px;
+  text-align:center;
+  letter-spacing:8px;
+  background:#383838;
+  border:2px solid #555;
+  border-radius:6px;
+  color:#fff;
+  margin-bottom:20px;
+  outline:none;
+}
+.password-input:focus{
+  border-color:#ff9f29;
+}
+
+.error-msg{
+  color:#ff6b6b;
+  font-size:15px;
+  margin-bottom:20px;
+  min-height:24px;
+}
+
+.btn-row{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-top:10px;
+}
+.btn{
+  padding:12px 28px;
+  border-radius:6px;
+  font-size:17px;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+}
+.btn-cancel{
+  background:#444;
+  color:#ddd;
+}
+.btn-confirm{
+  background:#e64a19;
+  color:#fff;
+}
+</style>
+</head>
+<body>
+
+<div class="top-links">
+  <a href="index.html">← 返回首页</a>
+  <a href="javascript:history.back()">← 返回上一页</a>
+</div>
+
+<div class="center-box-wrapper">
+  <div class="password-card">
+    <h2>请输入密码</h2>
+    <input type="password" class="password-input" id="passwordInput" maxlength="6" placeholder="6位数字">
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="btn-row">
+      <button class="btn btn-cancel" onclick="history.back()">取消</button>
+      <button class="btn btn-confirm" onclick="checkPassword()">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ACCESS_PASSWORD = "771395";
+
+const params = new URLSearchParams(window.location.search);
+const type = params.get("type");
+const id = params.get("id")?.replace(/#.*$/, "") || "";
+
+function checkPassword(){
+  const input = document.getElementById("passwordInput").value;
+  const errorMsg = document.getElementById("errorMsg");
+  
+  if(input === ACCESS_PASSWORD){
+    errorMsg.textContent = "";
+    // 根据 type 跳转到对应页面
+    if(type === "1"){
+      window.location.href = "add.html?fatherId=" + encodeURIComponent(id);
+    }else if(type === "2"){
+      window.location.href = "modify.html?id=" + encodeURIComponent(id);
+    }else if(type === "3"){
+      // 新增确认 - 后续接 Python/处理逻辑
+      errorMsg.textContent = "✅ 验证通过，正在处理新增...";
+      errorMsg.style.color = "#4ade80";
+      // 以后这里接你的 Python 或 CSV 生成逻辑
+    }else if(type === "4"){
+      // 修改确认 - 后续接 Python/处理逻辑
+      errorMsg.textContent = "✅ 验证通过，正在保存修改...";
+      errorMsg.style.color = "#4ade80";
+      // 以后这里接你的 Python 或 CSV 更新逻辑
+    }else{
+      errorMsg.textContent = "❌ 无效的操作类型";
+    }
+  }else{
+    errorMsg.textContent = "❌ 密码错误，请重试";
+    document.getElementById("passwordInput").value = "";
+    document.getElementById("passwordInput").focus();
+  }
+}
+
+// 按回车键确认
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    checkPassword();
+  }
+});
+
+// 自动聚焦
+document.getElementById("passwordInput").focus();
+</script>
+
+</body>
+</html>
