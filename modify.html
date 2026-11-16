@@ -41,10 +41,22 @@ h1{
   margin-bottom:12px;
   gap:10px;
 }
+.form-row.two-col{
+  justify-content:space-between;
+}
+.form-row.two-col > div{
+  width:48%;
+  display:flex;
+  align-items:center;
+}
 .form-label{
   width:90px;
   color:#ddd;
   flex-shrink:0;
+}
+.form-label.small{
+  width:70px;
+  font-size:14px;
 }
 .form-input-wrap{
   flex:1;
@@ -58,6 +70,12 @@ h1{
   color:#fff;
   font-size:15px;
   outline:none;
+}
+.form-input:focus{
+  border-color:#ff9f29;
+}
+.form-input.short{
+  max-width:100px;
 }
 .form-original{
   width:40%;
@@ -136,13 +154,7 @@ h1{
   </div>
 
   <div class="form-row">
-    <div class="form-label">公公</div>
-    <div style="flex:1;"></div>
-    <div class="form-original" id="orig_grandpa">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">排行</div>
+    <div class="form-label">兄弟排行</div>
     <div class="form-input-wrap">
       <input type="text" class="form-input" id="input_rank" placeholder="输入新排行，不改则留空">
     </div>
@@ -183,9 +195,39 @@ h1{
   <div class="form-row">
     <div class="form-label">备注</div>
     <div class="form-input-wrap">
-      <textarea class="form-input" id="input_note" rows="4" placeholder="输入新备注，不改则留空"></textarea>
+      <textarea class="form-input" id="input_note" rows="3" placeholder="输入新备注，不改则留空"></textarea>
     </div>
     <div class="form-original" id="orig_note">—</div>
+  </div>
+
+  <!-- 新增：现居地+出生年份 -->
+  <div class="form-row two-col">
+    <div>
+      <div class="form-label small">现居地</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input" id="input_residence" placeholder="不改则留空">
+      </div>
+    </div>
+    <div>
+      <div class="form-label small">出生年份</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
+      </div>
+    </div>
+  </div>
+  <div class="form-row two-col" style="margin-top:4px;">
+    <div>
+      <div class="form-label small">安葬地</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input" id="input_burialPlace" placeholder="不改则留空">
+      </div>
+    </div>
+    <div>
+      <div class="form-label small">去世年份</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
+      </div>
+    </div>
   </div>
 
   <div class="info-box" id="infoBox"></div>
@@ -233,7 +275,7 @@ function parseCSV(text){
   const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
   const header = lines[0].split(sep);
   const idx = {};
-  ['No','姓名','父亲编号','兄弟排名','世代','妻子','儿子数量','相片链接','备注'].forEach(col=>{
+  ['No','姓名','父亲编号','兄弟排名','世代','妻子','儿子数量','相片链接','备注','现居地','安葬地','出生年份','去世年份'].forEach(col=>{
     idx[col] = header.indexOf(col);
   });
   const data = {};
@@ -250,7 +292,11 @@ function parseCSV(text){
       wife: idx['妻子']>=0 && col[idx['妻子']] ? col[idx['妻子']].trim() : "",
       sonCount: idx['儿子数量']>=0 && col[idx['儿子数量']] ? col[idx['儿子数量']].trim() : "",
       photoLinks: idx['相片链接']>=0 && col[idx['相片链接']] ? col[idx['相片链接']].trim() : "",
-      note: idx['备注']>=0 && col[idx['备注']] ? col[idx['备注']].trim() : ""
+      note: idx['备注']>=0 && col[idx['备注']] ? col[idx['备注']].trim() : "",
+      residence: idx['现居地']>=0 && col[idx['现居地']] ? col[idx['现居地']].trim() : "",
+      burialPlace: idx['安葬地']>=0 && col[idx['安葬地']] ? col[idx['安葬地']].trim() : "",
+      birthYear: idx['出生年份']>=0 && col[idx['出生年份']] ? col[idx['出生年份']].trim() : "",
+      deathYear: idx['去世年份']>=0 && col[idx['去世年份']] ? col[idx['去世年份']].trim() : ""
     };
   }
   return data;
@@ -281,11 +327,9 @@ window.onload = async function(){
     }
 
     const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
-    const grandpa = father && father.fatherId && father.fatherId !== "0" ? people[father.fatherId] : null;
 
     document.getElementById('orig_name').textContent = withSurname(originalData.name);
     document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
-    document.getElementById('orig_grandpa').textContent = grandpa ? withSurname(grandpa.name) : "—";
     document.getElementById('orig_rank').textContent = originalData.rank || "—";
     document.getElementById('orig_gen').textContent = '第' + originalData.gen + '代';
     document.getElementById('orig_wife').textContent = originalData.wife || "—";
@@ -299,6 +343,12 @@ window.onload = async function(){
       `例如：${exampleId}A.jpg, ${exampleId}B.jpg, ${exampleId}C.jpg`);
     
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
+    
+    // 加载新字段原值到输入框
+    document.getElementById('input_residence').value = originalData.residence || "";
+    document.getElementById('input_burialPlace').value = originalData.burialPlace || "";
+    document.getElementById('input_birthYear').value = originalData.birthYear || "";
+    document.getElementById('input_deathYear').value = originalData.deathYear || "";
 
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('formBox').style.display = 'block';
@@ -318,6 +368,10 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newSonCount = document.getElementById('input_sonCount').value.trim();
   const newPhotos = document.getElementById('input_photoLinks').value.trim();
   const newNote = document.getElementById('input_note').value.trim();
+  const newResidence = document.getElementById('input_residence').value.trim();
+  const newBurialPlace = document.getElementById('input_burialPlace').value.trim();
+  const newBirthYear = document.getElementById('input_birthYear').value.trim();
+  const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
   if(newName && newName !== originalData.name) changes.name = newName;
   if(newRank && newRank !== originalData.rank) changes.rank = newRank;
@@ -325,6 +379,10 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   if(newSonCount !== '' && newSonCount !== originalData.sonCount) changes.sonCount = newSonCount;
   if(newPhotos && newPhotos !== originalData.photoLinks) changes.photoLinks = newPhotos;
   if(newNote !== '' && newNote !== originalData.note) changes.note = newNote;
+  if(newResidence !== '' && newResidence !== originalData.residence) changes.residence = newResidence;
+  if(newBurialPlace !== '' && newBurialPlace !== originalData.burialPlace) changes.burialPlace = newBurialPlace;
+  if(newBirthYear !== '' && newBirthYear !== originalData.birthYear) changes.birthYear = newBirthYear;
+  if(newDeathYear !== '' && newDeathYear !== originalData.deathYear) changes.deathYear = newDeathYear;
 
   if(Object.keys(changes).length === 0){
     showInfo('您没有修改任何内容', true);
@@ -338,17 +396,16 @@ document.getElementById('submitBtn').addEventListener('click', function(){
       (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId])
         ? people[originalData.fatherId].name : ""
     ) +
-    "&grandpaName=" + encodeURIComponent(
-      (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId] && 
-       people[originalData.fatherId].fatherId && people[originalData.fatherId].fatherId !== "0")
-        ? (people[people[originalData.fatherId].fatherId] || {}).name || "" : ""
-    ) +
     "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
     "&gen=" + encodeURIComponent(originalData.gen) +
     "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
     "&sonCount=" + encodeURIComponent(changes.sonCount || originalData.sonCount) +
     "&photo=" + encodeURIComponent(changes.photoLinks || originalData.photoLinks) +
-    "&note=" + encodeURIComponent(changes.note || originalData.note);
+    "&note=" + encodeURIComponent(changes.note || originalData.note) +
+    "&residence=" + encodeURIComponent(changes.residence || originalData.residence) +
+    "&burialPlace=" + encodeURIComponent(changes.burialPlace || originalData.burialPlace) +
+    "&birthYear=" + encodeURIComponent(changes.birthYear || originalData.birthYear) +
+    "&deathYear=" + encodeURIComponent(changes.deathYear || originalData.deathYear);
 });
 </script>
 
