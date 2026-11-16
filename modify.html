@@ -128,9 +128,9 @@ h1{
 <div id="formBox" style="display:none;">
 
   <div class="form-row">
-    <div class="form-label">华文名字</div>
+    <div class="form-label">名字</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_name" placeholder="输入新名字，不改则留空">
+      <input type="text" class="form-input" id="input_name" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_name">—</div>
   </div>
@@ -144,7 +144,7 @@ h1{
   <div class="form-row">
     <div class="form-label">兄弟排行</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_rank" placeholder="输入新排行，不改则留空">
+      <input type="text" class="form-input" id="input_rank" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_rank">—</div>
   </div>
@@ -156,9 +156,9 @@ h1{
   </div>
 
   <div class="form-row">
-    <div class="form-label">妻子名字</div>
+    <div class="form-label">妻子</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_wife" placeholder="输入新妻子名，不改则留空">
+      <input type="text" class="form-input" id="input_wife" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_wife">—</div>
   </div>
@@ -166,16 +166,15 @@ h1{
   <div class="form-row">
     <div class="form-label">儿子数量</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_sonCount" placeholder="输入新数量，不改则留空">
+      <input type="text" class="form-input" id="input_sonCount" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_sonCount">—</div>
   </div>
 
-  <div class="tip-text">相片链接：多个用逗号分开，不改则留空</div>
   <div class="form-row">
     <div class="form-label">相片链接</div>
     <div class="form-input-wrap">
-      <textarea class="form-input" id="input_photoLinks" rows="3" placeholder="不改则留空"></textarea>
+      <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="不改则留空"></textarea>
     </div>
     <div class="form-original" id="orig_photoLinks">—</div>
   </div>
@@ -183,7 +182,7 @@ h1{
   <div class="form-row">
     <div class="form-label">备注</div>
     <div class="form-input-wrap">
-      <textarea class="form-input" id="input_note" rows="3" placeholder="输入新备注，不改则留空"></textarea>
+      <textarea class="form-input" id="input_note" rows="2" placeholder="不改则留空"></textarea>
     </div>
     <div class="form-original" id="orig_note">—</div>
   </div>
@@ -262,31 +261,51 @@ function showInfo(msg, isError=false){
 
 function parseCSV(text){
   const lines = text.trim().split("\n");
-  const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+  const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
   const header = lines[0].split(sep);
-  const idx = {};
-  ['No','姓名','父亲编号','兄弟排名','字辈','世代','妻子','儿子数量','相片链接','备注','现居地','安葬地','出生年份','去世年份'].forEach(col=>{
-    idx[col] = header.indexOf(col);
-  });
+  
+  console.log("✅ CSV表头:", header);
+  
+  const idx = {
+    name: header.indexOf('姓名'),
+    no: header.indexOf('No'),
+    fatherId: header.indexOf('父亲编号'),
+    rank: header.indexOf('兄弟排名'),
+    generation: header.indexOf('世代'),
+    zi: header.indexOf('字辈'),
+    wife: header.indexOf('妻子'),
+    sonCount: header.indexOf('儿子数量'),
+    photoLinks: header.indexOf('相片链接'),
+    note: header.indexOf('备注'),
+    residence: header.indexOf('现居地'),
+    burialPlace: header.indexOf('安葬地'),
+    birthYear: header.indexOf('出生年份'),
+    deathYear: header.indexOf('去世年份')
+  };
+  
+  console.log("📌 列位置索引:", idx);
+  
   const data = {};
   for(let i=1;i<lines.length;i++){
     const col = lines[i].split(sep);
-    const no = idx['No']>=0 && col[idx['No']] ? col[idx['No']].trim() : "";
+    const no = idx.no >= 0 && col[idx.no] ? col[idx.no].trim() : "";
     if(!no) continue;
+    
     data[no] = {
+      name: idx.name >= 0 && col[idx.name] ? col[idx.name].trim() : "",
       no: no,
-      name: idx['姓名']>=0 && col[idx['姓名']] ? col[idx['姓名']].trim() : "",
-      fatherId: idx['父亲编号']>=0 && col[idx['父亲编号']] ? col[idx['父亲编号']].trim() : "",
-      rank: idx['兄弟排名']>=0 && col[idx['兄弟排名']] ? col[idx['兄弟排名']].trim() : "",
-      gen: idx['世代']>=0 && col[idx['世代']] ? col[idx['世代']].trim() : "",
-      wife: idx['妻子']>=0 && col[idx['妻子']] ? col[idx['妻子']].trim() : "",
-      sonCount: idx['儿子数量']>=0 && col[idx['儿子数量']] ? col[idx['儿子数量']].trim() : "",
-      photoLinks: idx['相片链接']>=0 && col[idx['相片链接']] ? col[idx['相片链接']].trim() : "",
-      note: idx['备注']>=0 && col[idx['备注']] ? col[idx['备注']].trim() : "",
-      residence: idx['现居地']>=0 && col[idx['现居地']] ? col[idx['现居地']].trim() : "",
-      burialPlace: idx['安葬地']>=0 && col[idx['安葬地']] ? col[idx['安葬地']].trim() : "",
-      birthYear: idx['出生年份']>=0 && col[idx['出生年份']] ? col[idx['出生年份']].trim() : "",
-      deathYear: idx['去世年份']>=0 && col[idx['去世年份']] ? col[idx['去世年份']].trim() : ""
+      fatherId: idx.fatherId >= 0 && col[idx.fatherId] ? col[idx.fatherId].trim() : "",
+      rank: idx.rank >= 0 && col[idx.rank] ? col[idx.rank].trim() : "",
+      generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation].trim() : "",
+      zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi].trim() : "",
+      wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife].trim() : "",
+      sonCount: idx.sonCount >= 0 && col[idx.sonCount] ? col[idx.sonCount].trim() : "",
+      photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks].trim() : "",
+      note: idx.note >= 0 && col[idx.note] ? col[idx.note].trim() : "",
+      residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence].trim() : "",
+      burialPlace: idx.burialPlace >= 0 && col[idx.burialPlace] ? col[idx.burialPlace].trim() : "",
+      birthYear: idx.birthYear >= 0 && col[idx.birthYear] ? col[idx.birthYear].trim() : "",
+      deathYear: idx.deathYear >= 0 && col[idx.deathYear] ? col[idx.deathYear].trim() : ""
     };
   }
   return data;
@@ -306,41 +325,36 @@ window.onload = async function(){
   }
 
   try{
-    const res = await fetch(CSV_URL);
+    const res = await fetch(CSV_URL + "?t=" + Date.now());
     const text = await res.text();
     people = parseCSV(text);
+    
+    console.log("📌 所有人记录数:", Object.keys(people).length);
+    console.log("📌 查找编号:", targetId);
     
     originalData = people[targetId];
     if(!originalData){
       document.getElementById('loadingBox').textContent = '查无此记录：' + targetId;
       return;
     }
+    
+    console.log("✅ 找到记录:", originalData);
 
     const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
 
     document.getElementById('orig_name').textContent = withSurname(originalData.name);
     document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
     document.getElementById('orig_rank').textContent = originalData.rank || "—";
-    document.getElementById('orig_gen').textContent = '第' + originalData.gen + '代';
+    document.getElementById('orig_gen').textContent = '第' + originalData.generation + '代';
     document.getElementById('orig_wife').textContent = originalData.wife || "—";
     document.getElementById('orig_sonCount').textContent = originalData.sonCount || "0";
     
-    const photoCount = originalData.photoLinks ? originalData.photoLinks.split(/[,，]+/).filter(s=>s.trim()).length : 0;
-    document.getElementById('orig_photoLinks').textContent = photoCount > 0 ? `已存${photoCount}张` : "暂无相片";
-    
-    const exampleId = targetId;
-    document.getElementById('input_photoLinks').setAttribute('placeholder', 
-      `例如：${exampleId}A.jpg, ${exampleId}B.jpg, ${exampleId}C.jpg`);
-    
+    // 直接显示相片链接内容，不再统计张数
+    document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
-    
-    document.getElementById('input_residence').value = "";
     document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
-    document.getElementById('input_burialPlace').value = "";
     document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
-    document.getElementById('input_birthYear').value = "";
     document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
-    document.getElementById('input_deathYear').value = "";
     document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
 
     document.getElementById('loadingBox').style.display = 'none';
@@ -390,7 +404,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         ? people[originalData.fatherId].name : ""
     ) +
     "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
-    "&gen=" + encodeURIComponent(originalData.gen) +
+    "&gen=" + encodeURIComponent(originalData.generation) +
     "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
     "&sonCount=" + encodeURIComponent(changes.sonCount || originalData.sonCount) +
     "&photo=" + encodeURIComponent(changes.photoLinks || originalData.photoLinks) +
