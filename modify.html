@@ -260,7 +260,6 @@ window.onload = async function(){
   const params = new URLSearchParams(location.search);
   targetId = params.get("id")?.replace(/#.*$/, "") || null;
   
-  // 返回上一页直接回 person.html，带 ID
   document.getElementById('backToPerson').href = targetId 
     ? "person.html?id=" + encodeURIComponent(targetId) 
     : "index.html";
@@ -295,7 +294,6 @@ window.onload = async function(){
     const photoCount = originalData.photoLinks ? originalData.photoLinks.split(/[,，]+/).filter(s=>s.trim()).length : 0;
     document.getElementById('orig_photoLinks').textContent = photoCount > 0 ? `已存${photoCount}张` : "暂无相片";
     
-    // 相片输入框提示：63A.jpg, 63B.jpg — ID自动替换
     const exampleId = targetId;
     document.getElementById('input_photoLinks').setAttribute('placeholder', 
       `例如：${exampleId}A.jpg, ${exampleId}B.jpg, ${exampleId}C.jpg`);
@@ -333,7 +331,6 @@ document.getElementById('submitBtn').addEventListener('click', function(){
     return;
   }
 
-  // 有修改 → 全部资料带去 verify.html，type=4
   window.location.href = "verify.html?type=4" +
     "&id=" + encodeURIComponent(targetId) +
     "&name=" + encodeURIComponent(changes.name || originalData.name) +
