@@ -95,7 +95,7 @@ textarea.form-input{
 
   <div class="top-links">
     <a href="index.html">← 返回主页</a>
-    <a href="javascript:history.back()">← 返回上一页</a>
+    <a href="javascript:goBackToPerson()">← 返回上一页</a>
   </div>
 
   <h2>新增族人资料</h2>
@@ -145,12 +145,21 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/
 
 const params = new URLSearchParams(window.location.search);
 const fatherId = params.get('fatherId');
+let fatherName = "";
 
 function withSurname(name){
   if(!name) return "";
   const n = name.trim();
   if(n.startsWith("张")) return n;
   return "张" + n;
+}
+
+function goBackToPerson(){
+  if(fatherId){
+    window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
+  }else{
+    window.location.href = "index.html";
+  }
 }
 
 async function loadFatherInfo() {
@@ -175,10 +184,10 @@ async function loadFatherInfo() {
       const no = idxNo >= 0 && cols[idxNo] ? cols[idxNo].trim() : '';
       
       if (no === fatherId) {
-        const name = idxName >= 0 ? cols[idxName].trim() : '';
+        fatherName = idxName >= 0 ? cols[idxName].trim() : '';
         const gen = idxGen >= 0 ? parseInt(cols[idxGen].trim()) : 0;
         
-        document.getElementById('fatherFullName').textContent = withSurname(name);
+        document.getElementById('fatherFullName').textContent = withSurname(fatherName);
         document.getElementById('generationText').textContent = gen + 1;
         return;
       }
@@ -195,13 +204,28 @@ async function loadFatherInfo() {
 
 document.getElementById('addForm').addEventListener('submit', function(e){
   e.preventDefault();
-  const name = document.getElementById('name').value;
+  const name = document.getElementById('name').value.trim();
+  const birthOrder = document.getElementById('birthOrder').value.trim();
+  const generation = document.getElementById('generationText').textContent.trim();
+  const wifeName = document.getElementById('wifeName').value.trim();
+  const sonCount = document.getElementById('sonCount').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+  
   if(!name){
     alert('请输入华文名字');
     return;
   }
-  alert('资料已提交！\n名字：' + name);
-  history.back();
+  
+  // 全部资料带过去 verify.html，type=3
+  window.location.href = "verify.html?type=3" +
+    "&fatherId=" + encodeURIComponent(fatherId || "") +
+    "&fatherName=" + encodeURIComponent(fatherName) +
+    "&name=" + encodeURIComponent(name) +
+    "&rank=" + encodeURIComponent(birthOrder) +
+    "&gen=" + encodeURIComponent(generation) +
+    "&wife=" + encodeURIComponent(wifeName) +
+    "&sonCount=" + encodeURIComponent(sonCount) +
+    "&note=" + encodeURIComponent(notes);
 });
 
 loadFatherInfo();
