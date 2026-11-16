@@ -191,7 +191,7 @@ h1{
   <div class="form-row">
     <div class="form-label">现居地</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_residence" placeholder="例如：深圳、斗湖">
+      <input type="text" class="form-input" id="input_residence" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_residence">—</div>
   </div>
@@ -199,7 +199,7 @@ h1{
   <div class="form-row">
     <div class="form-label">安葬地</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_burialPlace" placeholder="例如：深圳、斗湖">
+      <input type="text" class="form-input" id="input_burialPlace" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_burialPlace">—</div>
   </div>
@@ -334,13 +334,13 @@ window.onload = async function(){
     
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
     
-    document.getElementById('input_residence').value = "";
+    document.getElementById('input_residence').value = originalData.residence || "";
     document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
-    document.getElementById('input_burialPlace').value = "";
+    document.getElementById('input_burialPlace').value = originalData.burialPlace || "";
     document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
-    document.getElementById('input_birthYear').value = "";
+    document.getElementById('input_birthYear').value = originalData.birthYear || "";
     document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
-    document.getElementById('input_deathYear').value = "";
+    document.getElementById('input_deathYear').value = originalData.deathYear || "";
     document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
 
     document.getElementById('loadingBox').style.display = 'none';
