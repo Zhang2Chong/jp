@@ -33,17 +33,11 @@ h1{
 }
 .row-container{
   display:flex;
-  gap:12px;
+  gap:24px;
   margin-bottom:20px;
 }
 .col{
   flex:1;
-}
-.col label{
-  display:block;
-  margin-bottom:6px;
-  font-size:15px;
-  color:#ddd;
 }
 .search-row{
   display:flex;
@@ -93,6 +87,7 @@ h1{
   min-height:40px;
   line-height:22px;
   font-size:15px;
+  margin-bottom:4px;
 }
 .compare-btn{
   width:100%;
@@ -139,7 +134,7 @@ h1{
 }
 .two-line{
   display:flex;
-  gap:12px;
+  gap:24px;
 }
 .line-col{
   flex:1;
@@ -155,13 +150,12 @@ h1{
 .person-card.gen{
   font-size:13px;
   color:#aaa;
-  margin-bottom:2px;
+  margin-bottom:4px;
 }
-.person-card.name{
+.person-card.name-wrap{
   font-size:15px;
-  margin-bottom:2px;
 }
-.person-card.name.large{
+.person-card.name-wrap.large{
   font-size:23px;
   font-weight:bold;
   color:#fff;
@@ -169,6 +163,7 @@ h1{
 .person-card.child{
   font-size:12px;
   color:#888;
+  margin-left:4px;
 }
 </style>
 </head>
@@ -184,7 +179,6 @@ h1{
   <div class="row-container">
     <!-- 左边：A -->
     <div class="col">
-      <label>第一人</label>
       <div class="search-row">
         <input type="text" id="searchA" placeholder="输入名字或编号">
         <button onclick="searchPerson('A')">寻找</button>
@@ -195,7 +189,6 @@ h1{
 
     <!-- 右边：B -->
     <div class="col">
-      <label>第二人</label>
       <div class="search-row">
         <input type="text" id="searchB" placeholder="输入名字或编号">
         <button onclick="searchPerson('B')">寻找</button>
@@ -244,7 +237,7 @@ function parseCSV(text){
     no: header.indexOf('No'),
     fatherId: header.indexOf('父亲编号'),
     generation: header.indexOf('世代'),
-    childOrder: header.indexOf('排行')
+    childOrder: header.indexOf('兄弟排名')
   };
   
   allPeople = [];
@@ -333,12 +326,11 @@ function findCommonAncestor(chainA, chainB){
 }
 
 function makeCard(person, isBottom){
-  const orderText = person.childOrder ? `第${person.childOrder}子` : "";
+  const orderText = person.childOrder && person.childOrder !== "0" ? `<span class="child">第${person.childOrder}子</span>` : "";
   return `
     <div class="person-card">
       <div class="gen">第${person.generation}代</div>
-      <div class="name ${isBottom ? 'large' : ''}">${withZhang(person.name)}</div>
-      ${orderText ? `<div class="child">${orderText}</div>` : ''}
+      <div class="name-wrap ${isBottom ? 'large' : ''}">${withZhang(person.name)}${orderText}</div>
     </div>
   `;
 }
