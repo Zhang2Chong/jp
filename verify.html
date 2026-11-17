@@ -66,13 +66,13 @@ body{
   font-size:15px;
   line-height:1.6;
 }
-.preview-row.triple{
+.preview-row.double{
   display:flex;
   justify-content:space-between;
-  gap:8px;
+  gap:16px;
   flex-wrap:wrap;
 }
-.preview-row.triple > div{
+.preview-row.double > div{
   white-space:nowrap;
 }
 .preview-label{
@@ -169,10 +169,18 @@ h2{
         <span class="preview-label">妻子：</span>
         <span id="pWife">无</span>
       </div>
-      <div class="preview-row triple">
+      <div class="preview-row double">
         <div><span class="preview-label">世代：</span><span id="pGen">—</span></div>
         <div><span class="preview-label">排行：</span><span id="pRank">—</span></div>
         <div><span class="preview-label">儿子数量：</span><span id="pSon">—</span></div>
+      </div>
+      <div class="preview-row double">
+        <div><span class="preview-label">现居地：</span><span id="pResidence">无</span></div>
+        <div><span class="preview-label">出生年份：</span><span id="pBirthYear">无</span></div>
+      </div>
+      <div class="preview-row double">
+        <div><span class="preview-label">安葬地：</span><span id="pBurial">无</span></div>
+        <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
       </div>
       <div class="preview-row">
         <span class="preview-label">相片：</span>
@@ -211,6 +219,10 @@ const formData = {
   gen: params.get("gen") || "",
   wife: params.get("wife") || "",
   sonCount: params.get("sonCount") || "",
+  residence: params.get("residence") || "",
+  birthYear: params.get("birthYear") || "",
+  burial: params.get("burial") || "",
+  deathYear: params.get("deathYear") || "",
   photo: params.get("photo") || "",
   note: params.get("note") || ""
 };
@@ -252,6 +264,10 @@ function fillPreview(){
     document.getElementById("pRank").textContent = formData.rank || "—";
     document.getElementById("pWife").textContent = formData.wife || "无";
     document.getElementById("pSon").textContent = formData.sonCount || "0";
+    document.getElementById("pResidence").textContent = formData.residence || "无";
+    document.getElementById("pBirthYear").textContent = formData.birthYear || "无";
+    document.getElementById("pBurial").textContent = formData.burial || "无";
+    document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
     
     // 相片：多张用逗号分开，显示数量
     if(formData.photo && formData.photo.trim()){
