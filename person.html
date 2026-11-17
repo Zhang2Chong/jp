@@ -172,7 +172,7 @@ h2{
 
 <div class="top-links">
   <a href="index.html">← 返回首页</a>
-  <a href="javascript:history.back()">← 返回上一页</a>
+  <a href="javascript:goBackSmart()">← 返回上一页</a>
 </div>
 
 <div class="name-card">
@@ -220,6 +220,17 @@ h2{
 </div>
 
 <script>
+function goBackSmart(){
+  const ref = document.referrer;
+  // 从 browse 或其他 person 来的 → 原路返回
+  if(ref.includes("browse.html") || ref.includes("person.html")){
+    history.back();
+  }else{
+    // 从 add / modify / verify 来的 → 直接回 browse
+    window.location.href = "browse.html";
+  }
+}
+
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList.csv";
 let currentPersonId = null;
 
