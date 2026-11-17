@@ -155,7 +155,6 @@ h2{
       <a href="javascript:goBack()">← 返回上一页</a>
     </div>
 
-    <!-- 资料预览区 type=3/4 才显示 -->
     <div class="preview-section" id="previewSection">
       <div class="preview-title" id="previewTitle">📋 请核对以下资料</div>
       
@@ -203,14 +202,17 @@ h2{
 
 <script>
 const ACCESS_PASSWORD = "771395";
+const GITHUB_USER = "Zhang2Chong";
+const GITHUB_REPO = "ZhangFamily";
+// ===================== 👇 这里换成你的Token！=====================
+const GITHUB_TOKEN = "这里换成你的ghp_开头的Token";
+// =================================================================
+
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
 const id = params.get("id")?.replace(/#.*$/, "") || "";
 const fatherId = params.get("fatherId")?.replace(/#.*$/, "") || "";
-const GITHUB_USER = "Zhang2Chong";
-const GITHUB_REPO = "ZhangFamily";
 
-// 资料字段
 const formData = {
   name: params.get("name") || "",
   rank: params.get("rank") || "",
@@ -255,7 +257,6 @@ function fillPreview(){
       type === "3" ? "📋 请核对新增资料" : "📋 请核对修改资料";
     document.getElementById("titleText").textContent = "确认无误，请输入密码提交";
     
-    // 显示资料
     document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
     document.getElementById("pGen").textContent = formData.generation ? "第" + formData.generation + "代" : "—";
     document.getElementById("pRank").textContent = formData.rank || "—";
@@ -266,7 +267,6 @@ function fillPreview(){
     document.getElementById("pBurial").textContent = formData.burial || "无";
     document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
     
-    // 相片：多张用逗号分开，显示数量
     if(formData.photoLink && formData.photoLink.trim()){
       const photos = formData.photoLink.split(/[,，]/).filter(p=>p.trim());
       document.getElementById("pPhoto").textContent = photos.length + " 张相片";
@@ -284,7 +284,6 @@ function fillPreview(){
 async function sendToGitHub(){
   const dispatchType = type === "3" ? "add-person" : "modify-person";
   
-  // 组装数据
   const payload = {
     pwd: ACCESS_PASSWORD,
     type: type,
@@ -309,6 +308,7 @@ async function sendToGitHub(){
       method: "POST",
       headers: {
         "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + GITHUB_TOKEN,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -322,7 +322,6 @@ async function sendToGitHub(){
       document.getElementById("passwordInput").disabled = true;
       document.getElementById("confirmBtn").disabled = true;
       
-      // 2秒后返回对应页面
       setTimeout(() => {
         if(type === "3"){
           window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
