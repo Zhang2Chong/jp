@@ -6,110 +6,352 @@
 <title>两人血缘对比</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#1a1a1a;color:#ffdd66;font-family:"Microsoft YaHei",sans-serif;padding:24px}
-.back{color:#ff8800;margin-bottom:20px;display:block;font-size:16px;text-decoration:none}
-h2{text-align:center;margin-bottom:30px}
-input{width:100%;padding:14px;font-size:18px;border-radius:6px;border:none;margin:8px 0;background:#333;color:#fff}
-button{width:100%;padding:14px;font-size:20px;border:none;border-radius:6px;background:#2288ff;color:white;margin-top:12px;cursor:pointer}
-#result{margin-top:24px;padding:16px;background:#222;border-radius:8px;white-space:pre-wrap;line-height:1.8}
+body{
+  background:#1a1a1a;
+  color:#facc54;
+  font-family:"Microsoft YaHei",sans-serif;
+  padding:16px;
+}
+.wrapper{
+  max-width:600px;
+  margin:0 auto;
+  width:100%;
+}
+.top-link{
+  margin-bottom:20px;
+}
+.top-link a{
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:16px;
+}
+h1{
+  text-align:center;
+  font-size:24px;
+  margin-bottom:20px;
+  color:#ffcc44;
+}
+.row-container{
+  display:flex;
+  gap:12px;
+  margin-bottom:20px;
+}
+.col{
+  flex:1;
+}
+.col label{
+  display:block;
+  margin-bottom:6px;
+  font-size:15px;
+  color:#ddd;
+}
+.search-row{
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
+.search-row input{
+  flex:1;
+  padding:10px;
+  background:#2b2b2b;
+  border:1px solid #555;
+  color:#fff;
+  border-radius:4px;
+  font-size:15px;
+}
+.search-row button{
+  padding:10px 12px;
+  background:#ff9f29;
+  border:none;
+  border-radius:4px;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:15px;
+}
+.result-list{
+  background:#2b2b2b;
+  border:1px solid #444;
+  border-radius:4px;
+  max-height:180px;
+  overflow-y:auto;
+}
+.person-item{
+  padding:8px 10px;
+  border-bottom:1px solid #333;
+  cursor:pointer;
+  font-size:15px;
+}
+.person-item:hover{
+  background:#3c3c3c;
+}
+.selected-name{
+  padding:8px 10px;
+  background:#2b2b2b;
+  border:1px solid #ff9f29;
+  border-radius:4px;
+  min-height:40px;
+  line-height:22px;
+  font-size:15px;
+}
+.compare-btn{
+  width:100%;
+  padding:14px;
+  background:#0088ff;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:20px;
+}
+.compare-btn:disabled{
+  background:#335577;
+  color:#888;
+  cursor:not-allowed;
+}
+.result-area{
+  background:#2b2b2b;
+  border:1px solid #444;
+  border-radius:6px;
+  padding:16px;
+  display:none;
+}
+.result-area.show{
+  display:block;
+}
+.common-ancestor{
+  text-align:center;
+  font-size:18px;
+  color:#ffcc44;
+  padding:12px;
+  background:#382c00;
+  border-radius:4px;
+  margin-bottom:16px;
+  line-height:1.6;
+}
+.two-line{
+  display:flex;
+  gap:12px;
+}
+.line-col{
+  flex:1;
+  font-size:14px;
+  line-height:1.8;
+}
+.line-col h4{
+  color:#ff9f29;
+  margin-bottom:6px;
+  font-size:15px;
+}
 </style>
 </head>
 <body>
-<a class="back" href="index.html">← 返回首页</a>
-<h2>⚖️ 两人血缘对比</h2>
+<div class="wrapper">
 
-<input id="nameA" placeholder="输入第一位族人姓名">
-<input id="nameB" placeholder="输入第二位族人姓名">
-<button onclick="doCompare()">开始对比，找共同祖先</button>
+  <div class="top-link">
+    <a href="browse.html">← 返回主页</a>
+  </div>
 
-<div id="result">输入两位族人姓名，点击按钮开始追溯……</div>
+  <h1>⚖️ 两人血缘对比</h1>
+
+  <div class="row-container">
+    <!-- 左边：A -->
+    <div class="col">
+      <label>第一人</label>
+      <div class="search-row">
+        <input type="text" id="searchA" placeholder="输入名字或编号">
+        <button onclick="searchPerson('A')">寻找</button>
+      </div>
+      <div class="result-list" id="listA" style="display:none;"></div>
+      <div class="selected-name" id="selectedA">— 未选择 —</div>
+    </div>
+
+    <!-- 右边：B -->
+    <div class="col">
+      <label>第二人</label>
+      <div class="search-row">
+        <input type="text" id="searchB" placeholder="输入名字或编号">
+        <button onclick="searchPerson('B')">寻找</button>
+      </div>
+      <div class="result-list" id="listB" style="display:none;"></div>
+      <div class="selected-name" id="selectedB">— 未选择 —</div>
+    </div>
+  </div>
+
+  <button class="compare-btn" id="compareBtn" disabled onclick="doCompare()">开始对比，找共同祖先</button>
+
+  <div class="result-area" id="resultArea">
+    <div class="common-ancestor" id="commonResult"></div>
+    <div class="two-line">
+      <div class="line-col">
+        <h4>第一人 往上：</h4>
+        <div id="lineA"></div>
+      </div>
+      <div class="line-col">
+        <h4>第二人 往上：</h4>
+        <div id="lineB"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <script>
-const CSV_URL="https://raw.githubusercontent.com/Zhang2Chong/ZhangFamily/main/ZhangFamilyList.csv";
-let familyMap={}; // no → {name, fatherNo, gen}
-let nameToNo={}; // name → no
+const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
+let allPeople = [];
+let selectedA = null;
+let selectedB = null
 
-async function loadData(){
-  const res=await fetch(CSV_URL);
-  const text=await res.text();
-  const lines=text.trim().split(/\r?\n/);
-  const head=lines[0].split(",");
-  const idxNo=head.indexOf("No");
-  const idxName=head.indexOf("姓名");
-  const idxFather=head.indexOf("父亲编号");
-  const idxGen=head.indexOf("世代");
-
-  for(let i=1;i<lines.length;i++){
-    const c=lines[i].split(",");
-    const no=c[idxNo]?.trim();
-    const name=c[idxName]?.trim();
-    const father=c[idxFather]?.trim();
-    const gen=parseInt(c[idxGen])||1;
-    familyMap[no]={name,father,gen};
-    nameToNo[name]=no;
+// 读取CSV
+async function loadCSV(){
+  try{
+    const res = await fetch(CSV_URL + "?t=" + Date.now());
+    const text = await res.text();
+    parseCSV(text);
+  }catch(err){
+    console.error("读取失败", err);
   }
 }
 
-// 向上追溯完整祖先链
-function getLine(no){
-  const chain=[];
-  let curr=no;
-  while(familyMap[curr]){
-    chain.unshift(familyMap[curr]);
-    curr=familyMap[curr].father;
-    if(!curr || curr==="0") break;
+function parseCSV(text){
+  const lines = text.trim().split("\n");
+  const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
+  const header = lines[0].split(sep).map(h => h.trim());
+  
+  const idx = {
+    name: header.indexOf('姓名'),
+    no: header.indexOf('No'),
+    fatherId: header.indexOf('父亲编号'),
+    generation: header.indexOf('世代')
+  };
+  
+  allPeople = [];
+  for(let i=1; i<lines.length; i++){
+    const col = lines[i].split(sep).map(c => c.trim());
+    allPeople.push({
+      name: idx.name >= 0 ? col[idx.name] : "",
+      no: idx.no >= 0 ? col[idx.no] : "",
+      fatherId: idx.fatherId >= 0 ? col[idx.fatherId] : "",
+      generation: idx.generation >= 0 ? col[idx.generation] : ""
+    });
+  }
+}
+
+// 加"张"字
+function withZhang(name){
+  if(!name) return "";
+  return name.startsWith("张") ? name : "张" + name;
+}
+
+// 搜索人物
+function searchPerson(side){
+  const input = document.getElementById("search" + side).value.trim();
+  const list = document.getElementById("list" + side);
+  
+  if(!input){
+    list.style.display = "none";
+    return;
+  }
+  
+  // 匹配名字或编号
+  const matches = allPeople.filter(p => 
+    (p.name && p.name.includes(input)) || (p.no === input)
+  ).slice(0, 15);
+  
+  list.innerHTML = "";
+  if(matches.length === 0){
+    list.innerHTML = '<div class="person-item">未找到</div>';
+  }else{
+    matches.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "person-item";
+      div.textContent = `${withZhang(p.name)} · 第${p.generation}代 · 编号${p.no}`;
+      div.onclick = () => selectPerson(side, p);
+      list.appendChild(div);
+    });
+  }
+  list.style.display = "block";
+}
+
+// 选择人物
+function selectPerson(side, person){
+  document.getElementById("list" + side).style.display = "none";
+  document.getElementById("search" + side).value = "";
+  document.getElementById("selected" + side).textContent = 
+    `${withZhang(person.name)}｜第${person.generation}代｜编号 ${person.no}`;
+  
+  if(side === 'A') selectedA = person;
+  else selectedB = person;
+  
+  updateCompareButton();
+}
+
+// 检查是否两个都选好了
+function updateCompareButton(){
+  const btn = document.getElementById("compareBtn");
+  btn.disabled = !(selectedA && selectedB);
+}
+
+// 建立祖先链
+function getAncestorChain(person){
+  const chain = [];
+  let current = person;
+  const seen = new Set(); // 防止死循环
+  
+  while(current && current.no && !seen.has(current.no)){
+    seen.add(current.no);
+    chain.push(current);
+    if(!current.fatherId || current.fatherId === "0" || current.fatherId === "") break;
+    current = allPeople.find(p => p.no === current.fatherId);
   }
   return chain;
 }
 
-function doCompare(){
-  const elA=document.getElementById("nameA");
-  const elB=document.getElementById("nameB");
-  const elResult=document.getElementById("result");
-  const aName=elA.value.trim();
-  const bName=elB.value.trim();
-
-  if(!aName || !bName){
-    elResult.innerText="请输入两位族人的姓名";
-    return;
+// 找共同祖先
+function findCommonAncestor(chainA, chainB){
+  const setB = new Set(chainB.map(p => p.no));
+  for(const a of chainA){
+    if(setB.has(a.no)) return a;
   }
-
-  const noA=nameToNo[aName];
-  const noB=nameToNo[bName];
-
-  if(!noA){elResult.innerText="找不到："+aName;return}
-  if(!noB){elResult.innerText="找不到："+bName;return}
-
-  const lineA=getLine(noA);
-  const lineB=getLine(noB);
-
-  // 找共同祖先
-  let common=null;
-  for(let i=0;i<lineA.length && i<lineB.length;i++){
-    if(lineA[i].name===lineB[i].name){
-      common=lineA[i];
-    }else{
-      break;
-    }
-  }
-
-  let out="";
-  out+=`【${aName}】祖先链：\n`;
-  lineA.forEach(p=>out+=`  第${p.gen}代：${p.name}\n`);
-  out+=`\n【${bName}】祖先链：\n`;
-  lineB.forEach(p=>out+=`  第${p.gen}代：${p.name}\n`);
-  if(common){
-    out+=`\n✅ 共同祖先：${common.name}（第${common.gen}代）`;
-  }else{
-    out+=`\n❌ 未找到共同祖先`;
-  }
-  elResult.innerText=out;
+  return null;
 }
 
-// 页面加载时读取数据
-loadData().catch(e=>{
-  document.getElementById("result").innerText="数据加载失败："+e.message;
-})
+// 开始对比
+function doCompare(){
+  const chainA = getAncestorChain(selectedA);
+  const chainB = getAncestorChain(selectedB);
+  const common = findCommonAncestor(chainA, chainB);
+  
+  const resultArea = document.getElementById("resultArea");
+  const commonResult = document.getElementById("commonResult");
+  const lineA = document.getElementById("lineA");
+  const lineB = document.getElementById("lineB");
+  
+  resultArea.classList.add("show");
+  
+  if(!common){
+    commonResult.innerHTML = "暂未找到共同祖先";
+    lineA.innerHTML = chainA.map(p => withZhang(p.name)).join(" → ");
+    lineB.innerHTML = chainB.map(p => withZhang(p.name)).join(" → ");
+    return;
+  }
+  
+  // 找到共同祖先，截断链条
+  const idxA = chainA.findIndex(p => p.no === common.no);
+  const idxB = chainB.findIndex(p => p.no === common.no);
+  const shortA = chainA.slice(0, idxA + 1);
+  const shortB = chainB.slice(0, idxB + 1);
+  
+  commonResult.innerHTML = `✅ 你们的共同祖先是：<strong>${withZhang(common.name)}</strong><br>第${common.generation}代`;
+  lineA.innerHTML = shortA.map(p => withZhang(p.name)).join(" → ");
+  lineB.innerHTML = shortB.map(p => withZhang(p.name)).join(" → ");
+}
+
+// 页面加载
+loadCSV();
 </script>
+
 </body>
 </html>
