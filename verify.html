@@ -204,8 +204,6 @@ h2{
 const ACCESS_PASSWORD = "771395";
 const GITHUB_USER = "Zhang2Chong";
 const GITHUB_REPO = "ZhangFamily";
-// ⚠️ 本地测试时把你的ghp_ Token填在引号里，上传GitHub前清空引号！
-const GITHUB_TOKEN = "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";
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -307,7 +305,6 @@ async function sendToGitHub(){
       method: "POST",
       headers: {
         "Accept": "application/vnd.github+json",
-        "Authorization": "Bearer " + GITHUB_TOKEN,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -354,12 +351,7 @@ function checkPassword(){
       window.location.href = "add.html?fatherId=" + encodeURIComponent(id);
     }else if(type === "2"){
       window.location.href = "modify.html?id=" + encodeURIComponent(id);
-    }else if(type === "3"){
-      successMsg.textContent = "✅ 验证通过！正在提交...";
-      document.getElementById("passwordInput").disabled = true;
-      document.getElementById("confirmBtn").disabled = true;
-      sendToGitHub();
-    }else if(type === "4"){
+    }else if(type === "3" || type === "4"){
       successMsg.textContent = "✅ 验证通过！正在提交...";
       document.getElementById("passwordInput").disabled = true;
       document.getElementById("confirmBtn").disabled = true;
