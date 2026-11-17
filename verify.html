@@ -151,7 +151,7 @@ h2{
 <div class="center-box-wrapper">
   <div class="password-card">
     <div class="card-top-links">
-      <a href="index.html">← 返回首页</a>
+      <a href="index.html">← 返回主页</a>
       <a href="javascript:goBack()">← 返回上一页</a>
     </div>
 
@@ -204,9 +204,7 @@ h2{
 const ACCESS_PASSWORD = "771395";
 const GITHUB_USER = "Zhang2Chong";
 const GITHUB_REPO = "ZhangFamily";
-// ===================== 👇 这里换成你的Token！=====================
 const GITHUB_TOKEN = "";
-// =================================================================
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -308,7 +306,7 @@ async function sendToGitHub(){
       method: "POST",
       headers: {
         "Accept": "application/vnd.github+json",
-        "Authorization": "Bearer " + GITHUB_TOKEN,
+        "X-GitHub-Api-Version": "2022-11-28",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -318,7 +316,7 @@ async function sendToGitHub(){
     });
 
     if(res.ok){
-      document.getElementById("successMsg").textContent = "✅ 提交成功！正在返回...";
+      document.getElementById("successMsg").textContent = "✅ 请求已发送！正在处理...";
       document.getElementById("passwordInput").disabled = true;
       document.getElementById("confirmBtn").disabled = true;
       
@@ -331,7 +329,7 @@ async function sendToGitHub(){
       }, 2000);
     }else{
       const err = await res.json();
-      document.getElementById("errorMsg").textContent = "❌ 发送失败：" + (err.message || "请稍后重试");
+      document.getElementById("errorMsg").textContent = "❌ 失败：" + (err.message || "请稍后重试");
       document.getElementById("passwordInput").disabled = false;
       document.getElementById("confirmBtn").disabled = false;
     }
