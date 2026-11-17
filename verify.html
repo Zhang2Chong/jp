@@ -62,18 +62,24 @@ body{
   margin-bottom:16px;
 }
 .preview-row{
-  padding:4px 0;
+  padding:6px 0;
   font-size:15px;
-  line-height:1.6;
+  line-height:1.8;
+}
+.preview-row.triple{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.preview-row.triple > div{
+  white-space:nowrap;
 }
 .preview-row.double{
   display:flex;
   justify-content:space-between;
   gap:16px;
   flex-wrap:wrap;
-}
-.preview-row.double > div{
-  white-space:nowrap;
 }
 .preview-label{
   color:#aaa;
@@ -157,30 +163,14 @@ h2{
         <span class="preview-label">华文名字：</span>
         <span id="pName">—</span>
       </div>
-      <div class="preview-row">
-        <span class="preview-label">父亲：</span>
-        <span id="pFather">—</span>
-      </div>
-      <div class="preview-row">
-        <span class="preview-label">公公：</span>
-        <span id="pGrandpa">—</span>
+      <div class="preview-row triple">
+        <div><span class="preview-label">世代：</span><span id="pGen">—</span></div>
+        <div><span class="preview-label">兄弟排名：</span><span id="pRank">—</span></div>
+        <div><span class="preview-label">儿子数量：</span><span id="pSon">—</span></div>
       </div>
       <div class="preview-row">
         <span class="preview-label">妻子：</span>
         <span id="pWife">无</span>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">世代：</span><span id="pGen">—</span></div>
-        <div><span class="preview-label">排行：</span><span id="pRank">—</span></div>
-        <div><span class="preview-label">儿子数量：</span><span id="pSon">—</span></div>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">现居地：</span><span id="pResidence">无</span></div>
-        <div><span class="preview-label">出生年份：</span><span id="pBirthYear">无</span></div>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">安葬地：</span><span id="pBurial">无</span></div>
-        <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
       </div>
       <div class="preview-row">
         <span class="preview-label">相片：</span>
@@ -189,6 +179,14 @@ h2{
       <div class="preview-row">
         <span class="preview-label">备注：</span>
         <span id="pNote">无</span>
+      </div>
+      <div class="preview-row double">
+        <div><span class="preview-label">现居地：</span><span id="pResidence">无</span></div>
+        <div><span class="preview-label">出生年份：</span><span id="pBirthYear">无</span></div>
+      </div>
+      <div class="preview-row double">
+        <div><span class="preview-label">安葬地：</span><span id="pBurial">无</span></div>
+        <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
       </div>
     </div>
 
@@ -212,8 +210,6 @@ const fatherId = params.get("fatherId")?.replace(/#.*$/, "") || "";
 
 // 资料字段
 const formData = {
-  fatherName: params.get("fatherName") || "",
-  grandpaName: params.get("grandpaName") || "",
   name: params.get("name") || "",
   rank: params.get("rank") || "",
   gen: params.get("gen") || "",
@@ -258,12 +254,10 @@ function fillPreview(){
     
     // 显示资料
     document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
-    document.getElementById("pGen").textContent = formData.gen || "—";
-    document.getElementById("pFather").textContent = formData.fatherName ? "张" + formData.fatherName : "—";
-    document.getElementById("pGrandpa").textContent = formData.grandpaName ? "张" + formData.grandpaName : "—";
+    document.getElementById("pGen").textContent = formData.gen ? "第" + formData.gen + "代" : "—";
     document.getElementById("pRank").textContent = formData.rank || "—";
-    document.getElementById("pWife").textContent = formData.wife || "无";
     document.getElementById("pSon").textContent = formData.sonCount || "0";
+    document.getElementById("pWife").textContent = formData.wife || "无";
     document.getElementById("pResidence").textContent = formData.residence || "无";
     document.getElementById("pBirthYear").textContent = formData.birthYear || "无";
     document.getElementById("pBurial").textContent = formData.burial || "无";
