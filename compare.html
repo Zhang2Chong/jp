@@ -33,7 +33,7 @@ h1{
 }
 .row-container{
   display:flex;
-  gap:24px;
+  gap:32px;
   margin-bottom:20px;
 }
 .col{
@@ -134,7 +134,7 @@ h1{
 }
 .two-line{
   display:flex;
-  gap:24px;
+  gap:32px;
 }
 .line-col{
   flex:1;
@@ -161,7 +161,7 @@ h1{
   color:#fff;
 }
 .person-card.child{
-  font-size:12px;
+  font-size:11px;
   color:#888;
   margin-left:4px;
 }
@@ -326,7 +326,7 @@ function findCommonAncestor(chainA, chainB){
 }
 
 function makeCard(person, isBottom){
-  const orderText = person.childOrder && person.childOrder !== "0" ? `<span class="child">第${person.childOrder}子</span>` : "";
+  const orderText = person.childOrder ? `<span class="child">第${person.childOrder}子</span>` : "";
   return `
     <div class="person-card">
       <div class="gen">第${person.generation}代</div>
