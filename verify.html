@@ -196,7 +196,7 @@ h2{
     <div class="success-msg" id="successMsg"></div>
     <div class="btn-row">
       <button class="btn btn-cancel" onclick="goBack()">取消</button>
-      <button class="btn btn-confirm" onclick="checkPassword()">确认</button>
+      <button class="btn btn-confirm" id="confirmBtn" onclick="checkPassword()">确认</button>
     </div>
   </div>
 </div>
@@ -207,20 +207,23 @@ const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
 const id = params.get("id")?.replace(/#.*$/, "") || "";
 const fatherId = params.get("fatherId")?.replace(/#.*$/, "") || "";
+const GITHUB_USER = "Zhang2Chong";
+const GITHUB_REPO = "ZhangFamily";
 
 // 资料字段
 const formData = {
   name: params.get("name") || "",
   rank: params.get("rank") || "",
-  gen: params.get("gen") || "",
+  generation: params.get("gen") || "",
   wife: params.get("wife") || "",
   sonCount: params.get("sonCount") || "",
   residence: params.get("residence") || "",
   birthYear: params.get("birthYear") || "",
   burial: params.get("burial") || "",
   deathYear: params.get("deathYear") || "",
-  photo: params.get("photo") || "",
-  note: params.get("note") || ""
+  photoLink: params.get("photo") || "",
+  note: params.get("note") || "",
+  ziBei: params.get("ziBei") || ""
 };
 
 function goBack(){
@@ -254,7 +257,7 @@ function fillPreview(){
     
     // 显示资料
     document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
-    document.getElementById("pGen").textContent = formData.gen ? "第" + formData.gen + "代" : "—";
+    document.getElementById("pGen").textContent = formData.generation ? "第" + formData.generation + "代" : "—";
     document.getElementById("pRank").textContent = formData.rank || "—";
     document.getElementById("pSon").textContent = formData.sonCount || "0";
     document.getElementById("pWife").textContent = formData.wife || "无";
@@ -264,8 +267,8 @@ function fillPreview(){
     document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
     
     // 相片：多张用逗号分开，显示数量
-    if(formData.photo && formData.photo.trim()){
-      const photos = formData.photo.split(/[,，]/).filter(p=>p.trim());
+    if(formData.photoLink && formData.photoLink.trim()){
+      const photos = formData.photoLink.split(/[,，]/).filter(p=>p.trim());
       document.getElementById("pPhoto").textContent = photos.length + " 张相片";
     }else{
       document.getElementById("pPhoto").textContent = "无";
@@ -275,6 +278,68 @@ function fillPreview(){
   }else{
     document.getElementById("previewSection").classList.remove("show");
     document.getElementById("titleText").textContent = "请输入密码";
+  }
+}
+
+async function sendToGitHub(){
+  const dispatchType = type === "3" ? "add-person" : "modify-person";
+  
+  // 组装数据
+  const payload = {
+    pwd: ACCESS_PASSWORD,
+    type: type,
+    chineseName: formData.name,
+    no: id,
+    father: fatherId,
+    rank: formData.rank,
+    generation: formData.generation,
+    ziBei: formData.ziBei,
+    wife: formData.wife,
+    sonCount: formData.sonCount,
+    photoLink: formData.photoLink,
+    note: formData.note,
+    residence: formData.residence,
+    burial: formData.burial,
+    birthYear: formData.birthYear,
+    deathYear: formData.deathYear
+  };
+
+  try{
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/dispatches`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event_type: dispatchType,
+        client_payload: payload
+      })
+    });
+
+    if(res.ok){
+      document.getElementById("successMsg").textContent = "✅ 提交成功！正在返回...";
+      document.getElementById("passwordInput").disabled = true;
+      document.getElementById("confirmBtn").disabled = true;
+      
+      // 2秒后返回对应页面
+      setTimeout(() => {
+        if(type === "3"){
+          window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
+        }else if(type === "4"){
+          window.location.href = "person.html?id=" + encodeURIComponent(id);
+        }
+      }, 2000);
+    }else{
+      const err = await res.json();
+      document.getElementById("errorMsg").textContent = "❌ 发送失败：" + (err.message || "请稍后重试");
+      document.getElementById("passwordInput").disabled = false;
+      document.getElementById("confirmBtn").disabled = false;
+    }
+  }catch(err){
+    document.getElementById("errorMsg").textContent = "❌ 网络错误，请稍后重试";
+    document.getElementById("passwordInput").disabled = false;
+    document.getElementById("confirmBtn").disabled = false;
   }
 }
 
@@ -292,11 +357,15 @@ function checkPassword(){
     }else if(type === "2"){
       window.location.href = "modify.html?id=" + encodeURIComponent(id);
     }else if(type === "3"){
-      successMsg.textContent = "✅ 验证通过！正在生成新记录...";
+      successMsg.textContent = "✅ 验证通过！正在提交...";
       document.getElementById("passwordInput").disabled = true;
+      document.getElementById("confirmBtn").disabled = true;
+      sendToGitHub();
     }else if(type === "4"){
-      successMsg.textContent = "✅ 验证通过！正在保存修改...";
+      successMsg.textContent = "✅ 验证通过！正在提交...";
       document.getElementById("passwordInput").disabled = true;
+      document.getElementById("confirmBtn").disabled = true;
+      sendToGitHub();
     }else{
       errorMsg.textContent = "❌ 无效的操作类型";
     }
