@@ -125,11 +125,17 @@ h1{
   text-align:center;
   font-size:18px;
   color:#ffcc44;
-  padding:12px;
+  padding:16px 12px;
   background:#382c00;
   border-radius:4px;
-  margin-bottom:16px;
-  line-height:1.6;
+  margin-bottom:20px;
+  line-height:2.2;
+}
+.common-name{
+  font-size:27px;
+  font-weight:bold;
+  color:#fff;
+  margin-left:8px;
 }
 .two-line{
   display:flex;
@@ -137,13 +143,32 @@ h1{
 }
 .line-col{
   flex:1;
-  font-size:14px;
-  line-height:1.8;
 }
-.line-col h4{
-  color:#ff9f29;
+.person-card{
+  background:#222;
+  border:1px solid #444;
+  border-radius:4px;
+  padding:8px 10px;
   margin-bottom:6px;
+  text-align:center;
+}
+.person-card.gen{
+  font-size:13px;
+  color:#aaa;
+  margin-bottom:2px;
+}
+.person-card.name{
   font-size:15px;
+  margin-bottom:2px;
+}
+.person-card.name.large{
+  font-size:23px;
+  font-weight:bold;
+  color:#fff;
+}
+.person-card.child{
+  font-size:12px;
+  color:#888;
 }
 </style>
 </head>
@@ -151,7 +176,7 @@ h1{
 <div class="wrapper">
 
   <div class="top-link">
-    <a href="browse.html">← 返回主页</a>
+    <a href="index.html">← 返回主页</a>
   </div>
 
   <h1>⚖️ 两人血缘对比</h1>
@@ -185,14 +210,8 @@ h1{
   <div class="result-area" id="resultArea">
     <div class="common-ancestor" id="commonResult"></div>
     <div class="two-line">
-      <div class="line-col">
-        <h4>第一人 往上：</h4>
-        <div id="lineA"></div>
-      </div>
-      <div class="line-col">
-        <h4>第二人 往上：</h4>
-        <div id="lineB"></div>
-      </div>
+      <div class="line-col" id="lineA"></div>
+      <div class="line-col" id="lineB"></div>
     </div>
   </div>
 
@@ -202,9 +221,8 @@ h1{
 const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
 let allPeople = [];
 let selectedA = null;
-let selectedB = null
+let selectedB = null;
 
-// 读取CSV
 async function loadCSV(){
   try{
     const res = await fetch(CSV_URL + "?t=" + Date.now());
@@ -217,6 +235,7 @@ async function loadCSV(){
 
 function parseCSV(text){
   const lines = text.trim().split("\n");
+  if(lines.length < 2) return;
   const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
   const header = lines[0].split(sep).map(h => h.trim());
   
@@ -224,7 +243,8 @@ function parseCSV(text){
     name: header.indexOf('姓名'),
     no: header.indexOf('No'),
     fatherId: header.indexOf('父亲编号'),
-    generation: header.indexOf('世代')
+    generation: header.indexOf('世代'),
+    childOrder: header.indexOf('排行')
   };
   
   allPeople = [];
@@ -234,18 +254,17 @@ function parseCSV(text){
       name: idx.name >= 0 ? col[idx.name] : "",
       no: idx.no >= 0 ? col[idx.no] : "",
       fatherId: idx.fatherId >= 0 ? col[idx.fatherId] : "",
-      generation: idx.generation >= 0 ? col[idx.generation] : ""
+      generation: idx.generation >= 0 ? col[idx.generation] : "",
+      childOrder: idx.childOrder >= 0 ? col[idx.childOrder] : ""
     });
   }
 }
 
-// 加"张"字
 function withZhang(name){
   if(!name) return "";
   return name.startsWith("张") ? name : "张" + name;
 }
 
-// 搜索人物
 function searchPerson(side){
   const input = document.getElementById("search" + side).value.trim();
   const list = document.getElementById("list" + side);
@@ -255,7 +274,6 @@ function searchPerson(side){
     return;
   }
   
-  // 匹配名字或编号
   const matches = allPeople.filter(p => 
     (p.name && p.name.includes(input)) || (p.no === input)
   ).slice(0, 15);
@@ -267,7 +285,7 @@ function searchPerson(side){
     matches.forEach(p => {
       const div = document.createElement("div");
       div.className = "person-item";
-      div.textContent = `${withZhang(p.name)} · 第${p.generation}代 · 编号${p.no}`;
+      div.textContent = `${withZhang(p.name)} · 第${p.generation}代`;
       div.onclick = () => selectPerson(side, p);
       list.appendChild(div);
     });
@@ -275,12 +293,11 @@ function searchPerson(side){
   list.style.display = "block";
 }
 
-// 选择人物
 function selectPerson(side, person){
   document.getElementById("list" + side).style.display = "none";
   document.getElementById("search" + side).value = "";
   document.getElementById("selected" + side).textContent = 
-    `${withZhang(person.name)}｜第${person.generation}代｜编号 ${person.no}`;
+    `${withZhang(person.name)} · 第${person.generation}代`;
   
   if(side === 'A') selectedA = person;
   else selectedB = person;
@@ -288,17 +305,15 @@ function selectPerson(side, person){
   updateCompareButton();
 }
 
-// 检查是否两个都选好了
 function updateCompareButton(){
   const btn = document.getElementById("compareBtn");
   btn.disabled = !(selectedA && selectedB);
 }
 
-// 建立祖先链
 function getAncestorChain(person){
   const chain = [];
   let current = person;
-  const seen = new Set(); // 防止死循环
+  const seen = new Set();
   
   while(current && current.no && !seen.has(current.no)){
     seen.add(current.no);
@@ -309,7 +324,6 @@ function getAncestorChain(person){
   return chain;
 }
 
-// 找共同祖先
 function findCommonAncestor(chainA, chainB){
   const setB = new Set(chainB.map(p => p.no));
   for(const a of chainA){
@@ -318,7 +332,17 @@ function findCommonAncestor(chainA, chainB){
   return null;
 }
 
-// 开始对比
+function makeCard(person, isBottom){
+  const orderText = person.childOrder ? `第${person.childOrder}子` : "";
+  return `
+    <div class="person-card">
+      <div class="gen">第${person.generation}代</div>
+      <div class="name ${isBottom ? 'large' : ''}">${withZhang(person.name)}</div>
+      ${orderText ? `<div class="child">${orderText}</div>` : ''}
+    </div>
+  `;
+}
+
 function doCompare(){
   const chainA = getAncestorChain(selectedA);
   const chainB = getAncestorChain(selectedB);
@@ -333,23 +357,22 @@ function doCompare(){
   
   if(!common){
     commonResult.innerHTML = "暂未找到共同祖先";
-    lineA.innerHTML = chainA.map(p => withZhang(p.name)).join(" → ");
-    lineB.innerHTML = chainB.map(p => withZhang(p.name)).join(" → ");
+    lineA.innerHTML = chainA.map(p => makeCard(p, false)).join("");
+    lineB.innerHTML = chainB.map(p => makeCard(p, false)).join("");
     return;
   }
   
-  // 找到共同祖先，截断链条
   const idxA = chainA.findIndex(p => p.no === common.no);
   const idxB = chainB.findIndex(p => p.no === common.no);
-  const shortA = chainA.slice(0, idxA + 1);
-  const shortB = chainB.slice(0, idxB + 1);
+  const shortA = chainA.slice(0, idxA).reverse();
+  const shortB = chainB.slice(0, idxB).reverse();
   
-  commonResult.innerHTML = `✅ 你们的共同祖先是：<strong>${withZhang(common.name)}</strong><br>第${common.generation}代`;
-  lineA.innerHTML = shortA.map(p => withZhang(p.name)).join(" → ");
-  lineB.innerHTML = shortB.map(p => withZhang(p.name)).join(" → ");
+  commonResult.innerHTML = `你们的共同祖先是： 第${common.generation}代<span class="common-name">${withZhang(common.name)}</span>`;
+  
+  lineA.innerHTML = shortA.map((p, i, arr) => makeCard(p, i === arr.length - 1)).join("");
+  lineB.innerHTML = shortB.map((p, i, arr) => makeCard(p, i === arr.length - 1)).join("");
 }
 
-// 页面加载
 loadCSV();
 </script>
 
