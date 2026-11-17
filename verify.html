@@ -109,6 +109,12 @@ h2{
   border-color:#ff9f29;
 }
 
+.tip-msg{
+  color:#888;
+  font-size:14px;
+  margin-bottom:12px;
+  line-height:1.6;
+}
 .error-msg{
   color:#ff6b6b;
   font-size:15px;
@@ -143,6 +149,10 @@ h2{
 .btn-confirm{
   background:#e64a19;
   color:#fff;
+}
+.btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
 }
 </style>
 </head>
@@ -191,6 +201,7 @@ h2{
 
     <h2 id="titleText">请输入密码</h2>
     <input type="password" class="password-input" id="passwordInput" maxlength="6" placeholder="6位数字">
+    <div class="tip-msg" id="tipMsg"></div>
     <div class="error-msg" id="errorMsg"></div>
     <div class="success-msg" id="successMsg"></div>
     <div class="btn-row">
@@ -204,7 +215,6 @@ h2{
 const ACCESS_PASSWORD = "771395";
 const GITHUB_USER = "Zhang2Chong";
 const GITHUB_REPO = "ZhangFamily";
-const GITHUB_TOKEN = "";
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -279,8 +289,9 @@ function fillPreview(){
   }
 }
 
-async function sendToGitHub(){
-  const dispatchType = type === "3" ? "add-person" : "modify-person";
+function sendToGitHub(){
+  const actionText = type === "3" ? "ADD" : "MODIFY";
+  const displayName = formData.name ? "张" + formData.name : "—";
   
   const payload = {
     pwd: ACCESS_PASSWORD,
@@ -301,65 +312,45 @@ async function sendToGitHub(){
     deathYear: formData.deathYear
   };
 
-  try{
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/dispatches`, {
-      method: "POST",
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        event_type: dispatchType,
-        client_payload: payload
-      })
-    });
-
-    if(res.ok){
-      document.getElementById("successMsg").textContent = "✅ 请求已发送！正在处理...";
-      document.getElementById("passwordInput").disabled = true;
-      document.getElementById("confirmBtn").disabled = true;
-      
-      setTimeout(() => {
-        if(type === "3"){
-          window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
-        }else if(type === "4"){
-          window.location.href = "person.html?id=" + encodeURIComponent(id);
-        }
-      }, 2000);
-    }else{
-      const err = await res.json();
-      document.getElementById("errorMsg").textContent = "❌ 失败：" + (err.message || "请稍后重试");
-      document.getElementById("passwordInput").disabled = false;
-      document.getElementById("confirmBtn").disabled = false;
-    }
-  }catch(err){
-    document.getElementById("errorMsg").textContent = "❌ 网络错误，请稍后重试";
-    document.getElementById("passwordInput").disabled = false;
-    document.getElementById("confirmBtn").disabled = false;
-  }
+  const title = `${actionText}: ${displayName} (No.${id || "new"})`;
+  const body = JSON.stringify(payload, null, 2);
+  const issueUrl = `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  
+  document.getElementById("tipMsg").textContent = "💡 新页面会打开 GitHub，点一下「Submit new issue」即可提交";
+  document.getElementById("successMsg").textContent = "🔗 正在打开提交页面...";
+  document.getElementById("passwordInput").disabled = true;
+  document.getElementById("confirmBtn").disabled = true;
+  
+  setTimeout(() => {
+    window.open(issueUrl, "_blank");
+    
+    setTimeout(() => {
+      if(type === "3"){
+        window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
+      }else if(type === "4"){
+        window.location.href = "person.html?id=" + encodeURIComponent(id);
+      }
+    }, 1500);
+  }, 500);
 }
 
 function checkPassword(){
   const input = document.getElementById("passwordInput").value;
   const errorMsg = document.getElementById("errorMsg");
   const successMsg = document.getElementById("successMsg");
+  const tipMsg = document.getElementById("tipMsg");
   
   errorMsg.textContent = "";
   successMsg.textContent = "";
+  tipMsg.textContent = "";
   
   if(input === ACCESS_PASSWORD){
     if(type === "1"){
       window.location.href = "add.html?fatherId=" + encodeURIComponent(id);
     }else if(type === "2"){
       window.location.href = "modify.html?id=" + encodeURIComponent(id);
-    }else if(type === "3"){
-      successMsg.textContent = "✅ 验证通过！正在提交...";
-      document.getElementById("passwordInput").disabled = true;
-      document.getElementById("confirmBtn").disabled = true;
-      sendToGitHub();
-    }else if(type === "4"){
-      successMsg.textContent = "✅ 验证通过！正在提交...";
+    }else if(type === "3" || type === "4"){
+      successMsg.textContent = "✅ 验证通过！正在准备...";
       document.getElementById("passwordInput").disabled = true;
       document.getElementById("confirmBtn").disabled = true;
       sendToGitHub();
