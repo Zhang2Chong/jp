@@ -197,6 +197,9 @@ h2{
         <div><span class="preview-label">安葬地：</span><span id="pBurial">无</span></div>
         <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
       </div>
+      <div class="preview-row" id="newIdNote" style="color:#4ade80; font-size:14px; margin-top:8px; display:none;">
+        ℹ️ 新编号将自动分配，无需手动填写
+      </div>
     </div>
 
     <h2 id="titleText">请输入密码</h2>
@@ -283,6 +286,13 @@ function fillPreview(){
     }
     
     document.getElementById("pNote").textContent = formData.note || "无";
+    
+    // 新增模式：显示提示，no 留空交给 YML 自动分配
+    if(type === "3"){
+      document.getElementById("newIdNote").style.display = "block";
+    }else{
+      document.getElementById("newIdNote").style.display = "none";
+    }
   }else{
     document.getElementById("previewSection").classList.remove("show");
     document.getElementById("titleText").textContent = "请输入密码";
@@ -293,11 +303,12 @@ function sendToGitHub(){
   const actionText = type === "3" ? "ADD" : "MODIFY";
   const displayName = formData.name ? "张" + formData.name : "—";
   
+  // 新增时 no 传空字符串，交给 YML 自动分配
   const payload = {
     pwd: ACCESS_PASSWORD,
     type: type,
     chineseName: formData.name,
-    no: id,
+    no: type === "3" ? "" : id,  // ✅ 新增留空，修改用原有ID
     father: fatherId,
     rank: formData.rank,
     generation: formData.generation,
@@ -312,7 +323,7 @@ function sendToGitHub(){
     deathYear: formData.deathYear
   };
 
-  const title = `${actionText}: ${displayName} (No.${id || "new"})`;
+  const title = `${actionText}: ${displayName} (No.${type === "3" ? "auto" : id})`;
   const body = JSON.stringify(payload, null, 2);
   const issueUrl = `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
   
