@@ -171,7 +171,7 @@ h2{
 <div class="wrapper">
 
 <div class="top-links">
-  <a href="index.html">← 返回首页</a>
+  <a href="index.html">← 返回主页</a>
   <a href="javascript:goBackSmart()">← 返回上一页</a>
 </div>
 
@@ -244,8 +244,11 @@ const targetId = params.get("id")?.replace(/#.*$/, "") || null;
 currentPersonId = targetId;
 
 document.getElementById('addPersonLink').addEventListener('click', function(){
-  if(currentPersonId){
-    window.location.href = 'add.html?id=' + encodeURIComponent(currentPersonId.replace(/#.*/, ''));
+  if(currentPersonId && people[currentPersonId]){
+    const p = people[currentPersonId];
+    window.location.href = 'add.html?fatherId=' + encodeURIComponent(currentPersonId) +
+      '&fatherName=' + encodeURIComponent(p.name) +
+      '&fatherGen=' + encodeURIComponent(p.gen);
   }else{
     alert('请先等待页面加载完成');
   }
@@ -258,6 +261,8 @@ document.getElementById('modifyLink').addEventListener('click', function(){
     alert('请先等待页面加载完成');
   }
 });
+
+let people = {};
 
 window.onload = async function(){
   try{
@@ -276,7 +281,7 @@ window.onload = async function(){
     const idxWife = header.indexOf("妻子");
     const idxNote = header.indexOf("备注");
 
-    const people = {};
+    people = {};
     for(let i=1;i<lines.length;i++){
       const col = lines[i].split(sep);
       const no = idxNo>=0 && col[idxNo] ? col[idxNo].trim() : "";
