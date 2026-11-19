@@ -113,7 +113,7 @@ textarea.form-input{
 
     <div class="form-row">
       <div class="form-label">兄弟排行</div>
-      <input type="number" class="form-input" id="birthOrder" value="1" min="1" placeholder="如：1、2、3、4、5">
+      <input type="number" class="form-input" id="birthOrder" value="1" min="1" placeholder="如：1、2、3">
     </div>
 
     <div class="form-row">
@@ -146,6 +146,7 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList
 const params = new URLSearchParams(window.location.search);
 const fatherId = params.get('fatherId');
 let fatherName = "";
+let childGenNumber = "";
 
 function withSurname(name){
   if(!name) return "";
@@ -186,9 +187,10 @@ async function loadFatherInfo() {
       if (no === fatherId) {
         fatherName = idxName >= 0 ? cols[idxName].trim() : '';
         const gen = idxGen >= 0 ? parseInt(cols[idxGen].trim()) : 0;
+        childGenNumber = String(gen + 1);
         
         document.getElementById('fatherFullName').textContent = withSurname(fatherName);
-        document.getElementById('generationText').textContent = gen + 1;
+        document.getElementById('generationText').textContent = '第' + childGenNumber + '代';
         return;
       }
     }
@@ -206,7 +208,7 @@ document.getElementById('addForm').addEventListener('submit', function(e){
   e.preventDefault();
   const name = document.getElementById('name').value.trim();
   const birthOrder = document.getElementById('birthOrder').value.trim();
-  const generation = document.getElementById('generationText').textContent.trim();
+  const generation = childGenNumber;
   const wifeName = document.getElementById('wifeName').value.trim();
   const sonCount = document.getElementById('sonCount').value.trim();
   const notes = document.getElementById('notes').value.trim();
@@ -218,12 +220,16 @@ document.getElementById('addForm').addEventListener('submit', function(e){
   
   window.location.href = "verify.html?type=3" +
     "&fatherId=" + encodeURIComponent(fatherId || "") +
-    "&fatherName=" + encodeURIComponent(fatherName) +
     "&name=" + encodeURIComponent(name) +
     "&rank=" + encodeURIComponent(birthOrder) +
     "&gen=" + encodeURIComponent(generation) +
     "&wife=" + encodeURIComponent(wifeName) +
     "&sonCount=" + encodeURIComponent(sonCount) +
+    "&residence=" +
+    "&birthYear=" +
+    "&burialPlace=" +
+    "&deathYear=" +
+    "&photoLinks=" +
     "&note=" + encodeURIComponent(notes);
 });
 
