@@ -299,55 +299,14 @@ function fillPreview(){
 }
 
 function sendToGitHub(){
-  const actionText = type === "3" ? "ADD" : "MODIFY";
-  const displayName = formData.name ? "张" + formData.name : "—";
-  
-  const payload = {
-    pwd: ACCESS_PASSWORD,
-    type: type,
-    chineseName: formData.name,
-    no: type === "3" ? "" : id,
-    father: fatherId,
-    rank: formData.rank,
-    generation: formData.generation,
-    ziBei: formData.ziBei,
-    wife: formData.wife,
-    sonCount: formData.sonCount,
-    photoLink: formData.photoLink,
-    note: formData.note,
-    residence: formData.residence,
-    burial: formData.burial,
-    birthYear: formData.birthYear,
-    deathYear: formData.deathYear
-  };
-
-  const title = `${actionText}: ${displayName} (No.${type === "3" ? "auto" : id})`;
-  const body = JSON.stringify(payload, null, 2);
-  
-  document.getElementById("tipMsg").textContent = "💡 正在提交，请稍候...";
-  document.getElementById("successMsg").textContent = "✅ 提交成功！正在处理...";
-  document.getElementById("passwordInput").disabled = true;
-  document.getElementById("confirmBtn").disabled = true;
-
-  // 静默在后台创建 Issue，不跳页面、不显示给用户
-  const issueUrl = `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-  
-  // 用一个隐藏的 iframe 来加载 Issue 页面，用户看不到
-  const iframe = document.createElement("iframe");
-  iframe.style.display = "none";
-  iframe.src = issueUrl;
-  document.body.appendChild(iframe);
-  
-  // 3秒后自动返回，用户不用做任何操作
-  setTimeout(() => {
-    if(type === "3"){
-      window.location.href = "person.html?id=" + encodeURIComponent(fatherId);
-    }else if(type === "4"){
-      window.location.href = "person.html?id=" + encodeURIComponent(id);
-    }else{
-      history.back();
-    }
-  }, 3000);
+  // 直接跳转到 confirm.html，背后暂不提交数据
+  if(type === "3"){
+    window.location.href = "confirm.html?t=add&back=father&id=" + encodeURIComponent(fatherId);
+  }else if(type === "4"){
+    window.location.href = "confirm.html?t=modify&back=person&id=" + encodeURIComponent(id);
+  }else{
+    history.back();
+  }
 }
 
 function checkPassword(){
@@ -366,9 +325,6 @@ function checkPassword(){
     }else if(type === "2"){
       window.location.href = "modify.html?id=" + encodeURIComponent(id);
     }else if(type === "3" || type === "4"){
-      successMsg.textContent = "✅ 验证通过！正在提交...";
-      document.getElementById("passwordInput").disabled = true;
-      document.getElementById("confirmBtn").disabled = true;
       sendToGitHub();
     }else{
       errorMsg.textContent = "❌ 无效的操作类型";
