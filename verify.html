@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>确认资料</title>
+<title>添加子孙</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -22,21 +22,18 @@ body{
   padding:20px 0;
 }
 
-.password-card{
+.form-card{
   background:#2b2b2b;
   border-radius:10px;
   width:100%;
   max-width:420px;
   padding:24px;
-  text-align:center;
-  display:flex;
-  flex-direction:column;
 }
 
 .card-top-links{
   display:flex;
   justify-content:space-between;
-  margin-bottom:16px;
+  margin-bottom:20px;
 }
 .card-top-links a{
   color:#ff9f29;
@@ -44,309 +41,232 @@ body{
   font-size:15px;
 }
 
-.preview-section{
+h1{
+  text-align:center;
+  font-size:22px;
+  margin-bottom:24px;
+  color:#ffcc44;
+}
+
+.info-box{
   background:#383838;
   border-radius:6px;
-  padding:16px;
+  padding:12px 16px;
   margin-bottom:20px;
-  text-align:left;
-  display:none;
-}
-.preview-section.show{
-  display:block;
-}
-.preview-title{
-  text-align:center;
-  font-size:15px;
-  color:#ffcc44;
-  margin-bottom:16px;
-}
-.preview-row{
-  padding:6px 0;
   font-size:15px;
   line-height:1.8;
 }
-.preview-row.triple{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.preview-row.triple > div{
-  white-space:nowrap;
-}
-.preview-row.double{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  flex-wrap:wrap;
-}
-.preview-label{
+.info-box .label{
   color:#aaa;
 }
 
-h2{
-  font-size:20px;
+.form-row{
   margin-bottom:16px;
-  margin-top:8px;
-  color:#ffcc44;
 }
-
-.password-input{
+.form-label{
+  display:block;
+  font-size:15px;
+  color:#ddd;
+  margin-bottom:6px;
+}
+.form-input{
   width:100%;
-  padding:14px;
-  font-size:24px;
-  text-align:center;
-  letter-spacing:8px;
+  padding:12px 14px;
   background:#383838;
-  border:2px solid #555;
+  border:1px solid #555;
   border-radius:6px;
   color:#fff;
-  margin-bottom:16px;
+  font-size:16px;
   outline:none;
 }
-.password-input:focus{
+.form-input:focus{
   border-color:#ff9f29;
 }
-
-.tip-msg{
+.form-input.readonly{
+  background:#2a2a2a;
   color:#888;
-  font-size:14px;
-  margin-bottom:12px;
-  line-height:1.6;
 }
-.info-msg{
-  color:#88ccff;
-  font-size:14px;
+
+.tip-text{
+  font-size:13px;
+  color:#777;
+  margin-top:-10px;
   margin-bottom:12px;
-  min-height:24px;
-}
-.error-msg{
-  color:#ff6b6b;
-  font-size:15px;
-  margin-bottom:12px;
-  min-height:24px;
-}
-.success-msg{
-  color:#4ade80;
-  font-size:15px;
-  margin-bottom:12px;
-  min-height:24px;
 }
 
 .btn-row{
   display:flex;
   gap:12px;
-  justify-content:center;
-  margin-top:8px;
+  margin-top:24px;
 }
 .btn{
-  padding:12px 24px;
+  flex:1;
+  padding:14px;
   border-radius:6px;
   font-size:16px;
   border:none;
   cursor:pointer;
   text-decoration:none;
+  text-align:center;
 }
 .btn-cancel{
   background:#444;
   color:#ddd;
 }
-.btn-confirm{
+.btn-submit{
   background:#e64a19;
   color:#fff;
-}
-.btn:disabled{
-  opacity:0.5;
-  cursor:not-allowed;
 }
 </style>
 </head>
 <body>
 
 <div class="center-box-wrapper">
-  <div class="password-card">
+  <div class="form-card">
     <div class="card-top-links">
       <a href="index.html">← 返回主页</a>
-      <a href="javascript:goBack()">← 返回上一页</a>
+      <a id="backLink" href="#">← 返回上一页</a>
     </div>
 
-    <div class="preview-section" id="previewSection">
-      <div class="preview-title" id="previewTitle">📋 请核对以下资料</div>
-      
-      <div class="preview-row">
-        <span class="preview-label">华文名字：</span>
-        <span id="pName">—</span>
-      </div>
-      <div class="preview-row triple">
-        <div><span class="preview-label">世代：</span><span id="pGen">—</span></div>
-        <div><span class="preview-label">兄弟排名：</span><span id="pRank">—</span></div>
-        <div><span class="preview-label">儿子数量：</span><span id="pSon">—</span></div>
-      </div>
-      <div class="preview-row">
-        <span class="preview-label">妻子：</span>
-        <span id="pWife">无</span>
-      </div>
-      <div class="preview-row">
-        <span class="preview-label">相片：</span>
-        <span id="pPhoto">无</span>
-      </div>
-      <div class="preview-row">
-        <span class="preview-label">备注：</span>
-        <span id="pNote">无</span>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">现居地：</span><span id="pResidence">无</span></div>
-        <div><span class="preview-label">出生年份：</span><span id="pBirthYear">无</span></div>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">安葬地：</span><span id="pBurial">无</span></div>
-        <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
-      </div>
-      <div class="preview-row" id="newIdNote" style="color:#4ade80; font-size:14px; margin-top:8px; display:none;">
-        ℹ️ 新编号将自动分配，无需手动填写
-      </div>
+    <h1>添加子孙</h1>
+
+    <div class="info-box" id="fatherInfo" style="display:none;">
+      <div><span class="label">父亲：</span><span id="fatherName">—</span></div>
+      <div><span class="label">父亲世代：</span>第<span id="fatherGen">—</span>代 → 儿子世代：第<span id="childGen">—</span>代</div>
     </div>
 
-    <h2 id="titleText">确认无误，请输入管理密码</h2>
-    <input type="password" class="password-input" id="passwordInput" maxlength="6" placeholder="6位数字">
-    <div class="tip-msg" id="tipMsg"></div>
-    <div class="info-msg" id="infoMsg"></div>
-    <div class="error-msg" id="errorMsg"></div>
-    <div class="success-msg" id="successMsg"></div>
+    <div class="form-row">
+      <label class="form-label">华文名字 *</label>
+      <input type="text" class="form-input" id="input_name" placeholder="例如：明辉">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">兄弟排行</label>
+      <input type="text" class="form-input" id="input_rank" placeholder="例如：1">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">世代</label>
+      <input type="text" class="form-input readonly" id="input_generation" readonly placeholder="自动计算">
+      <div class="tip-text">由父亲世代 +1 自动填入</div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">妻子名字</label>
+      <input type="text" class="form-input" id="input_wife" placeholder="可空">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">儿子数量</label>
+      <input type="text" class="form-input" id="input_sonCount" placeholder="0">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">相片链接</label>
+      <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="多张用逗号隔开，可空"></textarea>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">备注</label>
+      <textarea class="form-input" id="input_note" rows="2" placeholder="可空"></textarea>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">现居地</label>
+      <input type="text" class="form-input" id="input_residence" placeholder="可空">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">安葬地</label>
+      <input type="text" class="form-input" id="input_burialPlace" placeholder="可空">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">出生年份</label>
+      <input type="text" class="form-input" id="input_birthYear" maxlength="4" placeholder="4位数字">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">逝世年份</label>
+      <input type="text" class="form-input" id="input_deathYear" maxlength="4" placeholder="在世则不填">
+    </div>
+
     <div class="btn-row">
-      <button class="btn btn-cancel" onclick="goBack()">取消</button>
-      <button class="btn btn-confirm" id="confirmBtn" onclick="openGitHubIssue()">确认并提交</button>
+      <a class="btn btn-cancel" id="cancelBtn">取消</a>
+      <button class="btn btn-submit" onclick="goToVerify()">提交资料</button>
     </div>
   </div>
 </div>
 
 <script>
-const GITHUB_USER = "Zhang2Chong";
-const GITHUB_REPO = "ZhangFamily";
-
+// 读取 URL 参数：fatherId, fatherName, fatherGen
 const params = new URLSearchParams(window.location.search);
-const type = params.get("type"); // "3" = 新增, "4" = 修改
-const id = params.get("id")?.replace(/#.*$/, "") || "";
-const fatherId = params.get("fatherId")?.replace(/#.*$/, "") || "";
+const fatherId = params.get("fatherId") || "";
+const fatherName = params.get("fatherName") || "";
+const fatherGen = params.get("fatherGen") || "";
 
-const formData = {
-  name: params.get("name") || "",
-  rank: params.get("rank") || "",
-  generation: params.get("gen") || "",
-  wife: params.get("wife") || "",
-  sonCount: params.get("sonCount") || "",
-  residence: params.get("residence") || "",
-  birthYear: params.get("birthYear") || "",
-  burialPlace: params.get("burialPlace") || "",
-  deathYear: params.get("deathYear") || "",
-  photoLink: params.get("photoLinks") || "",
-  note: params.get("note") || ""
-};
-
-function goBack(){
-  if(type === "3"){
-    window.location.href = "add.html?fatherId=" + encodeURIComponent(fatherId);
-  }else if(type === "4"){
-    window.location.href = "modify.html?id=" + encodeURIComponent(id);
-  }else{
-    history.back();
-  }
+// 计算儿子世代
+let childGen = "";
+if(fatherGen && !isNaN(parseInt(fatherGen))){
+  childGen = String(parseInt(fatherGen) + 1);
 }
 
-function fillPreview(){
-  if(type === "3" || type === "4"){
-    document.getElementById("previewSection").classList.add("show");
-    document.getElementById("previewTitle").textContent = 
-      type === "3" ? "📋 请核对新增资料" : "📋 请核对修改资料";
-    
-    document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
-    document.getElementById("pGen").textContent = formData.generation ? "第" + formData.generation + "代" : "—";
-    document.getElementById("pRank").textContent = formData.rank || "—";
-    document.getElementById("pSon").textContent = formData.sonCount || "0";
-    document.getElementById("pWife").textContent = formData.wife || "无";
-    document.getElementById("pResidence").textContent = formData.residence || "无";
-    document.getElementById("pBirthYear").textContent = formData.birthYear || "无";
-    document.getElementById("pBurial").textContent = formData.burialPlace || "无";
-    document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
-    
-    if(formData.photoLink && formData.photoLink.trim()){
-      const photos = formData.photoLink.split(/[,，]/).filter(p=>p.trim());
-      document.getElementById("pPhoto").textContent = photos.length + " 张相片";
-    }else{
-      document.getElementById("pPhoto").textContent = "无";
-    }
-    
-    document.getElementById("pNote").textContent = formData.note || "无";
-    
-    if(type === "3"){
-      document.getElementById("newIdNote").style.display = "block";
-    }else{
-      document.getElementById("newIdNote").style.display = "none";
-    }
-  }else{
-    document.getElementById("previewSection").classList.remove("show");
-    document.getElementById("titleText").textContent = "无效入口，请从正确页面进入";
-    document.getElementById("passwordInput").style.display = "none";
-    document.getElementById("confirmBtn").style.display = "none";
-  }
+// 返回链接
+document.getElementById("backLink").href = fatherId 
+  ? `person.html?id=${encodeURIComponent(fatherId)}` 
+  : "javascript:history.back()";
+document.getElementById("cancelBtn").href = fatherId 
+  ? `person.html?id=${encodeURIComponent(fatherId)}` 
+  : "index.html";
+
+// 显示父亲信息
+if(fatherId && fatherName && fatherGen){
+  document.getElementById("fatherInfo").style.display = "block";
+  document.getElementById("fatherName").textContent = fatherName;
+  document.getElementById("fatherGen").textContent = fatherGen;
+  document.getElementById("childGen").textContent = childGen;
+  document.getElementById("input_generation").value = childGen;
 }
 
-function buildIssueBody(password){
-  const payload = {
-    type: type === "3" ? "add-person" : "modify-person",
-    password: password,
-    id: id || null,
-    fatherId: fatherId || null,
-    name: formData.name,
-    rank: formData.rank,
-    generation: formData.generation,
-    wife: formData.wife,
-    sonCount: formData.sonCount,
-    residence: formData.residence,
-    birthYear: formData.birthYear,
-    burialPlace: formData.burialPlace,
-    deathYear: formData.deathYear,
-    photoLink: formData.photoLink,
-    note: formData.note
-  };
-  return JSON.stringify(payload, null, 2);
-}
+function goToVerify(){
+  const name = document.getElementById("input_name").value.trim();
+  const rank = document.getElementById("input_rank").value.trim();
+  const wife = document.getElementById("input_wife").value.trim();
+  const sonCount = document.getElementById("input_sonCount").value.trim() || "0";
+  const photoLinks = document.getElementById("input_photoLinks").value.trim();
+  const note = document.getElementById("input_note").value.trim();
+  const residence = document.getElementById("input_residence").value.trim();
+  const burialPlace = document.getElementById("input_burialPlace").value.trim();
+  const birthYear = document.getElementById("input_birthYear").value.trim();
+  const deathYear = document.getElementById("input_deathYear").value.trim();
+  const generation = document.getElementById("input_generation").value.trim();
 
-function openGitHubIssue(){
-  const password = document.getElementById("passwordInput").value;
-  const errorMsg = document.getElementById("errorMsg");
-  const infoMsg = document.getElementById("infoMsg");
-  
-  errorMsg.textContent = "";
-  infoMsg.textContent = "";
-  
-  if(!password || password.length !== 6){
-    errorMsg.textContent = "❌ 请输入6位数字密码";
+  if(!name){
+    alert("请填写华文名字");
     return;
   }
-  
-  const issueTitle = type === "3" 
-    ? `新增：张${formData.name} · 第${formData.generation}代`
-    : `修改：张${formData.name || id} · 资料更新`;
-  
-  const issueBody = buildIssueBody(password);
-  const githubUrl = `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
-  
-  infoMsg.textContent = "🔑 正在打开 GitHub 提交页面...";
-  setTimeout(() => {
-    window.open(githubUrl, "_blank");
-  }, 300);
-}
 
-document.addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    openGitHubIssue();
+  // 构建跳转链接，把所有资料传给 verify.html
+  let url = "verify.html?type=3" +
+    "&name=" + encodeURIComponent(name) +
+    "&rank=" + encodeURIComponent(rank) +
+    "&gen=" + encodeURIComponent(generation) +
+    "&wife=" + encodeURIComponent(wife) +
+    "&sonCount=" + encodeURIComponent(sonCount) +
+    "&photoLinks=" + encodeURIComponent(photoLinks) +
+    "&note=" + encodeURIComponent(note) +
+    "&residence=" + encodeURIComponent(residence) +
+    "&burialPlace=" + encodeURIComponent(burialPlace) +
+    "&birthYear=" + encodeURIComponent(birthYear) +
+    "&deathYear=" + encodeURIComponent(deathYear);
+
+  // 如果有父亲信息，一并带上
+  if(fatherId){
+    url += "&fatherId=" + encodeURIComponent(fatherId);
   }
-});
 
-fillPreview();
-document.getElementById("passwordInput").focus();
+  window.location.href = url;
+}
 </script>
 
 </body>
