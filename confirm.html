@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提交成功</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#1a1a1a;
+  font-family:"Microsoft YaHei",sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.success-box{
+  text-align:center;
+  padding:40px 30px;
+}
+.icon{
+  font-size:60px;
+  margin-bottom:20px;
+}
+h1{
+  color:#4ade80;
+  font-size:28px;
+  margin-bottom:12px;
+}
+p{
+  color:#aaa;
+  font-size:16px;
+}
+</style>
+</head>
+<body>
+<div class="success-box">
+  <div class="icon">✅</div>
+  <h1>提交成功！</h1>
+  <p>正在返回...</p>
+</div>
+
+<script>
+// 读取参数，决定跳回哪里
+const params = new URLSearchParams(window.location.search);
+const backTo = params.get("back") || "";
+const id = params.get("id") || "";
+const t = params.get("t") || "";
+
+// 停留 1 秒后跳转
+setTimeout(() => {
+  if(t === "add" && backTo === "person" && id){
+    window.location.href = "person.html?id=" + encodeURIComponent(id);
+  }else if(t === "modify" && backTo === "person" && id){
+    window.location.href = "person.html?id=" + encodeURIComponent(id);
+  }else if(backTo === "father" && id){
+    window.location.href = "person.html?id=" + encodeURIComponent(id);
+  }else{
+    history.back();
+  }
+}, 1000); // 1000 = 1秒，以后想改就改这个数字，2000=2秒
+</script>
+</body>
+</html>
