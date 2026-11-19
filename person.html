@@ -222,11 +222,9 @@ h2{
 <script>
 function goBackSmart(){
   const ref = document.referrer;
-  // 从 browse 或其他 person 来的 → 原路返回
   if(ref.includes("browse.html") || ref.includes("person.html")){
     history.back();
   }else{
-    // 从 add / modify / verify 来的 → 直接回 browse
     window.location.href = "browse.html";
   }
 }
@@ -247,7 +245,7 @@ currentPersonId = targetId;
 
 document.getElementById('addPersonLink').addEventListener('click', function(){
   if(currentPersonId){
-    window.location.href = 'verify.html?type=1&id=' + encodeURIComponent(currentPersonId.replace(/#.*/, ''));
+    window.location.href = 'add.html?id=' + encodeURIComponent(currentPersonId.replace(/#.*/, ''));
   }else{
     alert('请先等待页面加载完成');
   }
@@ -255,7 +253,7 @@ document.getElementById('addPersonLink').addEventListener('click', function(){
 
 document.getElementById('modifyLink').addEventListener('click', function(){
   if(currentPersonId){
-    window.location.href = 'verify.html?type=2&id=' + encodeURIComponent(currentPersonId.replace(/#.*/, ''));
+    window.location.href = 'modify.html?id=' + encodeURIComponent(currentPersonId.replace(/#.*/, ''));
   }else{
     alert('请先等待页面加载完成');
   }
