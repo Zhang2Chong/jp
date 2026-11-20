@@ -198,7 +198,7 @@ h1{
 </div>
 
 <script>
-const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList.csv";
+const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/ZhangFamily/main/ZhangFamilyList.csv";
 
 function withSurname(name){
   if(!name) return "";
@@ -260,8 +260,8 @@ window.onload = async function(){
     const text = await res.text();
     const lines = text.trim().split("\n");
     
-    const sep = ",";
-    const header = lines[0].split(sep).map(h => h.trim());
+    const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+    const header = lines[0].split(sep);
     
     const idxNo = header.indexOf("No");
     const idxName = header.indexOf("姓名");
