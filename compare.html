@@ -142,7 +142,7 @@ h1{
 }
 .two-line{
   display:flex;
-  gap:24px;
+  gap:28px;
 }
 .line-col{
   flex:1;
@@ -151,36 +151,32 @@ h1{
 .person-card{
   background:#2c2c2c;
   border:1px solid #444;
-  border-radius:4px;
-  padding:12px 8px;
+  border-radius:6px;
+  padding:14px 10px;
   margin-bottom:8px;
   text-align:center;
 }
 .person-card.gen{
-  font-size:15px;
-  color:#e0e0e0;
-  margin-bottom:4px;
+  font-size:16px;
+  color:#facc54;
+  margin-bottom:6px;
 }
 .person-card.name-wrap{
-  font-size:18px;
-  color:#ffcc44;
+  font-size:19px;
+  color:#ffffff;
   font-weight:bold;
+  margin-bottom:6px;
 }
 .person-card.child{
-  font-size:13px;
-  color:#b0b0b0;
-  margin-top:2px;
-  display:block;
-}
-.separator{
-  display:none;
+  font-size:14px;
+  color:#b8b8b8;
 }
 
 @media (max-width:480px){
-  .two-line{gap:16px;}
-  .person-card.gen{font-size:14px;}
-  .person-card.name-wrap{font-size:16px;}
-  .person-card.child{font-size:12px;}
+  .two-line{gap:20px;}
+  .person-card.gen{font-size:15px;}
+  .person-card.name-wrap{font-size:17px;}
+  .person-card.child{font-size:13px;}
 }
 </style>
 </head>
@@ -343,7 +339,7 @@ function findCommonAncestor(chainA, chainB){
 }
 
 function makeCard(person, isBottom){
-  const orderText = person.childOrder ? `<span class="child">第${person.childOrder}子</span>` : "";
+  const orderText = person.childOrder ? `<div class="child">第${person.childOrder}子</div>` : "";
   return `
     <div class="person-card">
       <div class="gen">第${person.generation}代</div>
