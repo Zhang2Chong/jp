@@ -261,7 +261,7 @@ window.onload = async function(){
     const lines = text.trim().split("\n");
     
     const sep = ",";
-    const header = lines[0].split(sep);
+    const header = lines[0].split(sep).map(h => h.trim());
     
     const idxNo = header.indexOf("No");
     const idxName = header.indexOf("姓名");
