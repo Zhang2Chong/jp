@@ -13,7 +13,7 @@ body{
   padding:16px;
 }
 .wrapper{
-  max-width:600px;
+  max-width:700px;
   margin:0 auto;
   width:100%;
 }
@@ -33,7 +33,7 @@ h1{
 }
 .row-container{
   display:flex;
-  gap:16px;
+  gap:24px;
   margin-bottom:20px;
 }
 .col{
@@ -45,14 +45,13 @@ h1{
   margin-bottom:8px;
 }
 .search-row input{
-  flex:0 0 auto;
-  width:65%;
+  flex:1;
   padding:12px 10px;
   background:#2b2b2b;
   border:1px solid #555;
   color:#fff;
   border-radius:4px;
-  font-size:17px;
+  font-size:16px;
 }
 .search-row button{
   padding:12px 14px;
@@ -122,21 +121,22 @@ h1{
   text-align:center;
   font-size:18px;
   color:#ffcc44;
-  padding:16px 12px;
+  padding:20px 16px;
   background:#382c00;
   border-radius:4px;
   margin-bottom:20px;
-  line-height:2.2;
+  white-space:nowrap;
 }
 .common-name{
-  font-size:27px;
+  font-size:28px;
   font-weight:bold;
   color:#fff;
-  margin-left:8px;
+  margin-left:10px;
+  display:inline-block;
 }
 .two-line{
   display:flex;
-  gap:30px;
+  gap:32px;
 }
 .line-col{
   flex:1;
@@ -145,8 +145,8 @@ h1{
   background:#e8e8e8;
   border:1px solid #bbb;
   border-radius:4px;
-  padding:10px 12px;
-  margin-bottom:6px;
+  padding:12px 10px;
+  margin-bottom:8px;
   text-align:center;
 }
 .person-card.gen{
@@ -159,7 +159,7 @@ h1{
   color:#333;
 }
 .person-card.name-wrap.large{
-  font-size:23px;
+  font-size:22px;
   font-weight:bold;
   color:#000;
 }
@@ -174,10 +174,10 @@ h1{
   margin:0 2px;
 }
 
-@media (max-width:600px){
-  .row-container{flex-direction:column; gap:20px;}
-  .search-row input{width:70%;}
-  .two-line{flex-direction:column; gap:16px;}
+@media (max-width:480px){
+  .row-container{gap:12px;}
+  .two-line{gap:12px;}
+  .common-ancestor{white-space:normal;}
 }
 </style>
 </head>
