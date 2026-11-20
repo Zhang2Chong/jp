@@ -160,6 +160,11 @@ h2{
   color:#ddd;
 }
 
+/* 关键：手机屏幕（≤768px）隐藏按钮，电脑屏幕显示 */
+@media (max-width:768px){
+  .btn-row{display:none !important;}
+}
+
 @media (max-width:480px){
   .ancestor-grid{grid-template-columns:repeat(2, 1fr);}
   .info-container{flex-direction:column;}
@@ -270,7 +275,7 @@ window.onload = async function(){
     const text = await res.text();
     const lines = text.trim().split("\n");
     const sep = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
-    const header = lines[0].split(sep);
+    const header = lines[0].split(sep).map(h => h.trim());
     
     const idxNo = header.indexOf("No");
     const idxName = header.indexOf("姓名");
