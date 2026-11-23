@@ -48,6 +48,13 @@ h1{
 }
 .form-input-wrap{
   flex:1;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.name-prefix{
+  color:#fff;
+  font-size:15px;
 }
 .form-input{
   width:100%;
@@ -130,7 +137,8 @@ h1{
   <div class="form-row">
     <div class="form-label">名字</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_name" placeholder="不改则留空">
+      <span class="name-prefix">张</span>
+      <input type="text" class="form-input" id="input_name" maxlength="2" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_name">—</div>
   </div>
@@ -158,33 +166,9 @@ h1{
   <div class="form-row">
     <div class="form-label">妻子</div>
     <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_wife" placeholder="不改则留空">
+      <input type="text" class="form-input" id="input_wife" maxlength="3" placeholder="不改则留空">
     </div>
     <div class="form-original" id="orig_wife">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">儿子数量</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_sonCount" placeholder="不改则留空">
-    </div>
-    <div class="form-original" id="orig_sonCount">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">相片链接</div>
-    <div class="form-input-wrap">
-      <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="不改则留空"></textarea>
-    </div>
-    <div class="form-original" id="orig_photoLinks">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">备注</div>
-    <div class="form-input-wrap">
-      <textarea class="form-input" id="input_note" rows="2" placeholder="不改则留空"></textarea>
-    </div>
-    <div class="form-original" id="orig_note">—</div>
   </div>
 
   <div class="form-row">
@@ -217,6 +201,22 @@ h1{
       <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
     </div>
     <div class="form-original" id="orig_deathYear">—</div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-label">相片链接</div>
+    <div class="form-input-wrap">
+      <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="不改则留空"></textarea>
+    </div>
+    <div class="form-original" id="orig_photoLinks">—</div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-label">备注</div>
+    <div class="form-input-wrap">
+      <textarea class="form-input" id="input_note" rows="2" maxlength="500" placeholder="不改则留空"></textarea>
+    </div>
+    <div class="form-original" id="orig_note">—</div>
   </div>
 
   <div class="info-box" id="infoBox"></div>
@@ -272,7 +272,6 @@ function parseCSV(text){
     generation: header.indexOf('世代'),
     zi: header.indexOf('字辈'),
     wife: header.indexOf('妻子'),
-    sonCount: header.indexOf('儿子数量'),
     photoLinks: header.indexOf('相片链接'),
     note: header.indexOf('备注'),
     residence: header.indexOf('现居地'),
@@ -295,7 +294,6 @@ function parseCSV(text){
       generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation] : "",
       zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi] : "",
       wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife] : "",
-      sonCount: idx.sonCount >= 0 && col[idx.sonCount] ? col[idx.sonCount] : "",
       photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks] : "",
       note: idx.note >= 0 && col[idx.note] ? col[idx.note] : "",
       residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence] : "",
@@ -338,7 +336,6 @@ window.onload = async function(){
     document.getElementById('orig_rank').textContent = originalData.rank || "—";
     document.getElementById('orig_gen').textContent = '第' + originalData.generation + '代';
     document.getElementById('orig_wife').textContent = originalData.wife || "—";
-    document.getElementById('orig_sonCount').textContent = originalData.sonCount || "0";
     document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
     document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
     document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
@@ -361,7 +358,6 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newName = document.getElementById('input_name').value.trim();
   const newRank = document.getElementById('input_rank').value.trim();
   const newWife = document.getElementById('input_wife').value.trim();
-  const newSonCount = document.getElementById('input_sonCount').value.trim();
   const newPhotos = document.getElementById('input_photoLinks').value.trim();
   const newNote = document.getElementById('input_note').value.trim();
   const newResidence = document.getElementById('input_residence').value.trim();
@@ -369,10 +365,31 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
+  // 校验
+  if(newRank && Number(newRank) < 1){
+    showInfo("兄弟排行不能小于1", true);
+    return;
+  }
+  if(newBirthYear && !/^\d{4}$/.test(newBirthYear)){
+    showInfo("出生年份必须是4位数字", true);
+    return;
+  }
+  if(newDeathYear && !/^\d{4}$/.test(newDeathYear)){
+    showInfo("去世年份必须是4位数字", true);
+    return;
+  }
+  if(newName && [...newName].length > 2){
+    showInfo("名字最多两个汉字", true);
+    return;
+  }
+  if(newWife && [...newWife].length > 3){
+    showInfo("妻子名字最多三个汉字", true);
+    return;
+  }
+
   if(newName && newName !== originalData.name) changes.name = newName;
   if(newRank && newRank !== originalData.rank) changes.rank = newRank;
   if(newWife !== '' && newWife !== originalData.wife) changes.wife = newWife;
-  if(newSonCount !== '' && newSonCount !== originalData.sonCount) changes.sonCount = newSonCount;
   if(newPhotos && newPhotos !== originalData.photoLinks) changes.photoLinks = newPhotos;
   if(newNote !== '' && newNote !== originalData.note) changes.note = newNote;
   if(newResidence !== '' && newResidence !== originalData.residence) changes.residence = newResidence;
@@ -395,7 +412,6 @@ document.getElementById('submitBtn').addEventListener('click', function(){
     "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
     "&gen=" + encodeURIComponent(originalData.generation) +
     "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
-    "&sonCount=" + encodeURIComponent(changes.sonCount || originalData.sonCount) +
     "&photo=" + encodeURIComponent(changes.photoLinks || originalData.photoLinks) +
     "&note=" + encodeURIComponent(changes.note || originalData.note) +
     "&residence=" + encodeURIComponent(changes.residence || originalData.residence) +
