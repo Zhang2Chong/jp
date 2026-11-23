@@ -66,15 +66,6 @@ body{
   font-size:15px;
   line-height:1.8;
 }
-.preview-row.triple{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.preview-row.triple > div{
-  white-space:nowrap;
-}
 .preview-row.double{
   display:flex;
   justify-content:space-between;
@@ -178,14 +169,25 @@ h2{
         <span class="preview-label">华文名字：</span>
         <span id="pName">—</span>
       </div>
-      <div class="preview-row triple">
+      <div class="preview-row double">
         <div><span class="preview-label">世代：</span><span id="pGen">—</span></div>
         <div><span class="preview-label">兄弟排名：</span><span id="pRank">—</span></div>
-        <div><span class="preview-label">儿子数量：</span><span id="pSon">—</span></div>
       </div>
       <div class="preview-row">
         <span class="preview-label">妻子：</span>
         <span id="pWife">无</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">现居地：</span>
+        <span id="pResidence">无</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">安葬地：</span>
+        <span id="pBurial">无</span>
+      </div>
+      <div class="preview-row double">
+        <div><span class="preview-label">出生年份：</span><span id="pBirthYear">无</span></div>
+        <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
       </div>
       <div class="preview-row">
         <span class="preview-label">相片：</span>
@@ -194,14 +196,6 @@ h2{
       <div class="preview-row">
         <span class="preview-label">备注：</span>
         <span id="pNote">无</span>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">现居地：</span><span id="pResidence">无</span></div>
-        <div><span class="preview-label">出生年份：</span><span id="pBirthYear">无</span></div>
-      </div>
-      <div class="preview-row double">
-        <div><span class="preview-label">安葬地：</span><span id="pBurial">无</span></div>
-        <div><span class="preview-label">逝世年份：</span><span id="pDeathYear">无</span></div>
       </div>
       <div class="preview-row" id="newIdNote" style="color:#4ade80; font-size:14px; margin-top:8px; display:none;">
         ℹ️ 新编号将自动分配，无需手动填写
@@ -235,7 +229,6 @@ const formData = {
   rank: params.get("rank") || "",
   generation: params.get("gen") || "",
   wife: params.get("wife") || "",
-  sonCount: params.get("sonCount") || "",
   residence: params.get("residence") || "",
   birthYear: params.get("birthYear") || "",
   burialPlace: params.get("burialPlace") || "",
@@ -263,11 +256,10 @@ function fillPreview(){
     document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
     document.getElementById("pGen").textContent = formData.generation ? "第" + formData.generation + "代" : "—";
     document.getElementById("pRank").textContent = formData.rank || "—";
-    document.getElementById("pSon").textContent = formData.sonCount || "0";
     document.getElementById("pWife").textContent = formData.wife || "无";
     document.getElementById("pResidence").textContent = formData.residence || "无";
-    document.getElementById("pBirthYear").textContent = formData.birthYear || "无";
     document.getElementById("pBurial").textContent = formData.burialPlace || "无";
+    document.getElementById("pBirthYear").textContent = formData.birthYear || "无";
     document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
     
     if(formData.photoLink && formData.photoLink.trim()){
@@ -302,7 +294,6 @@ function buildIssueBody(password){
     rank: formData.rank,
     generation: formData.generation,
     wife: formData.wife,
-    sonCount: formData.sonCount,
     residence: formData.residence,
     birthYear: formData.birthYear,
     burialPlace: formData.burialPlace,
