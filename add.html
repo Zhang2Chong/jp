@@ -71,22 +71,6 @@ h2{
   color:#fff;
   font-size:16px;
 }
-textarea.form-input{
-  min-height:70px;
-  resize:none;
-}
-
-.btn-submit{
-  width:100%;
-  padding:12px;
-  background:#e64a19;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  font-size:17px;
-  margin-top:10px;
-  cursor:pointer;
-}
 </style>
 </head>
 <body>
@@ -123,17 +107,7 @@ textarea.form-input{
 
     <div class="form-row">
       <div class="form-label">妻子名字</div>
-      <input type="text" class="form-input" id="wifeName" placeholder="可空">
-    </div>
-
-    <div class="form-row">
-      <div class="form-label">儿子数量</div>
-      <input type="number" class="form-input" id="sonCount" min="0" value="0">
-    </div>
-
-    <div class="form-row">
-      <div class="form-label">备注</div>
-      <textarea class="form-input" id="notes" placeholder="可空"></textarea>
+      <input type="text" class="form-input" id="wifeName" maxlength="3" placeholder="可空">
     </div>
 
     <button type="submit" class="btn-submit">提交资料</button>
@@ -210,27 +184,23 @@ document.getElementById('addForm').addEventListener('submit', function(e){
   const birthOrder = document.getElementById('birthOrder').value.trim();
   const generation = childGenNumber;
   const wifeName = document.getElementById('wifeName').value.trim();
-  const sonCount = document.getElementById('sonCount').value.trim();
-  const notes = document.getElementById('notes').value.trim();
   
   if(!name){
     alert('请输入华文名字');
     return;
   }
-  
+
   window.location.href = "verify.html?type=3" +
     "&fatherId=" + encodeURIComponent(fatherId || "") +
     "&name=" + encodeURIComponent(name) +
     "&rank=" + encodeURIComponent(birthOrder) +
     "&gen=" + encodeURIComponent(generation) +
     "&wife=" + encodeURIComponent(wifeName) +
-    "&sonCount=" + encodeURIComponent(sonCount) +
     "&residence=" +
     "&birthYear=" +
     "&burialPlace=" +
     "&deathYear=" +
-    "&photoLinks=" +
-    "&note=" + encodeURIComponent(notes);
+    "&photoLinks=";
 });
 
 loadFatherInfo();
