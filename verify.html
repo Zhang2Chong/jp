@@ -109,19 +109,19 @@ h2{
 .info-msg{
   color:#88ccff;
   font-size:14px;
-  margin-bottom:12px;
+  margin-bottom:8px;
   min-height:24px;
 }
 .error-msg{
   color:#ff6b6b;
   font-size:15px;
-  margin-bottom:12px;
+  margin-bottom:8px;
   min-height:24px;
 }
 .success-msg{
   color:#4ade80;
   font-size:15px;
-  margin-bottom:12px;
+  margin-bottom:8px;
   min-height:24px;
 }
 
@@ -129,7 +129,7 @@ h2{
   display:flex;
   gap:12px;
   justify-content:center;
-  margin-top:8px;
+  margin-top:0;
 }
 .btn{
   padding:12px 24px;
@@ -251,9 +251,9 @@ function goBack(){
 function fillPreview(){
   if(type === "3" || type === "4"){
     document.getElementById("previewSection").classList.add("show");
-    document.getElementById("previewTitle").textContent = 
+    document.getElementById("previewTitle").textContent =
       type === "3" ? "📋 请核对新增资料" : "📋 请核对修改资料";
-    
+
     document.getElementById("pName").textContent = formData.name ? "张" + formData.name : "—";
     document.getElementById("pGen").textContent = formData.generation ? "第" + formData.generation + "代" : "—";
     document.getElementById("pRank").textContent = formData.rank || "—";
@@ -262,16 +262,16 @@ function fillPreview(){
     document.getElementById("pBurial").textContent = formData.burialPlace || "无";
     document.getElementById("pBirthYear").textContent = formData.birthYear || "无";
     document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
-    
+
     if(formData.photoLink && formData.photoLink.trim()){
       const photos = formData.photoLink.split(/[,，]/).filter(p=>p.trim());
       document.getElementById("pPhoto").textContent = photos.length + " 张相片";
     }else{
       document.getElementById("pPhoto").textContent = "无";
     }
-    
+
     document.getElementById("pNote").textContent = formData.note || "无";
-    
+
     if(type === "3"){
       document.getElementById("newIdNote").style.display = "block";
     }else{
@@ -295,7 +295,7 @@ async function submitToJq(){
 
   errorMsg.textContent = "";
   successMsg.textContent = "";
-  
+
   if(!password || password.length !== 6){
     errorMsg.textContent = "❌ 请输入6位数字密码";
     return;
