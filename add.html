@@ -71,6 +71,20 @@ h2{
   color:#fff;
   font-size:16px;
 }
+.btn-submit {
+  background-color: #e62121;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 11px 22px;
+  font-size: 17px;
+  cursor: pointer;
+  margin-top: 18px;
+  width: 100%;
+}
+.btn-submit:hover {
+  background-color: #c81919;
+}
 </style>
 </head>
 <body>
@@ -178,15 +192,25 @@ async function loadFatherInfo() {
   }
 }
 
+const nameInput = document.getElementById("name");
+nameInput.addEventListener("input", function () {
+  this.value = this.value.replace(/[^\u4e00-\u9fa5]/g, "");
+});
+
 document.getElementById('addForm').addEventListener('submit', function(e){
   e.preventDefault();
   const name = document.getElementById('name').value.trim();
   const birthOrder = document.getElementById('birthOrder').value.trim();
   const generation = childGenNumber;
   const wifeName = document.getElementById('wifeName').value.trim();
+  const chineseReg = /^[\u4e00-\u9fa5]{1,2}$/;
   
   if(!name){
     alert('请输入华文名字');
+    return;
+  }
+  if (!chineseReg.test(name)) {
+    alert('华文名字只能够输入中文汉字，一至两个字');
     return;
   }
 
