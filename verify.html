@@ -210,14 +210,15 @@ h2{
     <div class="success-msg" id="successMsg"></div>
     <div class="btn-row">
       <button class="btn btn-cancel" onclick="goBack()">取消</button>
-      <button class="btn btn-confirm" id="confirmBtn" onclick="openGitHubIssue()">确认并提交</button>
+      <button class="btn btn-confirm" id="confirmBtn" onclick="submitToJq()">确认并提交</button>
     </div>
   </div>
 </div>
 
 <script>
+// ===== 这里改成 jq 仓库 =====
 const GITHUB_USER = "Zhang2Chong";
-const GITHUB_REPO = "ZhangFamily";
+const JQ_REPO = "jq";
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type"); // "3" = 新增, "4" = 修改
@@ -284,55 +285,73 @@ function fillPreview(){
   }
 }
 
-function buildIssueBody(password){
-  const payload = {
-    type: type === "3" ? "add-person" : "modify-person",
-    password: password,
-    id: id || null,
-    fatherId: fatherId || null,
-    name: formData.name,
-    rank: formData.rank,
-    generation: formData.generation,
-    wife: formData.wife,
-    residence: formData.residence,
-    birthYear: formData.birthYear,
-    burialPlace: formData.burialPlace,
-    deathYear: formData.deathYear,
-    photoLink: formData.photoLink,
-    note: formData.note
-  };
-  return JSON.stringify(payload, null, 2);
-}
-
-function openGitHubIssue(){
-  const password = document.getElementById("passwordInput").value;
+// 【重点】提交到 jq 的 repository_dispatch
+async function submitToJq(){
+  const password = document.getElementById("passwordInput").value.trim();
   const errorMsg = document.getElementById("errorMsg");
   const infoMsg = document.getElementById("infoMsg");
-  
+  const successMsg = document.getElementById("successMsg");
+  const confirmBtn = document.getElementById("confirmBtn");
+
   errorMsg.textContent = "";
-  infoMsg.textContent = "";
+  successMsg.textContent = "";
   
   if(!password || password.length !== 6){
     errorMsg.textContent = "❌ 请输入6位数字密码";
     return;
   }
-  
-  const issueTitle = type === "3" 
-    ? `新增：张${formData.name} · 第${formData.generation}代`
-    : `修改：张${formData.name || id} · 资料更新`;
-  
-  const issueBody = buildIssueBody(password);
-  const githubUrl = `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
-  
-  infoMsg.textContent = "🔑 正在打开 GitHub 提交页面...";
-  setTimeout(() => {
-    window.open(githubUrl, "_blank");
-  }, 300);
+
+  confirmBtn.disabled = true;
+  infoMsg.textContent = "⏳ 正在提交资料到校验通道...";
+
+  // 打包 payload，送到 jq workflow
+  const payload = {
+    event_type: "family_submit",
+    client_payload: {
+      gate_password: password,
+      op_type: type === "3" ? "add-person" : "modify-person",
+      id: id || null,
+      fatherId: fatherId || null,
+      name: formData.name,
+      rank: formData.rank,
+      generation: formData.generation,
+      wife: formData.wife,
+      residence: formData.residence,
+      birthYear: formData.birthYear,
+      burialPlace: formData.burialPlace,
+      deathYear: formData.deathYear,
+      photoLink: formData.photoLink,
+      note: formData.note
+    }
+  };
+
+  try{
+    // 注意：这里前端不能放token！前端只发请求，权限校验全部放在jq后端
+    const resp = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${JQ_REPO}/dispatches`,{
+      method:"POST",
+      headers:{
+        "Accept":"application/vnd.github.v3+json",
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(resp.ok){
+      infoMsg.textContent = "";
+      successMsg.textContent = "✅ 提交成功！已经送入校验队列";
+    }else{
+      const r = await resp.json();
+      errorMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
+    }
+  }catch(err){
+    errorMsg.textContent = "❌ 网络错误，无法送出";
+  }
+  confirmBtn.disabled = false;
 }
 
 document.addEventListener("keydown", function(e){
   if(e.key === "Enter"){
-    openGitHubIssue();
+    submitToJq();
   }
 });
 
