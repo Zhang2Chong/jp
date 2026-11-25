@@ -216,12 +216,14 @@ h2{
 </div>
 
 <script>
-// ===== 这里改成 jq 仓库 =====
 const GITHUB_USER = "Zhang2Chong";
 const JQ_REPO = "jq";
+const CSV_RAW_URL = "https://raw.githubusercontent.com/Zhang2Chong/jq/main/log.csv";
+
+let knockToken = "";
 
 const params = new URLSearchParams(window.location.search);
-const type = params.get("type"); // "3" = 新增, "4" = 修改
+const type = params.get("type");
 const id = params.get("id")?.replace(/#.*$/, "") || "";
 const fatherId = params.get("fatherId")?.replace(/#.*$/, "") || "";
 
@@ -285,7 +287,30 @@ function fillPreview(){
   }
 }
 
-// 【重点】提交到 jq 的 repository_dispatch
+async function loadTokenFromCsv(){
+  const infoMsg = document.getElementById("infoMsg");
+  try{
+    const res = await fetch(CSV_RAW_URL);
+    if(!res.ok){
+      infoMsg.textContent = "⚠️ 读取 log.csv 失败，敲门令牌无法加载";
+      return;
+    }
+    const text = await res.text();
+    const lines = text.split("\n");
+    if(lines.length < 1) return;
+    const header = lines[0].split(",");
+    const seg8 = header[7] || "";
+    const seg9 = header[8] || "";
+    const seg10 = header[9] || "";
+    knockToken = seg8.trim() + seg9.trim() + seg10.trim();
+    if(!knockToken){
+      infoMsg.textContent = "⚠️ CSV 表头 8,9,10 是空，拼不出敲门 token";
+    }
+  }catch(e){
+    infoMsg.textContent = "⚠️ 读取 log.csv 出错：" + e.message;
+  }
+}
+
 async function submitToJq(){
   const password = document.getElementById("passwordInput").value.trim();
   const errorMsg = document.getElementById("errorMsg");
@@ -300,11 +325,14 @@ async function submitToJq(){
     errorMsg.textContent = "❌ 请输入6位数字密码";
     return;
   }
+  if(!knockToken){
+    errorMsg.textContent = "❌ 敲门令牌尚未加载，不能提交";
+    return;
+  }
 
   confirmBtn.disabled = true;
   infoMsg.textContent = "⏳ 正在提交资料到校验通道...";
 
-  // 打包 payload，送到 jq workflow
   const payload = {
     event_type: "family_submit",
     client_payload: {
@@ -326,12 +354,12 @@ async function submitToJq(){
   };
 
   try{
-    // 注意：这里前端不能放token！前端只发请求，权限校验全部放在jq后端
     const resp = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${JQ_REPO}/dispatches`,{
       method:"POST",
       headers:{
         "Accept":"application/vnd.github.v3+json",
-        "Content-Type":"application/json"
+        "Content-Type":"application/json",
+        "Authorization": "token " + knockToken
       },
       body: JSON.stringify(payload)
     });
@@ -356,6 +384,7 @@ document.addEventListener("keydown", function(e){
 });
 
 fillPreview();
+loadTokenFromCsv();
 document.getElementById("passwordInput").focus();
 </script>
 
