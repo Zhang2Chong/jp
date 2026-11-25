@@ -377,7 +377,7 @@ async function submitToJq(){
 
     if(resp.ok){
       infoMsg.textContent = "";
-      successMsg.textContent = "✅ 提交成功！已经送入校验队列";
+      successMsg.textContent = "✅ 提交已送入队列，约需 1–3 分钟生效；密码输入失败不会改动家谱";
     }else{
       const r = await resp.json();
       errorMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
