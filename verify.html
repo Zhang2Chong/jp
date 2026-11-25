@@ -217,7 +217,7 @@ h2{
 
 <script>
 const GITHUB_USER = "Zhang2Chong";
-const JP_REPO = "jp";
+const JQ_REPO = "jq";
 const CSV_RAW_URL = "https://zhang2chong.github.io/jp/token_seq.csv";
 
 let knockToken = "";
@@ -292,22 +292,26 @@ async function loadTokenFromCsv(){
   try{
     const res = await fetch(CSV_RAW_URL);
     if(!res.ok){
-      infoMsg.textContent = "⚠️ 读取 log.csv 失败，敲门令牌无法加载";
+      infoMsg.textContent = "⚠️ 读取 token_seq.csv 失败，敲门令牌无法加载";
       return;
     }
     const text = await res.text();
-    const lines = text.split("\n");
-    if(lines.length < 1) return;
-    const header = lines[0].split(",");
-    const seg8 = header[7] || "";
-    const seg9 = header[8] || "";
-    const seg10 = header[9] || "";
-    knockToken = seg8.trim() + seg9.trim() + seg10.trim();
+    const lines = text.split("\n").filter(line=>line.trim()!="");
+    if(lines.length < 2) {
+      infoMsg.textContent = "⚠️ token_seq.csv 缺少第二行token数据";
+      return;
+    }
+    // 第二行，分割三栏
+    const row = lines[1].split(",");
+    const seg1 = row[0]?.trim() || "";
+    const seg2 = row[1]?.trim() || "";
+    const seg3 = row[2]?.trim() || "";
+    knockToken = seg1 + seg2 + seg3;
     if(!knockToken){
-      infoMsg.textContent = "⚠️ CSV 表头 8,9,10 是空，拼不出敲门 token";
+      infoMsg.textContent = "⚠️ token三段为空，拼不出敲门token";
     }
   }catch(e){
-    infoMsg.textContent = "⚠️ 读取 log.csv 出错：" + e.message;
+    infoMsg.textContent = "⚠️ 读取 token_seq.csv 出错：" + e.message;
   }
 }
 
