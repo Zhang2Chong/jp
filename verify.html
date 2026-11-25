@@ -341,7 +341,6 @@ async function submitToJq(){
         sendId = id;
     }
 
-    // 这里自动生成 submit_id
     const submitId = crypto.randomUUID();
 
     const payload = {
@@ -351,7 +350,7 @@ async function submitToJq(){
             op_type: type === "3" ? "add-person" : "modify-person",
             submit_id: submitId,
             data: {
-                id: sendId,
+                no: sendId,
                 fatherId: fatherId || null,
                 name: formData.name,
                 rank: formData.rank,
