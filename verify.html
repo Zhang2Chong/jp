@@ -325,7 +325,7 @@ function makeShortTicket(){
     return s;
 }
 
-// 读取log，返回行数
+// 读取log，返回行数（基线）
 async function getLogLineCount(){
     try{
         const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
@@ -338,7 +338,7 @@ async function getLogLineCount(){
     }
 }
 
-// 检查新增行里面有没有目标ticket，找到返回行内容，找不到返回null
+// 只在基线之后的新增行里找 Submit_ID（第5栏 = cols[4]）
 async function checkNewLines(baseCount, targetTicket){
     try{
         const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
@@ -349,7 +349,7 @@ async function checkNewLines(baseCount, targetTicket){
         const newLines = allLines.slice(baseCount);
         for(const line of newLines){
             const cols = line.split(",");
-            if(cols.length >=6 && cols[0].trim() === targetTicket){
+            if(cols.length >=6 && cols[4].trim() === targetTicket){
                 return cols;
             }
         }
@@ -425,18 +425,19 @@ async function submitToJq(){
 
         if(resp.ok){
             infoMsg.textContent = `📤 已送出，工单Ticket：${ticket}，正在自动核对结果...`;
+
             const pollIntervalMs = 15000; // 15秒查一次
             const maxTotalMs = 180000;    // 3分钟超时
             let elapsed = 0;
-            let found = false;
 
             const pollTimer = setInterval(async ()=>{
                 elapsed += pollIntervalMs;
                 const cols = await checkNewLines(baseLineCount, ticket);
+
                 if(cols !== null){
                     clearInterval(pollTimer);
-                    found = true;
-                    if(cols[5].trim() === "T"){
+                    const flag = cols[5].trim().toLowerCase();
+                    if(flag === "t"){
                         successMsg.textContent = "✅ 通过，家谱资料已经入库同步";
                         infoMsg.textContent = "";
                         setTimeout(()=>{
@@ -448,6 +449,7 @@ async function submitToJq(){
                     }
                     return;
                 }
+
                 if(elapsed >= maxTotalMs){
                     clearInterval(pollTimer);
                     errorMsg.textContent = "⚠️ 本单3分钟超时作废，请重新提交";
