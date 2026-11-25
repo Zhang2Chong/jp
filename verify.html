@@ -124,6 +124,15 @@ h2{
     margin-bottom:6px;
     min-height:20px;
 }
+.countdown-msg{
+    font-size:16px;
+    margin:8px 0;
+    min-height:24px;
+    color:#ffdd77;
+}
+.countdown-msg.warn{
+    color:#ff4444;
+}
 
 .btn-row{
     display:flex;
@@ -153,6 +162,7 @@ h2{
 }
 </style>
 </head>
+
 <body>
 
 <div class="center-box-wrapper">
@@ -205,6 +215,7 @@ h2{
         <h2 id="titleText">确认无误，请输入管理密码</h2>
         <input type="password" class="password-input" id="passwordInput" maxlength="6" placeholder="6位数字">
         <div class="tip-msg" id="tipMsg"></div>
+        <div class="countdown-msg" id="countdownMsg"></div>
         <div class="info-msg" id="infoMsg"></div>
         <div class="error-msg" id="errorMsg"></div>
         <div class="success-msg" id="successMsg"></div>
@@ -222,6 +233,8 @@ const JP_RAW_LOG_URL = "https://zhang2chong.github.io/jp/log.csv";
 const CSV_RAW_URL = "https://zhang2chong.github.io/jp/token_seq.csv";
 
 let knockToken = "";
+let countdownTimer = null;
+let pollTimer = null;
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -267,7 +280,7 @@ function fillPreview(){
         document.getElementById("pDeathYear").textContent = formData.deathYear || "无";
 
         if(formData.photoLink && formData.photoLink.trim()){
-            const photos = formData.photoLink.split(/[，,]/).filter(p=>p.trim());
+            const photos = formData.photoLink.split(/，,/).filter(p=>p.trim());
             document.getElementById("pPhoto").textContent = photos.length + " 张相片";
         }else{
             document.getElementById("pPhoto").textContent = "无";
@@ -315,7 +328,6 @@ async function loadTokenFromCsv(){
     }
 }
 
-// 生成8位 大写字母+数字 ticket
 function makeShortTicket(){
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let s = "";
@@ -325,7 +337,6 @@ function makeShortTicket(){
     return s;
 }
 
-// 读取log，返回行数（基线）
 async function getLogLineCount(){
     try{
         const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
@@ -338,7 +349,6 @@ async function getLogLineCount(){
     }
 }
 
-// 只在基线之后的新增行里找 Submit_ID（第5栏 = cols[4]）
 async function checkNewLines(baseCount, targetTicket){
     try{
         const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
@@ -359,15 +369,29 @@ async function checkNewLines(baseCount, targetTicket){
     }
 }
 
+function clearAllTimers(){
+    if(countdownTimer){
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+    if(pollTimer){
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+}
+
 async function submitToJq(){
     const password = document.getElementById("passwordInput").value.trim();
     const errorMsg = document.getElementById("errorMsg");
     const infoMsg = document.getElementById("infoMsg");
     const successMsg = document.getElementById("successMsg");
     const confirmBtn = document.getElementById("confirmBtn");
+    const countdownMsg = document.getElementById("countdownMsg");
 
     errorMsg.textContent = "";
     successMsg.textContent = "";
+    countdownMsg.textContent = "";
+    countdownMsg.classList.remove("warn");
 
     if(!password || password.length !== 6){
         errorMsg.textContent = "❌ 请输入6位数字密码";
@@ -388,6 +412,10 @@ async function submitToJq(){
 
     const ticket = makeShortTicket();
     const baseLineCount = await getLogLineCount();
+
+    const startedAt = Date.now();
+    const totalLimitMs = 180000;
+    const pollIntervalMs = 15000;
 
     const payload = {
         event_type: "family_submit",
@@ -426,16 +454,32 @@ async function submitToJq(){
         if(resp.ok){
             infoMsg.textContent = `📤 已送出，工单Ticket：${ticket}，正在自动核对结果...`;
 
-            const pollIntervalMs = 15000; // 15秒查一次
-            const maxTotalMs = 180000;    // 3分钟超时
-            let elapsed = 0;
+            countdownTimer = setInterval(()=>{
+                const elapsed = Date.now() - startedAt;
+                const remain = Math.max(0, Math.ceil((totalLimitMs - elapsed) / 1000));
+                countdownMsg.textContent = `⌛ 剩余：${remain} 秒`;
+                if(remain <= 30){
+                    countdownMsg.classList.add("warn");
+                }else{
+                    countdownMsg.classList.remove("warn");
+                }
+                if(remain <= 0){
+                    clearAllTimers();
+                    errorMsg.textContent = "⚠️ 本单3分钟总时限耗尽，工单作废，请重新提交";
+                    infoMsg.textContent = "";
+                    confirmBtn.disabled = false;
+                }
+            }, 1000);
 
-            const pollTimer = setInterval(async ()=>{
-                elapsed += pollIntervalMs;
+            pollTimer = setInterval(async ()=>{
+                const elapsed = Date.now() - startedAt;
+                if(elapsed >= totalLimitMs){
+                    clearAllTimers();
+                    return;
+                }
                 const cols = await checkNewLines(baseLineCount, ticket);
-
                 if(cols !== null){
-                    clearInterval(pollTimer);
+                    clearAllTimers();
                     const flag = cols[5].trim().toLowerCase();
                     if(flag === "t"){
                         successMsg.textContent = "✅ 通过，家谱资料已经入库同步";
@@ -446,25 +490,21 @@ async function submitToJq(){
                     }else{
                         errorMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
                         infoMsg.textContent = "";
+                        countdownMsg.textContent = "";
+                        countdownMsg.classList.remove("warn");
+                        confirmBtn.disabled = false;
                     }
-                    return;
-                }
-
-                if(elapsed >= maxTotalMs){
-                    clearInterval(pollTimer);
-                    errorMsg.textContent = "⚠️ 本单3分钟超时作废，请重新提交";
-                    infoMsg.textContent = "";
                 }
             }, pollIntervalMs);
-
         }else{
             const r = await resp.json();
             errorMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
+            confirmBtn.disabled = false;
         }
     }catch(err){
         errorMsg.textContent = "❌ 网络错误，无法送出";
+        confirmBtn.disabled = false;
     }
-    confirmBtn.disabled = false;
 }
 
 document.addEventListener("keydown", function(e){
