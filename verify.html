@@ -338,25 +338,24 @@ async function getLogLineCount(){
     }
 }
 
-// 检查新增行里面有没有目标ticket
+// 检查新增行里面有没有目标ticket，找到返回行内容，找不到返回null
 async function checkNewLines(baseCount, targetTicket){
     try{
         const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
-        if(!r.ok) return false;
+        if(!r.ok) return null;
         const t = await r.text();
         const allLines = t.split("\n").filter(x=>x.trim()!="");
-        if(allLines.length <= baseCount) return false;
-        // 只取基线之后新增行
+        if(allLines.length <= baseCount) return null;
         const newLines = allLines.slice(baseCount);
         for(const line of newLines){
             const cols = line.split(",");
-            if(cols.length >=5 && cols[4].trim() === targetTicket){
-                return true;
+            if(cols.length >=6 && cols[0].trim() === targetTicket){
+                return cols;
             }
         }
-        return false;
+        return null;
     }catch{
-        return false;
+        return null;
     }
 }
 
@@ -388,7 +387,6 @@ async function submitToJq(){
     }
 
     const ticket = makeShortTicket();
-    // 记下提交这一刻log基线行数
     const baseLineCount = await getLogLineCount();
 
     const payload = {
@@ -427,30 +425,35 @@ async function submitToJq(){
 
         if(resp.ok){
             infoMsg.textContent = `📤 已送出，工单Ticket：${ticket}，正在自动核对结果...`;
-            let totalWait = 0;
-            const maxWait = 30;
-            const interval = 3;
+            const pollIntervalMs = 15000; // 15秒查一次
+            const maxTotalMs = 180000;    // 3分钟超时
+            let elapsed = 0;
             let found = false;
 
             const pollTimer = setInterval(async ()=>{
-                totalWait += interval;
-                const ok = await checkNewLines(baseLineCount, ticket);
-                if(ok){
+                elapsed += pollIntervalMs;
+                const cols = await checkNewLines(baseLineCount, ticket);
+                if(cols !== null){
                     clearInterval(pollTimer);
-                    successMsg.textContent = "✅ 核对成功！本次家谱记录已经写入";
-                    infoMsg.textContent = "";
-                    setTimeout(()=>{
-                        window.location.href = "index.html";
-                    }, 2500);
                     found = true;
+                    if(cols[5].trim() === "T"){
+                        successMsg.textContent = "✅ 通过，家谱资料已经入库同步";
+                        infoMsg.textContent = "";
+                        setTimeout(()=>{
+                            window.location.href = "index.html";
+                        }, 2500);
+                    }else{
+                        errorMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
+                        infoMsg.textContent = "";
+                    }
                     return;
                 }
-                if(totalWait >= maxWait){
+                if(elapsed >= maxTotalMs){
                     clearInterval(pollTimer);
-                    errorMsg.textContent = "⚠️ 30秒内未查到本次工单，本次提交大概率失败";
+                    errorMsg.textContent = "⚠️ 本单3分钟超时作废，请重新提交";
                     infoMsg.textContent = "";
                 }
-            }, interval * 1000);
+            }, pollIntervalMs);
 
         }else{
             const r = await resp.json();
