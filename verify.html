@@ -218,6 +218,7 @@ h2{
 <script>
 const GITHUB_USER = "Zhang2Chong";
 const JQ_REPO = "jq";
+const JP_RAW_LOG_URL = "https://zhang2chong.github.io/jp/log.csv";
 const CSV_RAW_URL = "https://zhang2chong.github.io/jp/token_seq.csv";
 
 let knockToken = "";
@@ -314,6 +315,51 @@ async function loadTokenFromCsv(){
     }
 }
 
+// 生成8位 大写字母+数字 ticket
+function makeShortTicket(){
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let s = "";
+    for(let i=0;i<8;i++){
+        s += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return s;
+}
+
+// 读取log，返回行数
+async function getLogLineCount(){
+    try{
+        const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
+        if(!r.ok) return 0;
+        const t = await r.text();
+        const arr = t.split("\n").filter(x=>x.trim()!="");
+        return arr.length;
+    }catch{
+        return 0;
+    }
+}
+
+// 检查新增行里面有没有目标ticket
+async function checkNewLines(baseCount, targetTicket){
+    try{
+        const r = await fetch(JP_RAW_LOG_URL, {cache: "no-cache"});
+        if(!r.ok) return false;
+        const t = await r.text();
+        const allLines = t.split("\n").filter(x=>x.trim()!="");
+        if(allLines.length <= baseCount) return false;
+        // 只取基线之后新增行
+        const newLines = allLines.slice(baseCount);
+        for(const line of newLines){
+            const cols = line.split(",");
+            if(cols.length >=5 && cols[4].trim() === targetTicket){
+                return true;
+            }
+        }
+        return false;
+    }catch{
+        return false;
+    }
+}
+
 async function submitToJq(){
     const password = document.getElementById("passwordInput").value.trim();
     const errorMsg = document.getElementById("errorMsg");
@@ -341,14 +387,16 @@ async function submitToJq(){
         sendId = id;
     }
 
-    const submitId = crypto.randomUUID();
+    const ticket = makeShortTicket();
+    // 记下提交这一刻log基线行数
+    const baseLineCount = await getLogLineCount();
 
     const payload = {
         event_type: "family_submit",
         client_payload: {
             gate_password: password,
             op_type: type === "3" ? "add-person" : "modify-person",
-            submit_id: submitId,
+            ticket: ticket,
             data: {
                 no: sendId,
                 fatherId: fatherId || null,
@@ -378,11 +426,32 @@ async function submitToJq(){
         });
 
         if(resp.ok){
-            infoMsg.textContent = "";
-            successMsg.textContent = "✅ 提交已送入队列，约需 1–3 分钟生效；密码输入失败不会改动家谱";
-            setTimeout(()=>{
-                window.location.href = "index.html";
-            }, 2000);
+            infoMsg.textContent = `📤 已送出，工单Ticket：${ticket}，正在自动核对结果...`;
+            let totalWait = 0;
+            const maxWait = 30;
+            const interval = 3;
+            let found = false;
+
+            const pollTimer = setInterval(async ()=>{
+                totalWait += interval;
+                const ok = await checkNewLines(baseLineCount, ticket);
+                if(ok){
+                    clearInterval(pollTimer);
+                    successMsg.textContent = "✅ 核对成功！本次家谱记录已经写入";
+                    infoMsg.textContent = "";
+                    setTimeout(()=>{
+                        window.location.href = "index.html";
+                    }, 2500);
+                    found = true;
+                    return;
+                }
+                if(totalWait >= maxWait){
+                    clearInterval(pollTimer);
+                    errorMsg.textContent = "⚠️ 30秒内未查到本次工单，本次提交大概率失败";
+                    infoMsg.textContent = "";
+                }
+            }, interval * 1000);
+
         }else{
             const r = await resp.json();
             errorMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
