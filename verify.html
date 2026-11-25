@@ -336,13 +336,19 @@ async function submitToJq(){
   confirmBtn.disabled = true;
   infoMsg.textContent = "⏳ 正在提交资料到校验通道...";
 
+  // ===== 重点改动：type=3新增，id强制为null，不把旧id传过去 =====
+  let sendId = null;
+  if(type === "4"){
+    sendId = id;
+  }
+
   const payload = {
     event_type: "family_submit",
     client_payload: {
       gate_password: password,
       op_type: type === "3" ? "add-person" : "modify-person",
       data: {
-        id: id || null,
+        id: sendId,
         fatherId: fatherId || null,
         name: formData.name,
         rank: formData.rank,
