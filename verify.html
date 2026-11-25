@@ -301,7 +301,6 @@ async function loadTokenFromCsv(){
       infoMsg.textContent = "⚠️ token_seq.csv 缺少第二行token数据";
       return;
     }
-    // 第二行，分割三栏
     const row = lines[1].split(",");
     const seg1 = row[0]?.trim() || "";
     const seg2 = row[1]?.trim() || "";
@@ -342,18 +341,20 @@ async function submitToJq(){
     client_payload: {
       gate_password: password,
       op_type: type === "3" ? "add-person" : "modify-person",
-      id: id || null,
-      fatherId: fatherId || null,
-      name: formData.name,
-      rank: formData.rank,
-      generation: formData.generation,
-      wife: formData.wife,
-      residence: formData.residence,
-      birthYear: formData.birthYear,
-      burialPlace: formData.burialPlace,
-      deathYear: formData.deathYear,
-      photoLink: formData.photoLink,
-      note: formData.note
+      data: {
+        id: id || null,
+        fatherId: fatherId || null,
+        name: formData.name,
+        rank: formData.rank,
+        generation: formData.generation,
+        wife: formData.wife,
+        residence: formData.residence,
+        birthYear: formData.birthYear,
+        burialPlace: formData.burialPlace,
+        deathYear: formData.deathYear,
+        photoLink: formData.photoLink,
+        note: formData.note
+      }
     }
   };
 
