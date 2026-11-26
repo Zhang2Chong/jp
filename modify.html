@@ -259,8 +259,8 @@ document.querySelectorAll('.btn-clear').forEach(btn => {
     const fieldId = btn.dataset.field;
     const el = document.getElementById(fieldId);
     el.value = CLEAR_MARK;
-  })
-})
+  });
+});
 
 function withSurname(name){
   if(!name) return "";
@@ -381,6 +381,7 @@ window.onload = async function(){
 
 document.getElementById('submitBtn').addEventListener('click', function(){
   const changes = {};
+  const currentYear = new Date().getFullYear();
 
   const newName = document.getElementById('input_name').value.trim();
   const newRank = document.getElementById('input_rank').value.trim();
@@ -392,18 +393,52 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
-  if(newRank && Number(newRank) < 1){
-    showInfo("兄弟排行不能小于1", true);
-    return;
+  // ===== 兄弟排行校验 =====
+  if(newRank && newRank !== CLEAR_MARK){
+    const r = Number(newRank);
+    if(isNaN(r) || r < 1 || r > 19){
+      showInfo("兄弟排行只允许 1~19", true);
+      return;
+    }
+    if(r >=2 && r <=9 && newRank.length > 1){
+      showInfo("2~9只能单独一位，不可以02、03", true);
+      return;
+    }
   }
-  if(newBirthYear && newBirthYear !== CLEAR_MARK && !/^\d{4}$/.test(newBirthYear)){
-    showInfo("出生年份必须是4位数字", true);
-    return;
+
+  // ===== 出生年份校验 =====
+  if(newBirthYear && newBirthYear !== CLEAR_MARK){
+    if(!/^\d{4}$/.test(newBirthYear)){
+      showInfo("出生年份必须是4位数字", true);
+      return;
+    }
+    const b = Number(newBirthYear);
+    if(b > currentYear){
+      showInfo("出生年份不能大于" + currentYear, true);
+      return;
+    }
   }
-  if(newDeathYear && newDeathYear !== CLEAR_MARK && !/^\d{4}$/.test(newDeathYear)){
-    showInfo("去世年份必须是4位数字", true);
-    return;
+
+  // ===== 去世年份校验 =====
+  if(newDeathYear && newDeathYear !== CLEAR_MARK){
+    if(!/^\d{4}$/.test(newDeathYear)){
+      showInfo("去世年份必须是4位数字", true);
+      return;
+    }
+    const d = Number(newDeathYear);
+    if(d > currentYear){
+      showInfo("去世年份不能大于" + currentYear, true);
+      return;
+    }
+    if(newBirthYear && newBirthYear !== CLEAR_MARK){
+      const b = Number(newBirthYear);
+      if(d < b){
+        showInfo("去世年份不能早于出生年份", true);
+        return;
+      }
+    }
   }
+
   if(newName && newName !== CLEAR_MARK && [...newName].length > 2){
     showInfo("名字最多两个汉字", true);
     return;
