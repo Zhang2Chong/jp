@@ -332,7 +332,6 @@ function parseCSV(text){
     return data;
 }
 
-// 实时拦截
 document.getElementById('input_name').addEventListener('input',function(){
     let v = this.value.replace(/[^\u4e00-\u9fa5]/g,"");
     this.value = v.slice(0,2);
@@ -414,11 +413,18 @@ document.getElementById('submitBtn').addEventListener('click', function(){
 
     const chineseReg = /^[\u4e00-\u9fa5]+$/;
 
+    //排行逻辑：1可以继续补数字，2~9只能单独一位
     if(newRank){
-        const r = Number(newRank);
-        if(r < 1 || r > 15){
-            showInfo("兄弟排行范围：1～15", true);
-            return;
+        if(newRank[0] === '1'){
+            if(newRank.length>2 || Number(newRank) >15){
+                showInfo("排行只能 1~15", true);
+                return;
+            }
+        }else{
+            if(newRank.length>1 || Number(newRank)<2 || Number(newRank)>9){
+                showInfo("2到9只可以单独一位", true);
+                return;
+            }
         }
     }
 
