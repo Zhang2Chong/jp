@@ -7,117 +7,125 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-    background:#1a1a1a;
-    color:#facc54;
-    font-family:"Microsoft YaHei",sans-serif;
-    padding:16px;
+  background:#1a1a1a;
+  color:#facc54;
+  font-family:"Microsoft YaHei",sans-serif;
+  padding:16px;
 }
 .wrapper{
-    max-width:600px;
-    margin:0 auto;
-    width:100%;
+  max-width:600px;
+  margin:0 auto;
+  width:100%;
 }
 .top-links{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:24px;
-    padding-bottom:12px;
-    border-bottom:1px solid #444;
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:24px;
+  padding-bottom:12px;
+  border-bottom:1px solid #444;
 }
 .top-links a{
-    color:#ff9f29;
-    text-decoration:none;
-    font-size:16px;
+  color:#ff9f29;
+  text-decoration:none;
+  font-size:16px;
 }
 h1{
-    text-align:center;
-    font-size:26px;
-    margin-bottom:24px;
-    color:#ffcc44;
+  text-align:center;
+  font-size:26px;
+  margin-bottom:24px;
+  color:#ffcc44;
 }
 .form-row{
-    display:flex;
-    align-items:center;
-    margin-bottom:12px;
-    gap:10px;
+  display:flex;
+  align-items:center;
+  margin-bottom:12px;
+  gap:10px;
 }
 .form-label{
-    width:90px;
-    color:#ddd;
-    flex-shrink:0;
+  width:90px;
+  color:#ddd;
+  flex-shrink:0;
 }
 .form-input-wrap{
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:6px;
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
 .name-prefix{
-    color:#fff;
-    font-size:15px;
+  color:#fff;
+  font-size:15px;
 }
 .form-input{
-    width:100%;
-    padding:10px 12px;
-    background:#2b2b2b;
-    border:1px solid #555;
-    border-radius:4px;
-    color:#fff;
-    font-size:15px;
-    outline:none;
+  width:100%;
+  padding:10px 12px;
+  background:#2b2b2b;
+  border:1px solid #555;
+  border-radius:4px;
+  color:#fff;
+  font-size:15px;
+  outline:none;
 }
 .form-input:focus{
-    border-color:#ff9f29;
+  border-color:#ff9f29;
 }
 .form-input.short{
-    max-width:120px;
+  max-width:120px;
 }
 .form-original{
-    width:40%;
-    padding:10px 12px;
-    background:#222;
-    border-radius:4px;
-    color:#aaa;
-    font-size:14px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+  width:40%;
+  padding:10px 12px;
+  background:#222;
+  border-radius:4px;
+  color:#aaa;
+  font-size:14px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .tip-text{
-    font-size:12px;
-    color:#777;
-    margin-bottom:4px;
-    margin-left:100px;
+  font-size:12px;
+  color:#777;
+  margin-bottom:4px;
+  margin-left:100px;
 }
 .btn-block{
-    margin-top:24px;
+  margin-top:24px;
 }
 .submit-btn{
-    width:100%;
-    padding:14px;
-    background:#e64a19;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    font-size:18px;
-    cursor:pointer;
+  width:100%;
+  padding:14px;
+  background:#e64a19;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:18px;
+  cursor:pointer;
+}
+.btn-clear{
+  padding: 2px 8px;
+  background:#992222;
+  color:white;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
 }
 .info-box{
-    background:#2b2b2b;
-    padding:12px;
-    border-radius:4px;
-    margin-bottom:16px;
-    color:#88ff88;
-    font-size:14px;
-    display:none;
+  background:#2b2b2b;
+  padding:12px;
+  border-radius:4px;
+  margin-bottom:16px;
+  color:#88ff88;
+  font-size:14px;
+  display:none;
 }
 .info-box.error{
-    color:#ff6b6b;
+  color:#ff6b6b;
 }
 .loading{
-    text-align:center;
-    padding:40px;
-    color:#aaa;
+  text-align:center;
+  padding:40px;
+  color:#aaa;
 }
 </style>
 </head>
@@ -125,8 +133,8 @@ h1{
 <div class="wrapper">
 
 <div class="top-links">
-    <a href="index.html">← 返回主页</a>
-    <a id="backToPerson" href="#">← 返回上一页</a>
+  <a href="index.html">← 返回主页</a>
+  <a id="backToPerson" href="#">← 返回上一页</a>
 </div>
 
 <h1>修改资料</h1>
@@ -134,96 +142,105 @@ h1{
 <div id="loadingBox" class="loading">正在加载资料...</div>
 <div id="formBox" style="display:none;">
 
-    <div class="form-row">
-        <div class="form-label">名字</div>
-        <div class="form-input-wrap">
-            <span class="name-prefix">张</span>
-            <input type="text" class="form-input" id="input_name" maxlength="2" placeholder="填入新内容修改">
-        </div>
-        <div class="form-original" id="orig_name">—</div>
+  <div class="form-row">
+    <div class="form-label">名字</div>
+    <div class="form-input-wrap">
+      <span class="name-prefix">张</span>
+      <input type="text" class="form-input" id="input_name" maxlength="2" placeholder="填入新内容修改">
+      <button type="button" class="btn-clear" data-field="input_name">清空</button>
     </div>
+    <div class="form-original" id="orig_name">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">父亲</div>
-        <div style="flex:1;"></div>
-        <div class="form-original" id="orig_father">—</div>
+  <div class="form-row">
+    <div class="form-label">父亲</div>
+    <div style="flex:1;"></div>
+    <div class="form-original" id="orig_father">—</div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-label">兄弟排行</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_rank" placeholder="填入新内容修改">
+      <button type="button" class="btn-clear" data-field="input_rank">清空</button>
     </div>
+    <div class="form-original" id="orig_rank">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">兄弟排行</div>
-        <div class="form-input-wrap">
-            <input type="text" class="form-input" id="input_rank" placeholder="填入新内容修改">
-        </div>
-        <div class="form-original" id="orig_rank">—</div>
+  <div class="form-row">
+    <div class="form-label">世代</div>
+    <div style="flex:1;"></div>
+    <div class="form-original" id="orig_gen">—</div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-label">妻子</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_wife" maxlength="3" placeholder="填入新内容修改">
+      <button type="button" class="btn-clear" data-field="input_wife">清空</button>
     </div>
+    <div class="form-original" id="orig_wife">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">世代</div>
-        <div style="flex:1;"></div>
-        <div class="form-original" id="orig_gen">—</div>
+  <div class="form-row">
+    <div class="form-label">现居地</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_residence" placeholder="填入新内容修改">
+      <button type="button" class="btn-clear" data-field="input_residence">清空</button>
     </div>
+    <div class="form-original" id="orig_residence">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">妻子</div>
-        <div class="form-input-wrap">
-            <input type="text" class="form-input" id="input_wife" maxlength="3" placeholder="填入新内容修改">
-        </div>
-        <div class="form-original" id="orig_wife">—</div>
+  <div class="form-row">
+    <div class="form-label">安葬地</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input" id="input_burialPlace" placeholder="填入新内容修改">
+      <button type="button" class="btn-clear" data-field="input_burialPlace">清空</button>
     </div>
+    <div class="form-original" id="orig_burialPlace">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">现居地</div>
-        <div class="form-input-wrap">
-            <input type="text" class="form-input" id="input_residence" placeholder="填入新内容修改">
-        </div>
-        <div class="form-original" id="orig_residence">—</div>
+  <div class="form-row">
+    <div class="form-label">出生年份</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
+      <button type="button" class="btn-clear" data-field="input_birthYear">清空</button>
     </div>
+    <div class="form-original" id="orig_birthYear">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">安葬地</div>
-        <div class="form-input-wrap">
-            <input type="text" class="form-input" id="input_burialPlace" placeholder="填入新内容修改">
-        </div>
-        <div class="form-original" id="orig_burialPlace">—</div>
+  <div class="form-row">
+    <div class="form-label">去世年份</div>
+    <div class="form-input-wrap">
+      <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
+      <button type="button" class="btn-clear" data-field="input_deathYear">清空</button>
     </div>
+    <div class="form-original" id="orig_deathYear">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">出生年份</div>
-        <div class="form-input-wrap">
-            <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
-        </div>
-        <div class="form-original" id="orig_birthYear">—</div>
+  <div class="form-row">
+    <div class="form-label">相片链接</div>
+    <div class="form-input-wrap">
+      <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="填入新内容修改"></textarea>
+      <button type="button" class="btn-clear" data-field="input_photoLinks">清空</button>
     </div>
+    <div class="form-original" id="orig_photoLinks">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">去世年份</div>
-        <div class="form-input-wrap">
-            <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
-        </div>
-        <div class="form-original" id="orig_deathYear">—</div>
+  <div class="form-row">
+    <div class="form-label">备注</div>
+    <div class="form-input-wrap">
+      <textarea class="form-input" id="input_note" rows="2" maxlength="500" placeholder="填入新内容修改"></textarea>
+      <button type="button" class="btn-clear" data-field="input_note">清空</button>
     </div>
+    <div class="form-original" id="orig_note">—</div>
+  </div>
 
-    <div class="form-row">
-        <div class="form-label">相片链接</div>
-        <div class="form-input-wrap">
-            <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="填入新内容修改"></textarea>
-        </div>
-        <div class="form-original" id="orig_photoLinks">—</div>
-    </div>
+  <div class="info-box" id="infoBox"></div>
 
-    <div class="form-row">
-        <div class="form-label">备注</div>
-        <div class="form-input-wrap">
-            <textarea class="form-input" id="input_note" rows="2" maxlength="500" placeholder="填入新内容修改"></textarea>
-        </div>
-        <div class="form-original" id="orig_note">—</div>
-    </div>
-
-    <div class="info-box" id="infoBox"></div>
-
-    <div class="btn-block">
-        <button class="submit-btn" id="submitBtn">提交资料</button>
-    </div>
+  <div class="btn-block">
+    <button class="submit-btn" id="submitBtn">提交资料</button>
+  </div>
 
 </div>
 
@@ -235,256 +252,198 @@ let targetId = null;
 let people = {};
 let originalData = null;
 
+const CLEAR_MARK = "【清空】";
+
+document.querySelectorAll('.btn-clear').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const fieldId = btn.dataset.field;
+    const el = document.getElementById(fieldId);
+    el.value = CLEAR_MARK;
+  })
+})
+
 function withSurname(name){
-    if(!name) return "";
-    const n=name.trim();
-    if(n.startsWith("张")) return n;
-    return "张"+n;
+  if(!name) return "";
+  const n=name.trim();
+  if(n.startsWith("张")) return n;
+  return "张"+n;
 }
 
 function showInfo(msg, isError=false){
-    const box = document.getElementById('infoBox');
-    box.style.display = 'block';
-    if(isError){
-        box.classList.add('error');
-    }else{
-        box.classList.remove('error');
-    }
-    box.textContent = msg;
+  const box = document.getElementById('infoBox');
+  box.style.display = 'block';
+  if(isError){
+    box.classList.add('error');
+  }else{
+    box.classList.remove('error');
+  }
+  box.textContent = msg;
 
-    if(isError){
-        setTimeout(()=>{
-            box.style.display = 'none';
-        }, 2500);
-    }
+  if(isError){
+    setTimeout(()=>{
+      box.style.display = 'none';
+    }, 2500);
+  }
 }
 
 function parseCSV(text){
-    const lines = text.trim().split("\n");
-    const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
-    const header = lines[0].split(sep).map(h => h.trim());
+  const lines = text.trim().split("\n");
+  const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
+  const header = lines[0].split(sep).map(h => h.trim());
 
-    const idx = {
-        name: header.indexOf('姓名'),
-        no: header.indexOf('No'),
-        fatherId: header.indexOf('父亲编号'),
-        rank: header.indexOf('兄弟排名'),
-        generation: header.indexOf('世代'),
-        zi: header.indexOf('字辈'),
-        wife: header.indexOf('妻子'),
-        photoLinks: header.indexOf('相片链接'),
-        note: header.indexOf('备注'),
-        residence: header.indexOf('现居地'),
-        burialPlace: header.indexOf('安葬地'),
-        birthYear: header.indexOf('出生年份'),
-        deathYear: header.indexOf('去世年份')
+  const idx = {
+    name: header.indexOf('姓名'),
+    no: header.indexOf('No'),
+    fatherId: header.indexOf('父亲编号'),
+    rank: header.indexOf('兄弟排名'),
+    generation: header.indexOf('世代'),
+    zi: header.indexOf('字辈'),
+    wife: header.indexOf('妻子'),
+    photoLinks: header.indexOf('相片链接'),
+    note: header.indexOf('备注'),
+    residence: header.indexOf('现居地'),
+    burialPlace: header.indexOf('安葬地'),
+    birthYear: header.indexOf('出生年份'),
+    deathYear: header.indexOf('去世年份')
+  };
+
+  const data = {};
+  for(let i=1;i<lines.length;i++){
+    const col = lines[i].split(sep).map(c => c.trim());
+    const no = idx.no >= 0 && col[idx.no] ? col[idx.no] : "";
+    if(!no) continue;
+
+    data[no] = {
+      name: idx.name >= 0 && col[idx.name] ? col[idx.name] : "",
+      no: no,
+      fatherId: idx.fatherId >= 0 && col[idx.fatherId] ? col[idx.fatherId] : "",
+      rank: idx.rank >= 0 && col[idx.rank] ? col[idx.rank] : "",
+      generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation] : "",
+      zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi] : "",
+      wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife] : "",
+      photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks] : "",
+      note: idx.note >= 0 && col[idx.note] ? col[idx.note] : "",
+      residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence] : "",
+      burialPlace: idx.burialPlace >= 0 && col[idx.burialPlace] ? col[idx.burialPlace] : "",
+      birthYear: idx.birthYear >= 0 && col[idx.birthYear] ? col[idx.birthYear] : "",
+      deathYear: idx.deathYear >= 0 && col[idx.deathYear] ? col[idx.deathYear] : ""
     };
-
-    const data = {};
-    for(let i=1;i<lines.length;i++){
-        const col = lines[i].split(sep).map(c => c.trim());
-        const no = idx.no >= 0 && col[idx.no] ? col[idx.no] : "";
-        if(!no) continue;
-
-        data[no] = {
-            name: idx.name >= 0 && col[idx.name] ? col[idx.name] : "",
-            no: no,
-            fatherId: idx.fatherId >= 0 && col[idx.fatherId] ? col[idx.fatherId] : "",
-            rank: idx.rank >= 0 && col[idx.rank] ? col[idx.rank] : "",
-            generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation] : "",
-            zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi] : "",
-            wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife] : "",
-            photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks] : "",
-            note: idx.note >= 0 && col[idx.note] ? col[idx.note] : "",
-            residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence] : "",
-            burialPlace: idx.burialPlace >= 0 && col[idx.burialPlace] ? col[idx.burialPlace] : "",
-            birthYear: idx.birthYear >= 0 && col[idx.birthYear] ? col[idx.birthYear] : "",
-            deathYear: idx.deathYear >= 0 && col[idx.deathYear] ? col[idx.deathYear] : ""
-        };
-    }
-    return data;
+  }
+  return data;
 }
 
-document.getElementById('input_name').addEventListener('input',function(){
-    let v = this.value.replace(/[^\u4e00-\u9fa5]/g,"");
-    this.value = v.slice(0,2);
-});
-document.getElementById('input_wife').addEventListener('input',function(){
-    let v = this.value.replace(/[^\u4e00-\u9fa5]/g,"");
-    this.value = v.slice(0,3);
-});
-document.getElementById('input_rank').addEventListener('input',function(){
-    this.value = this.value.replace(/\D/g,"");
-});
-document.getElementById('input_birthYear').addEventListener('input',function(){
-    this.value = this.value.replace(/\D/g,"").slice(0,4);
-});
-document.getElementById('input_deathYear').addEventListener('input',function(){
-    this.value = this.value.replace(/\D/g,"").slice(0,4);
-});
-
 window.onload = async function(){
-    const params = new URLSearchParams(location.search);
-    targetId = params.get("id")?.replace(/#.*$/, "") || null;
+  const params = new URLSearchParams(location.search);
+  targetId = params.get("id")?.replace(/#.*$/, "") || null;
 
-    document.getElementById('backToPerson').href = targetId
-        ? "person.html?id=" + encodeURIComponent(targetId)
-        : "index.html";
+  document.getElementById('backToPerson').href = targetId
+    ? "person.html?id=" + encodeURIComponent(targetId)
+    : "index.html";
 
-    if(!targetId){
-        document.getElementById('loadingBox').textContent = '缺少编号参数';
-        return;
+  if(!targetId){
+    document.getElementById('loadingBox').textContent = '缺少编号参数';
+    return;
+  }
+
+  try{
+    const res = await fetch(CSV_URL + "?t=" + Date.now());
+    const text = await res.text();
+    people = parseCSV(text);
+
+    originalData = people[targetId];
+    if(!originalData){
+      document.getElementById('loadingBox').textContent = '查无此记录：' + targetId;
+      return;
     }
 
-    try{
-        const res = await fetch(CSV_URL + "?t=" + Date.now());
-        const text = await res.text();
-        people = parseCSV(text);
+    const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
 
-        originalData = people[targetId];
-        if(!originalData){
-            document.getElementById('loadingBox').textContent = '查无此记录：' + targetId;
-            return;
-        }
+    document.getElementById('orig_name').textContent = withSurname(originalData.name);
+    document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
+    document.getElementById('orig_rank').textContent = originalData.rank || "—";
+    document.getElementById('orig_gen').textContent = '第' + originalData.generation + '代';
+    document.getElementById('orig_wife').textContent = originalData.wife || "—";
+    document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
+    document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
+    document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
+    document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
+    document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
+    document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
 
-        const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('formBox').style.display = 'block';
 
-        document.getElementById('orig_name').textContent = withSurname(originalData.name);
-        document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
-        document.getElementById('orig_rank').textContent = originalData.rank || "—";
-        document.getElementById('orig_gen').textContent = '第' + originalData.generation + '代';
-        document.getElementById('orig_wife').textContent = originalData.wife || "—";
-        document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
-        document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
-        document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
-        document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
-        document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
-        document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
-
-        document.getElementById('loadingBox').style.display = 'none';
-        document.getElementById('formBox').style.display = 'block';
-
-    }catch(err){
-        console.error(err);
-        document.getElementById('loadingBox').textContent = '加载失败：' + err.message;
-    }
+  }catch(err){
+    console.error(err);
+    document.getElementById('loadingBox').textContent = '加载失败：' + err.message;
+  }
 };
 
 document.getElementById('submitBtn').addEventListener('click', function(){
-    const changes = {};
-    const currentYear = new Date().getFullYear();
+  const changes = {};
 
-    const newName = document.getElementById('input_name').value.trim();
-    const newRank = document.getElementById('input_rank').value.trim();
-    const newWife = document.getElementById('input_wife').value.trim();
-    const newPhotos = document.getElementById('input_photoLinks').value.trim();
-    const newNote = document.getElementById('input_note').value.trim();
-    const newResidence = document.getElementById('input_residence').value.trim();
-    const newBurialPlace = document.getElementById('input_burialPlace').value.trim();
-    const newBirthYear = document.getElementById('input_birthYear').value.trim();
-    const newDeathYear = document.getElementById('input_deathYear').value.trim();
+  const newName = document.getElementById('input_name').value.trim();
+  const newRank = document.getElementById('input_rank').value.trim();
+  const newWife = document.getElementById('input_wife').value.trim();
+  const newPhotos = document.getElementById('input_photoLinks').value.trim();
+  const newNote = document.getElementById('input_note').value.trim();
+  const newResidence = document.getElementById('input_residence').value.trim();
+  const newBurialPlace = document.getElementById('input_burialPlace').value.trim();
+  const newBirthYear = document.getElementById('input_birthYear').value.trim();
+  const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
-    const chineseReg = /^[\u4e00-\u9fa5]+$/;
+  if(newRank && Number(newRank) < 1){
+    showInfo("兄弟排行不能小于1", true);
+    return;
+  }
+  if(newBirthYear && newBirthYear !== CLEAR_MARK && !/^\d{4}$/.test(newBirthYear)){
+    showInfo("出生年份必须是4位数字", true);
+    return;
+  }
+  if(newDeathYear && newDeathYear !== CLEAR_MARK && !/^\d{4}$/.test(newDeathYear)){
+    showInfo("去世年份必须是4位数字", true);
+    return;
+  }
+  if(newName && newName !== CLEAR_MARK && [...newName].length > 2){
+    showInfo("名字最多两个汉字", true);
+    return;
+  }
+  if(newWife && newWife !== CLEAR_MARK && [...newWife].length > 3){
+    showInfo("妻子名字最多三个汉字", true);
+    return;
+  }
 
-    //排行逻辑：1可以继续补数字，2~9只能单独一位
-    if(newRank){
-        if(newRank[0] === '1'){
-            if(newRank.length>2 || Number(newRank) >15){
-                showInfo("排行只能 1~15", true);
-                return;
-            }
-        }else{
-            if(newRank.length>1 || Number(newRank)<2 || Number(newRank)>9){
-                showInfo("2到9只可以单独一位", true);
-                return;
-            }
-        }
-    }
+  if(newName && (newName === CLEAR_MARK || newName !== originalData.name)) changes.name = newName;
+  if(newRank && (newRank === CLEAR_MARK || newRank !== originalData.rank)) changes.rank = newRank;
+  if(newWife !== '' && (newWife === CLEAR_MARK || newWife !== originalData.wife)) changes.wife = newWife;
+  if(newPhotos && (newPhotos === CLEAR_MARK || newPhotos !== originalData.photoLinks)) changes.photoLinks = newPhotos;
+  if(newNote !== '' && (newNote === CLEAR_MARK || newNote !== originalData.note)) changes.note = newNote;
+  if(newResidence !== '' && (newResidence === CLEAR_MARK || newResidence !== originalData.residence)) changes.residence = newResidence;
+  if(newBurialPlace !== '' && (newBurialPlace === CLEAR_MARK || newBurialPlace !== originalData.burialPlace)) changes.burialPlace = newBurialPlace;
+  if(newBirthYear !== '' && (newBirthYear === CLEAR_MARK || newBirthYear !== originalData.birthYear)) changes.birthYear = newBirthYear;
+  if(newDeathYear !== '' && (newDeathYear === CLEAR_MARK || newDeathYear !== originalData.deathYear)) changes.deathYear = newDeathYear;
 
-    if(newName){
-        if(!chineseReg.test(newName)){
-            showInfo("名字只允许汉字", true);
-            return;
-        }
-        if([...newName].length > 2){
-            showInfo("名字最多两个汉字", true);
-            return;
-        }
-    }
+  if(Object.keys(changes).length === 0){
+    showInfo('您没有修改任何内容', true);
+    return;
+  }
 
-    if(newWife){
-        if(!chineseReg.test(newWife)){
-            showInfo("妻子名字只允许汉字", true);
-            return;
-        }
-        if([...newWife].length > 3){
-            showInfo("妻子名字最多三个汉字", true);
-            return;
-        }
-    }
-
-    if(newBirthYear){
-        if(!/^\d{4}$/.test(newBirthYear)){
-            showInfo("出生年份必须是4位数字", true);
-            return;
-        }
-        const b = Number(newBirthYear);
-        if(b > currentYear){
-            showInfo("出生年份不能大于当年：" + currentYear, true);
-            return;
-        }
-    }
-
-    if(newDeathYear){
-        if(!/^\d{4}$/.test(newDeathYear)){
-            showInfo("去世年份必须是4位数字", true);
-            return;
-        }
-        const d = Number(newDeathYear);
-        if(d > currentYear){
-            showInfo("去世年份不能大于当年：" + currentYear, true);
-            return;
-        }
-        if(newBirthYear){
-            const b = Number(newBirthYear);
-            if(d < b){
-                showInfo("去世年份不能早于出生年份", true);
-                return;
-            }
-        }
-    }
-
-    if(newName && newName !== originalData.name) changes.name = newName;
-    if(newRank && newRank !== originalData.rank) changes.rank = newRank;
-    if(newWife !== '' && newWife !== originalData.wife) changes.wife = newWife;
-    if(newPhotos && newPhotos !== originalData.photoLinks) changes.photoLinks = newPhotos;
-    if(newNote !== '' && newNote !== originalData.note) changes.note = newNote;
-    if(newResidence !== '' && newResidence !== originalData.residence) changes.residence = newResidence;
-    if(newBurialPlace !== '' && newBurialPlace !== originalData.burialPlace) changes.burialPlace = newBurialPlace;
-    if(newBirthYear !== '' && newBirthYear !== originalData.birthYear) changes.birthYear = newBirthYear;
-    if(newDeathYear !== '' && newDeathYear !== originalData.deathYear) changes.deathYear = newDeathYear;
-
-    if(Object.keys(changes).length === 0){
-        showInfo('您没有修改任何内容', true);
-        return;
-    }
-
-    window.location.href = "verify.html?type=4" +
-        "&id=" + encodeURIComponent(targetId) +
-        "&name=" + encodeURIComponent(changes.name || originalData.name) +
-        "&fatherName=" + encodeURIComponent(
-            (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId])
-                ? people[originalData.fatherId].name : ""
-        ) +
-        "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
-        "&gen=" + encodeURIComponent(originalData.generation) +
-        "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
-        "&photo=" + encodeURIComponent(changes.photoLinks || originalData.photoLinks) +
-        "&note=" + encodeURIComponent(changes.note || originalData.note) +
-        "&residence=" + encodeURIComponent(changes.residence || originalData.residence) +
-        "&burialPlace=" + encodeURIComponent(changes.burialPlace || originalData.burialPlace) +
-        "&birthYear=" + encodeURIComponent(changes.birthYear || originalData.birthYear) +
-        "&deathYear=" + encodeURIComponent(changes.deathYear || originalData.deathYear);
+  window.location.href = "verify.html?type=4" +
+    "&id=" + encodeURIComponent(targetId) +
+    "&name=" + encodeURIComponent(changes.name || originalData.name) +
+    "&fatherName=" + encodeURIComponent(
+      (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId])
+        ? people[originalData.fatherId].name : ""
+    ) +
+    "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
+    "&gen=" + encodeURIComponent(originalData.generation) +
+    "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
+    "&photo=" + encodeURIComponent(changes.photoLinks || originalData.photoLinks) +
+    "&note=" + encodeURIComponent(changes.note || originalData.note) +
+    "&residence=" + encodeURIComponent(changes.residence || originalData.residence) +
+    "&burialPlace=" + encodeURIComponent(changes.burialPlace || originalData.burialPlace) +
+    "&birthYear=" + encodeURIComponent(changes.birthYear || originalData.birthYear) +
+    "&deathYear=" + encodeURIComponent(changes.deathYear || originalData.deathYear);
 });
 </script>
 
