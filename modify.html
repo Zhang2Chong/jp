@@ -41,7 +41,7 @@ h1{
   margin-bottom:12px;
   gap:10px;
 }
-.form-label{
+.label{
   width:90px;
   color:#ddd;
   flex-shrink:0;
@@ -72,7 +72,7 @@ h1{
 .form-input.short{
   max-width:120px;
 }
-.form-original{
+.old-val{
   width:40%;
   padding:10px 12px;
   background:#222;
@@ -82,33 +82,6 @@ h1{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-}
-.tip-text{
-  font-size:12px;
-  color:#777;
-  margin-bottom:4px;
-  margin-left:100px;
-}
-.btn-block{
-  margin-top:24px;
-}
-.submit-btn{
-  width:100%;
-  padding:14px;
-  background:#e64a19;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  font-size:18px;
-  cursor:pointer;
-}
-.btn-clear{
-  padding: 2px 8px;
-  background:#992222;
-  color:white;
-  border:none;
-  border-radius:4px;
-  cursor:pointer;
 }
 .info-box{
   background:#2b2b2b;
@@ -122,128 +95,109 @@ h1{
 .info-box.error{
   color:#ff6b6b;
 }
-.loading{
-  text-align:center;
-  padding:40px;
-  color:#aaa;
+.btn-block{
+  margin-top:24px;
+}
+.submit-btn{
+  width:100%;
+  padding:14px;
+  background:#e62b19;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:18px;
+  cursor:pointer;
 }
 </style>
 </head>
 <body>
 <div class="wrapper">
-
-<div class="top-links">
-  <a href="index.html">← 返回主页</a>
-  <a id="backToPerson" href="#">← 返回上一页</a>
-</div>
-
-<h1>修改资料</h1>
-
-<div id="loadingBox" class="loading">正在加载资料...</div>
-<div id="formBox" style="display:none;">
-
-  <div class="form-row">
-    <div class="form-label">名字</div>
-    <div class="form-input-wrap">
-      <span class="name-prefix">张</span>
-      <input type="text" class="form-input" id="input_name" maxlength="2" placeholder="填入新内容修改">
-      <button type="button" class="btn-clear" data-field="input_name">清空</button>
+  <div class="top-links">
+    <a href="index.html">← 返回主页</a>
+    <a id="backToPerson" href="#">← 返回上一页</a>
+  </div>
+  <h1>修改资料</h1>
+  <div id="loadingBox" class="info-box" style="display:block;">正在加载资料...</div>
+  <div id="formBox" style="display:none;">
+    <div class="form-row">
+      <div class="label">名字</div>
+      <div class="form-input-wrap">
+        <span class="name-prefix">张</span>
+        <input type="text" class="form-input" id="input_name" maxlength="2" placeholder="填入新内容修改">
+      </div>
+      <div class="old-val" id="orig_name">—</div>
     </div>
-    <div class="form-original" id="orig_name">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">父亲</div>
-    <div style="flex:1;"></div>
-    <div class="form-original" id="orig_father">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">兄弟排行</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_rank" placeholder="填入新内容修改">
-      <button type="button" class="btn-clear" data-field="input_rank">清空</button>
+    <div class="form-row">
+      <div class="label">父亲</div>
+      <div class="form-input-wrap"></div>
+      <div class="old-val" id="orig_father">—</div>
     </div>
-    <div class="form-original" id="orig_rank">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">世代</div>
-    <div style="flex:1;"></div>
-    <div class="form-original" id="orig_gen">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">妻子</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_wife" maxlength="3" placeholder="填入新内容修改">
-      <button type="button" class="btn-clear" data-field="input_wife">清空</button>
+    <div class="form-row">
+      <div class="label">兄弟排行</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input" id="input_rank" placeholder="填入新内容修改">
+      </div>
+      <div class="old-val" id="orig_rank">—</div>
     </div>
-    <div class="form-original" id="orig_wife">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">现居地</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_residence" placeholder="填入新内容修改">
-      <button type="button" class="btn-clear" data-field="input_residence">清空</button>
+    <div class="form-row">
+      <div class="label">世代</div>
+      <div class="form-input-wrap"></div>
+      <div class="old-val" id="orig_gen">—</div>
     </div>
-    <div class="form-original" id="orig_residence">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">安葬地</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input" id="input_burialPlace" placeholder="填入新内容修改">
-      <button type="button" class="btn-clear" data-field="input_burialPlace">清空</button>
+    <div class="form-row">
+      <div class="label">妻子</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input" id="input_wife" maxlength="3" placeholder="填入新内容修改">
+      </div>
+      <div class="old-val" id="orig_wife">—</div>
     </div>
-    <div class="form-original" id="orig_burialPlace">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">出生年份</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
-      <button type="button" class="btn-clear" data-field="input_birthYear">清空</button>
+    <div class="form-row">
+      <div class="label">现居地</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input" id="input_residence" placeholder="填入新内容修改">
+      </div>
+      <div class="old-val" id="orig_residence">—</div>
     </div>
-    <div class="form-original" id="orig_birthYear">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">去世年份</div>
-    <div class="form-input-wrap">
-      <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
-      <button type="button" class="btn-clear" data-field="input_deathYear">清空</button>
+    <div class="form-row">
+      <div class="label">安葬地</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input" id="input_burialPlace" placeholder="填入新内容修改">
+      </div>
+      <div class="old-val" id="orig_burialPlace">—</div>
     </div>
-    <div class="form-original" id="orig_deathYear">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">相片链接</div>
-    <div class="form-input-wrap">
-      <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="填入新内容修改"></textarea>
-      <button type="button" class="btn-clear" data-field="input_photoLinks">清空</button>
+    <div class="form-row">
+      <div class="label">出生年份</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
+      </div>
+      <div class="old-val" id="orig_birthYear">—</div>
     </div>
-    <div class="form-original" id="orig_photoLinks">—</div>
-  </div>
-
-  <div class="form-row">
-    <div class="form-label">备注</div>
-    <div class="form-input-wrap">
-      <textarea class="form-input" id="input_note" rows="2" maxlength="500" placeholder="填入新内容修改"></textarea>
-      <button type="button" class="btn-clear" data-field="input_note">清空</button>
+    <div class="form-row">
+      <div class="label">去世年份</div>
+      <div class="form-input-wrap">
+        <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
+      </div>
+      <div class="old-val" id="orig_deathYear">—</div>
     </div>
-    <div class="form-original" id="orig_note">—</div>
+    <div class="form-row">
+      <div class="label">相片链接</div>
+      <div class="form-input-wrap">
+        <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="填入新内容修改"></textarea>
+      </div>
+      <div class="old-val" id="orig_photoLinks">—</div>
+    </div>
+    <div class="form-row">
+      <div class="label">备注</div>
+      <div class="form-input-wrap">
+        <textarea class="form-input" id="input_note" rows="2" maxlength="500" placeholder="填入新内容修改"></textarea>
+      </div>
+      <div class="old-val" id="orig_note">—</div>
+    </div>
+    <div class="info-box" id="infoBox"></div>
+    <div class="btn-block">
+      <button class="submit-btn" id="submitBtn">提交资料</button>
+    </div>
   </div>
-
-  <div class="info-box" id="infoBox"></div>
-
-  <div class="btn-block">
-    <button class="submit-btn" id="submitBtn">提交资料</button>
-  </div>
-
-</div>
-
 </div>
 
 <script>
@@ -251,46 +205,20 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList
 let targetId = null;
 let people = {};
 let originalData = null;
-
 const CLEAR_MARK = "【清空】";
-
-document.querySelectorAll('.btn-clear').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const fieldId = btn.dataset.field;
-    const el = document.getElementById(fieldId);
-    el.value = CLEAR_MARK;
-  });
-})
-
-function withSurname(name){
-  if(!name) return "";
-  const n=name.trim();
-  if(n.startsWith("张")) return n;
-  return "张"+n;
-}
 
 function showInfo(msg, isError=false){
   const box = document.getElementById('infoBox');
   box.style.display = 'block';
-  if(isError){
-    box.classList.add('error');
-  }else{
-    box.classList.remove('error');
-  }
+  box.className = isError ? "info-box error" : "info-box";
   box.textContent = msg;
-
-  if(isError){
-    setTimeout(()=>{
-      box.style.display = 'none';
-    }, 2500);
-  }
+  if(isError) setTimeout(()=>box.style.display='none',2500);
 }
 
 function parseCSV(text){
   const lines = text.trim().split("\n");
   const sep = lines[0].indexOf(",") >= 0 ? "," : "\t";
-  const header = lines[0].split(sep).map(h => h.trim());
-
+  const header = lines[0].split(sep).map(h=>h.trim());
   const idx = {
     name: header.indexOf('姓名'),
     no: header.indexOf('No'),
@@ -306,27 +234,25 @@ function parseCSV(text){
     birthYear: header.indexOf('出生年份'),
     deathYear: header.indexOf('去世年份')
   };
-
   const data = {};
   for(let i=1;i<lines.length;i++){
-    const col = lines[i].split(sep).map(c => c.trim());
-    const no = idx.no >= 0 && col[idx.no] ? col[idx.no] : "";
+    const col = lines[i].split(sep).map(c=>c.trim());
+    const no = idx.no >= 0 ? col[idx.no] : "";
     if(!no) continue;
-
     data[no] = {
-      name: idx.name >= 0 && col[idx.name] ? col[idx.name] : "",
+      name: idx.name >=0 ? col[idx.name] : "",
       no: no,
-      fatherId: idx.fatherId >= 0 && col[idx.fatherId] ? col[idx.fatherId] : "",
-      rank: idx.rank >= 0 && col[idx.rank] ? col[idx.rank] : "",
-      generation: idx.generation >= 0 && col[idx.generation] ? col[idx.generation] : "",
-      zi: idx.zi >= 0 && col[idx.zi] ? col[idx.zi] : "",
-      wife: idx.wife >= 0 && col[idx.wife] ? col[idx.wife] : "",
-      photoLinks: idx.photoLinks >= 0 && col[idx.photoLinks] ? col[idx.photoLinks] : "",
-      note: idx.note >= 0 && col[idx.note] ? col[idx.note] : "",
-      residence: idx.residence >= 0 && col[idx.residence] ? col[idx.residence] : "",
-      burialPlace: idx.burialPlace >= 0 && col[idx.burialPlace] ? col[idx.burialPlace] : "",
-      birthYear: idx.birthYear >= 0 && col[idx.birthYear] ? col[idx.birthYear] : "",
-      deathYear: idx.deathYear >= 0 && col[idx.deathYear] ? col[idx.deathYear] : ""
+      fatherId: idx.fatherId >=0 ? col[idx.fatherId] : "",
+      rank: idx.rank >=0 ? col[idx.rank] : "",
+      generation: idx.generation >=0 ? col[idx.generation] : "",
+      zi: idx.zi >=0 ? col[idx.zi] : "",
+      wife: idx.wife >=0 ? col[idx.wife] : "",
+      photoLinks: idx.photoLinks >=0 ? col[idx.photoLinks] : "",
+      note: idx.note >=0 ? col[idx.note] : "",
+      residence: idx.residence >=0 ? col[idx.residence] : "",
+      burialPlace: idx.burialPlace >=0 ? col[idx.burialPlace] : "",
+      birthYear: idx.birthYear >=0 ? col[idx.birthYear] : "",
+      deathYear: idx.deathYear >=0 ? col[idx.deathYear] : ""
     };
   }
   return data;
@@ -334,55 +260,43 @@ function parseCSV(text){
 
 window.onload = async function(){
   const params = new URLSearchParams(location.search);
-  targetId = params.get("id")?.replace(/#.*$/, "") || null;
-
-  document.getElementById('backToPerson').href = targetId
-    ? "person.html?id=" + encodeURIComponent(targetId)
-    : "index.html";
-
+  targetId = params.get("id")?.replace(/#.*$/,"") || null;
+  document.getElementById('backToPerson').href = targetId ? `person.html?id=${targetId}` : "index.html";
   if(!targetId){
-    document.getElementById('loadingBox').textContent = '缺少编号参数';
+    document.getElementById('loadingBox').textContent = "缺少编号参数";
     return;
   }
-
   try{
     const res = await fetch(CSV_URL + "?t=" + Date.now());
     const text = await res.text();
     people = parseCSV(text);
-
     originalData = people[targetId];
     if(!originalData){
-      document.getElementById('loadingBox').textContent = '查无此记录：' + targetId;
+      document.getElementById('loadingBox').textContent = "查无此记录：" + targetId;
       return;
     }
-
-    const father = originalData.fatherId && originalData.fatherId !== "0" ? people[originalData.fatherId] : null;
-
-    document.getElementById('orig_name').textContent = withSurname(originalData.name);
-    document.getElementById('orig_father').textContent = father ? withSurname(father.name) : "—";
+    const father = (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId]) ? people[originalData.fatherId] : null;
+    document.getElementById('orig_name').textContent = originalData.name;
+    document.getElementById('orig_father').textContent = father ? ("张"+father.name) : "—";
     document.getElementById('orig_rank').textContent = originalData.rank || "—";
-    document.getElementById('orig_gen').textContent = '第' + originalData.generation + '代';
+    document.getElementById('orig_gen').textContent = "第" + originalData.generation + "代";
     document.getElementById('orig_wife').textContent = originalData.wife || "—";
-    document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
-    document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
     document.getElementById('orig_residence').textContent = originalData.residence || "暂无";
     document.getElementById('orig_burialPlace').textContent = originalData.burialPlace || "暂无";
     document.getElementById('orig_birthYear').textContent = originalData.birthYear || "暂无";
     document.getElementById('orig_deathYear').textContent = originalData.deathYear || "暂无";
-
-    document.getElementById('loadingBox').style.display = 'none';
-    document.getElementById('formBox').style.display = 'block';
-
+    document.getElementById('orig_photoLinks').textContent = originalData.photoLinks || "暂无相片";
+    document.getElementById('orig_note').textContent = originalData.note || "暂无备注";
+    document.getElementById('loadingBox').style.display = "none";
+    document.getElementById('formBox').style.display = "block";
   }catch(err){
-    console.error(err);
-    document.getElementById('loadingBox').textContent = '加载失败：' + err.message;
+    document.getElementById('loadingBox').textContent = "加载失败：" + err.message;
   }
-};
+}
 
 document.getElementById('submitBtn').addEventListener('click', function(){
   const changes = {};
   const currentYear = new Date().getFullYear();
-
   const newName = document.getElementById('input_name').value.trim();
   const newRank = document.getElementById('input_rank').value.trim();
   const newWife = document.getElementById('input_wife').value.trim();
@@ -393,58 +307,33 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
-  // 名字校验
-  if(newName && newName !== CLEAR_MARK && [...newName].length > 2){
-    showInfo("名字最多两个汉字", true);
-    return;
+  if(newName && newName !== CLEAR_MARK && [...newName].length>2){
+    showInfo("名字最多两个汉字",true);return;
   }
-  // 妻子校验
-  if(newWife && newWife !== CLEAR_MARK && [...newWife].length > 3){
-    showInfo("妻子名字最多三个汉字", true);
-    return;
+  if(newWife && newWife !== CLEAR_MARK && [...newWife].length>3){
+    showInfo("妻子名字最多三个汉字",true);return;
   }
-  // 兄弟排行校验 1~19
   if(newRank && newRank !== CLEAR_MARK){
-    const rankNum = Number(newRank);
-    if(isNaN(rankNum) || rankNum < 1 || rankNum > 19){
-      showInfo("兄弟排行只能填 1 到 19", true);
-      return;
+    const r = Number(newRank);
+    if(isNaN(r) || r<1 || r>19){
+      showInfo("兄弟排行只能填1到19",true);return;
     }
   }
-  // 出生年份校验
   if(newBirthYear && newBirthYear !== CLEAR_MARK){
-    if(!/^\d{4}$/.test(newBirthYear)){
-      showInfo("出生年份必须是4位数字", true);
-      return;
-    }
-    const bNum = Number(newBirthYear);
-    if(bNum > currentYear){
-      showInfo("出生年份不能超过今年", true);
-      return;
-    }
+    if(!/^\d{4}$/.test(newBirthYear)){showInfo("出生年份必须4位数字",true);return;}
+    const b = Number(newBirthYear);
+    if(b>currentYear){showInfo("出生年份不能超过今年",true);return;}
   }
-  // 去世年份校验
   if(newDeathYear && newDeathYear !== CLEAR_MARK){
-    if(!/^\d{4}$/.test(newDeathYear)){
-      showInfo("去世年份必须是4位数字", true);
-      return;
-    }
-    const dNum = Number(newDeathYear);
-    if(dNum > currentYear){
-      showInfo("去世年份不能超过今年", true);
-      return;
-    }
+    if(!/^\d{4}$/.test(newDeathYear)){showInfo("去世年份必须4位数字",true);return;}
+    const d = Number(newDeathYear);
+    if(d>currentYear){showInfo("去世年份不能超过今年",true);return;}
   }
-  // 出生、去世都有填写，校验去世>出生
   let useBirth = newBirthYear === CLEAR_MARK ? null : (newBirthYear || originalData.birthYear);
   let useDeath = newDeathYear === CLEAR_MARK ? null : (newDeathYear || originalData.deathYear);
   if(useBirth && useDeath && /^\d{4}$/.test(useBirth) && /^\d{4}$/.test(useDeath)){
-    const b = Number(useBirth);
-    const d = Number(useDeath);
-    if(d <= b){
-      showInfo("去世年份必须大于出生年份", true);
-      return;
-    }
+    const b = Number(useBirth), d = Number(useDeath);
+    if(d <= b){showInfo("去世年份必须大于出生年份",true);return;}
   }
 
   if(newName && (newName === CLEAR_MARK || newName !== originalData.name)) changes.name = newName;
@@ -458,17 +347,12 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   if(newDeathYear !== '' && (newDeathYear === CLEAR_MARK || newDeathYear !== originalData.deathYear)) changes.deathYear = newDeathYear;
 
   if(Object.keys(changes).length === 0){
-    showInfo('您没有修改任何内容', true);
-    return;
+    showInfo("您没有修改任何内容",true);return;
   }
-
   window.location.href = "verify.html?type=4" +
     "&id=" + encodeURIComponent(targetId) +
     "&name=" + encodeURIComponent(changes.name || originalData.name) +
-    "&fatherName=" + encodeURIComponent(
-      (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId])
-        ? people[originalData.fatherId].name : ""
-    ) +
+    "&fatherName=" + encodeURIComponent( (originalData.fatherId && originalData.fatherId !== "0" && people[originalData.fatherId]) ? people[originalData.fatherId].name : "" ) +
     "&rank=" + encodeURIComponent(changes.rank || originalData.rank) +
     "&gen=" + encodeURIComponent(originalData.generation) +
     "&wife=" + encodeURIComponent(changes.wife || originalData.wife) +
@@ -480,6 +364,5 @@ document.getElementById('submitBtn').addEventListener('click', function(){
     "&deathYear=" + encodeURIComponent(changes.deathYear || originalData.deathYear);
 });
 </script>
-
 </body>
 </html>
