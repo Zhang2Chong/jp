@@ -111,7 +111,7 @@ h2{
 
         <div class="form-row">
             <div class="form-label">兄弟排行</div>
-            <input type="number" class="form-input" id="birthOrder" value="1" min="1" max="19" placeholder="1~19">
+            <input type="text" class="form-input" id="birthOrder" value="1" placeholder="1可附加编号，2-19只允许纯数字">
         </div>
 
         <div class="form-row">
@@ -221,6 +221,23 @@ document.getElementById('addForm').addEventListener('submit', function(e){
     }
     if(wifeName && !wifeReg.test(wifeName)){
         alert('妻子名字只能够输入中文汉字，最多四个字');
+        return;
+    }
+
+    // 和 modify 页面同一套校验规则
+    const baseMatch = birthOrder.match(/^(\d+)/);
+    if(!baseMatch){
+        alert("兄弟排行开头必须是数字");
+        return;
+    }
+    const baseNum = parseInt(baseMatch[1]);
+    if(baseNum < 1 || baseNum > 19){
+        alert("兄弟排行基础数字必须在1～19之间");
+        return;
+    }
+    // 2~19 只能纯数字，不能带后缀
+    if(baseNum >=2 && birthOrder !== String(baseNum)){
+        alert("排行2到19只可以填纯数字，不能加别的编号");
         return;
     }
 
