@@ -102,14 +102,6 @@ h1{
     font-size:18px;
     cursor:pointer;
 }
-.btn-clear{
-    padding: 2px 8px;
-    background:#992222;
-    color:white;
-    border:none;
-    border-radius:4px;
-    cursor:pointer;
-}
 .info-box{
     background:#2b2b2b;
     padding:12px;
@@ -147,7 +139,6 @@ h1{
         <div class="form-input-wrap">
             <span class="name-prefix">张</span>
             <input type="text" class="form-input" id="input_name" maxlength="2" placeholder="填入新内容修改">
-            <button type="button" class="btn-clear" data-field="input_name">清空</button>
         </div>
         <div class="form-original" id="orig_name">—</div>
     </div>
@@ -162,7 +153,6 @@ h1{
         <div class="form-label">兄弟排行</div>
         <div class="form-input-wrap">
             <input type="text" class="form-input" id="input_rank" placeholder="填入新内容修改">
-            <button type="button" class="btn-clear" data-field="input_rank">清空</button>
         </div>
         <div class="form-original" id="orig_rank">—</div>
     </div>
@@ -177,7 +167,6 @@ h1{
         <div class="form-label">妻子</div>
         <div class="form-input-wrap">
             <input type="text" class="form-input" id="input_wife" maxlength="3" placeholder="填入新内容修改">
-            <button type="button" class="btn-clear" data-field="input_wife">清空</button>
         </div>
         <div class="form-original" id="orig_wife">—</div>
     </div>
@@ -186,7 +175,6 @@ h1{
         <div class="form-label">现居地</div>
         <div class="form-input-wrap">
             <input type="text" class="form-input" id="input_residence" placeholder="填入新内容修改">
-            <button type="button" class="btn-clear" data-field="input_residence">清空</button>
         </div>
         <div class="form-original" id="orig_residence">—</div>
     </div>
@@ -195,7 +183,6 @@ h1{
         <div class="form-label">安葬地</div>
         <div class="form-input-wrap">
             <input type="text" class="form-input" id="input_burialPlace" placeholder="填入新内容修改">
-            <button type="button" class="btn-clear" data-field="input_burialPlace">清空</button>
         </div>
         <div class="form-original" id="orig_burialPlace">—</div>
     </div>
@@ -204,7 +191,6 @@ h1{
         <div class="form-label">出生年份</div>
         <div class="form-input-wrap">
             <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
-            <button type="button" class="btn-clear" data-field="input_birthYear">清空</button>
         </div>
         <div class="form-original" id="orig_birthYear">—</div>
     </div>
@@ -213,7 +199,6 @@ h1{
         <div class="form-label">去世年份</div>
         <div class="form-input-wrap">
             <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
-            <button type="button" class="btn-clear" data-field="input_deathYear">清空</button>
         </div>
         <div class="form-original" id="orig_deathYear">—</div>
     </div>
@@ -222,7 +207,6 @@ h1{
         <div class="form-label">相片链接</div>
         <div class="form-input-wrap">
             <textarea class="form-input" id="input_photoLinks" rows="2" placeholder="填入新内容修改"></textarea>
-            <button type="button" class="btn-clear" data-field="input_photoLinks">清空</button>
         </div>
         <div class="form-original" id="orig_photoLinks">—</div>
     </div>
@@ -231,7 +215,6 @@ h1{
         <div class="form-label">备注</div>
         <div class="form-input-wrap">
             <textarea class="form-input" id="input_note" rows="2" maxlength="500" placeholder="填入新内容修改"></textarea>
-            <button type="button" class="btn-clear" data-field="input_note">清空</button>
         </div>
         <div class="form-original" id="orig_note">—</div>
     </div>
@@ -251,16 +234,6 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList
 let targetId = null;
 let people = {};
 let originalData = null;
-
-const CLEAR_MARK = "【清空】";
-
-document.querySelectorAll('.btn-clear').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const fieldId = btn.dataset.field;
-        const el = document.getElementById(fieldId);
-        el.value = CLEAR_MARK;
-    });
-});
 
 function withSurname(name){
     if(!name) return "";
@@ -428,7 +401,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         }
     }
 
-    if(newName && newName !== CLEAR_MARK){
+    if(newName){
         if(!chineseReg.test(newName)){
             showInfo("名字只允许汉字", true);
             return;
@@ -439,7 +412,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         }
     }
 
-    if(newWife && newWife !== CLEAR_MARK){
+    if(newWife){
         if(!chineseReg.test(newWife)){
             showInfo("妻子名字只允许汉字", true);
             return;
@@ -450,7 +423,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         }
     }
 
-    if(newBirthYear && newBirthYear !== CLEAR_MARK){
+    if(newBirthYear){
         if(!/^\d{4}$/.test(newBirthYear)){
             showInfo("出生年份必须是4位数字", true);
             return;
@@ -462,7 +435,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         }
     }
 
-    if(newDeathYear && newDeathYear !== CLEAR_MARK){
+    if(newDeathYear){
         if(!/^\d{4}$/.test(newDeathYear)){
             showInfo("去世年份必须是4位数字", true);
             return;
@@ -472,7 +445,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
             showInfo("去世年份不能大于当年：" + currentYear, true);
             return;
         }
-        if(newBirthYear && newBirthYear !== CLEAR_MARK){
+        if(newBirthYear){
             const b = Number(newBirthYear);
             if(d < b){
                 showInfo("去世年份不能早于出生年份", true);
@@ -481,15 +454,15 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         }
     }
 
-    if(newName && (newName === CLEAR_MARK || newName !== originalData.name)) changes.name = newName;
-    if(newRank && (newRank === CLEAR_MARK || newRank !== originalData.rank)) changes.rank = newRank;
-    if(newWife !== '' && (newWife === CLEAR_MARK || newWife !== originalData.wife)) changes.wife = newWife;
-    if(newPhotos && (newPhotos === CLEAR_MARK || newPhotos !== originalData.photoLinks)) changes.photoLinks = newPhotos;
-    if(newNote !== '' && (newNote === CLEAR_MARK || newNote !== originalData.note)) changes.note = newNote;
-    if(newResidence !== '' && (newResidence === CLEAR_MARK || newResidence !== originalData.residence)) changes.residence = newResidence;
-    if(newBurialPlace !== '' && (newBurialPlace === CLEAR_MARK || newBurialPlace !== originalData.burialPlace)) changes.burialPlace = newBurialPlace;
-    if(newBirthYear !== '' && (newBirthYear === CLEAR_MARK || newBirthYear !== originalData.birthYear)) changes.birthYear = newBirthYear;
-    if(newDeathYear !== '' && (newDeathYear === CLEAR_MARK || newDeathYear !== originalData.deathYear)) changes.deathYear = newDeathYear;
+    if(newName && newName !== originalData.name) changes.name = newName;
+    if(newRank && newRank !== originalData.rank) changes.rank = newRank;
+    if(newWife !== '' && newWife !== originalData.wife) changes.wife = newWife;
+    if(newPhotos && newPhotos !== originalData.photoLinks) changes.photoLinks = newPhotos;
+    if(newNote !== '' && newNote !== originalData.note) changes.note = newNote;
+    if(newResidence !== '' && newResidence !== originalData.residence) changes.residence = newResidence;
+    if(newBurialPlace !== '' && newBurialPlace !== originalData.burialPlace) changes.burialPlace = newBurialPlace;
+    if(newBirthYear !== '' && newBirthYear !== originalData.birthYear) changes.birthYear = newBirthYear;
+    if(newDeathYear !== '' && newDeathYear !== originalData.deathYear) changes.deathYear = newDeathYear;
 
     if(Object.keys(changes).length === 0){
         showInfo('您没有修改任何内容', true);
