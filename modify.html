@@ -414,9 +414,12 @@ document.getElementById('submitBtn').addEventListener('click', function(){
 
     const chineseReg = /^[\u4e00-\u9fa5]+$/;
 
-    if(newRank && Number(newRank) < 1){
-        showInfo("兄弟排行不能小于1", true);
-        return;
+    if(newRank){
+        const r = Number(newRank);
+        if(r < 1 || r > 15){
+            showInfo("兄弟排行范围：1～15", true);
+            return;
+        }
     }
 
     if(newName && newName !== CLEAR_MARK){
