@@ -205,7 +205,6 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList
 let targetId = null;
 let people = {};
 let originalData = null;
-const CLEAR_MARK = "【清空】";
 
 function showInfo(msg, isError=false){
   const box = document.getElementById('infoBox');
@@ -214,6 +213,32 @@ function showInfo(msg, isError=false){
   box.textContent = msg;
   if(isError) setTimeout(()=>box.style.display='none',2500);
 }
+
+// 名字框：只允许汉字
+document.getElementById('input_name').addEventListener('input', function(){
+  this.value = this.value.replace(/[^\u4e00-\u9fa5]/g,'');
+});
+// 妻子框：只允许汉字
+document.getElementById('input_wife').addEventListener('input', function(){
+  this.value = this.value.replace(/[^\u4e00-\u9fa5]/g,'');
+});
+// 兄弟排行：只允许数字，范围1-19
+document.getElementById('input_rank').addEventListener('input', function(){
+  let v = this.value.replace(/[^\d]/g,'');
+  if(v !== ''){
+    let n = Number(v);
+    if(n>19) v = '19';
+  }
+  this.value = v;
+});
+// 出生年份：只数字
+document.getElementById('input_birthYear').addEventListener('input', function(){
+  this.value = this.value.replace(/[^\d]/g,'');
+});
+// 去世年份：只数字
+document.getElementById('input_deathYear').addEventListener('input', function(){
+  this.value = this.value.replace(/[^\d]/g,'');
+});
 
 function parseCSV(text){
   const lines = text.trim().split("\n");
@@ -307,44 +332,44 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
-  if(newName && newName !== CLEAR_MARK && [...newName].length>2){
+  if(newName && [...newName].length>2){
     showInfo("名字最多两个汉字",true);return;
   }
-  if(newWife && newWife !== CLEAR_MARK && [...newWife].length>3){
+  if(newWife && [...newWife].length>3){
     showInfo("妻子名字最多三个汉字",true);return;
   }
-  if(newRank && newRank !== CLEAR_MARK){
+  if(newRank){
     const r = Number(newRank);
     if(isNaN(r) || r<1 || r>19){
       showInfo("兄弟排行只能填1到19",true);return;
     }
   }
-  if(newBirthYear && newBirthYear !== CLEAR_MARK){
+  if(newBirthYear){
     if(!/^\d{4}$/.test(newBirthYear)){showInfo("出生年份必须4位数字",true);return;}
     const b = Number(newBirthYear);
     if(b>currentYear){showInfo("出生年份不能超过今年",true);return;}
   }
-  if(newDeathYear && newDeathYear !== CLEAR_MARK){
+  if(newDeathYear){
     if(!/^\d{4}$/.test(newDeathYear)){showInfo("去世年份必须4位数字",true);return;}
     const d = Number(newDeathYear);
     if(d>currentYear){showInfo("去世年份不能超过今年",true);return;}
   }
-  let useBirth = newBirthYear === CLEAR_MARK ? null : (newBirthYear || originalData.birthYear);
-  let useDeath = newDeathYear === CLEAR_MARK ? null : (newDeathYear || originalData.deathYear);
+  let useBirth = newBirthYear || originalData.birthYear;
+  let useDeath = newDeathYear || originalData.deathYear;
   if(useBirth && useDeath && /^\d{4}$/.test(useBirth) && /^\d{4}$/.test(useDeath)){
     const b = Number(useBirth), d = Number(useDeath);
     if(d <= b){showInfo("去世年份必须大于出生年份",true);return;}
   }
 
-  if(newName && (newName === CLEAR_MARK || newName !== originalData.name)) changes.name = newName;
-  if(newRank && (newRank === CLEAR_MARK || newRank !== originalData.rank)) changes.rank = newRank;
-  if(newWife !== '' && (newWife === CLEAR_MARK || newWife !== originalData.wife)) changes.wife = newWife;
-  if(newPhotos && (newPhotos === CLEAR_MARK || newPhotos !== originalData.photoLinks)) changes.photoLinks = newPhotos;
-  if(newNote !== '' && (newNote === CLEAR_MARK || newNote !== originalData.note)) changes.note = newNote;
-  if(newResidence !== '' && (newResidence === CLEAR_MARK || newResidence !== originalData.residence)) changes.residence = newResidence;
-  if(newBurialPlace !== '' && (newBurialPlace === CLEAR_MARK || newBurialPlace !== originalData.burialPlace)) changes.burialPlace = newBurialPlace;
-  if(newBirthYear !== '' && (newBirthYear === CLEAR_MARK || newBirthYear !== originalData.birthYear)) changes.birthYear = newBirthYear;
-  if(newDeathYear !== '' && (newDeathYear === CLEAR_MARK || newDeathYear !== originalData.deathYear)) changes.deathYear = newDeathYear;
+  if(newName && newName !== originalData.name) changes.name = newName;
+  if(newRank && newRank !== originalData.rank) changes.rank = newRank;
+  if(newWife !== '' && newWife !== originalData.wife) changes.wife = newWife;
+  if(newPhotos && newPhotos !== originalData.photoLinks) changes.photoLinks = newPhotos;
+  if(newNote !== '' && newNote !== originalData.note) changes.note = newNote;
+  if(newResidence !== '' && newResidence !== originalData.residence) changes.residence = newResidence;
+  if(newBurialPlace !== '' && newBurialPlace !== originalData.burialPlace) changes.burialPlace = newBurialPlace;
+  if(newBirthYear !== '' && newBirthYear !== originalData.birthYear) changes.birthYear = newBirthYear;
+  if(newDeathYear !== '' && newDeathYear !== originalData.deathYear) changes.deathYear = newDeathYear;
 
   if(Object.keys(changes).length === 0){
     showInfo("您没有修改任何内容",true);return;
