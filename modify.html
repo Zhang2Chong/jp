@@ -381,7 +381,6 @@ window.onload = async function(){
 
 document.getElementById('submitBtn').addEventListener('click', function(){
   const changes = {};
-  const currentYear = new Date().getFullYear();
 
   const newName = document.getElementById('input_name').value.trim();
   const newRank = document.getElementById('input_rank').value.trim();
@@ -393,39 +392,18 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
-  // 兄弟排行：最多10
-  if(newRank && newRank !== CLEAR_MARK){
-    const r = Number(newRank);
-    if(isNaN(r) || r < 1 || r > 10){
-      showInfo("兄弟排行只能填1~10", true);
-      return;
-    }
+  if(newRank && Number(newRank) < 1){
+    showInfo("兄弟排行不能小于1", true);
+    return;
   }
-
-  if(newBirthYear && newBirthYear !== CLEAR_MARK){
-    if(!/^\d{4}$/.test(newBirthYear)){
-      showInfo("出生年份必须是4位数字", true);
-      return;
-    }
-    const b = Number(newBirthYear);
-    if(b > currentYear){
-      showInfo("出生年份不能超过当前年份", true);
-      return;
-    }
+  if(newBirthYear && newBirthYear !== CLEAR_MARK && !/^\d{4}$/.test(newBirthYear)){
+    showInfo("出生年份必须是4位数字", true);
+    return;
   }
-
-  if(newDeathYear && newDeathYear !== CLEAR_MARK){
-    if(!/^\d{4}$/.test(newDeathYear)){
-      showInfo("去世年份必须是4位数字", true);
-      return;
-    }
-    const d = Number(newDeathYear);
-    if(d > currentYear){
-      showInfo("去世年份不能超过当前年份", true);
-      return;
-    }
+  if(newDeathYear && newDeathYear !== CLEAR_MARK && !/^\d{4}$/.test(newDeathYear)){
+    showInfo("去世年份必须是4位数字", true);
+    return;
   }
-
   if(newName && newName !== CLEAR_MARK && [...newName].length > 2){
     showInfo("名字最多两个汉字", true);
     return;
