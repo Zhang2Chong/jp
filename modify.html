@@ -83,6 +83,11 @@ h1{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+.year-tip{
+  color:#ff7777;
+  font-size:13px;
+  white-space:nowrap;
+}
 .info-box{
   background:#2b2b2b;
   padding:12px;
@@ -129,7 +134,8 @@ h1{
     </div>
     <div class="form-row">
       <div class="label">父亲</div>
-      <div class="form-input-wrap"></div>
+      <div class="form-input-wrap">
+      </div>
       <div class="old-val" id="orig_father">—</div>
     </div>
     <div class="form-row">
@@ -141,7 +147,8 @@ h1{
     </div>
     <div class="form-row">
       <div class="label">世代</div>
-      <div class="form-input-wrap"></div>
+      <div class="form-input-wrap">
+      </div>
       <div class="old-val" id="orig_gen">—</div>
     </div>
     <div class="form-row">
@@ -169,6 +176,7 @@ h1{
       <div class="label">出生年份</div>
       <div class="form-input-wrap">
         <input type="text" class="form-input short" id="input_birthYear" maxlength="4" placeholder="4位数字">
+        <span class="year-tip" id="tip_birth"></span>
       </div>
       <div class="old-val" id="orig_birthYear">—</div>
     </div>
@@ -176,6 +184,7 @@ h1{
       <div class="label">去世年份</div>
       <div class="form-input-wrap">
         <input type="text" class="form-input short" id="input_deathYear" maxlength="4" placeholder="4位数字">
+        <span class="year-tip" id="tip_death"></span>
       </div>
       <div class="old-val" id="orig_deathYear">—</div>
     </div>
@@ -205,6 +214,7 @@ const CSV_URL = "https://raw.githubusercontent.com/zhang2chong/jp/main/ZhangList
 let targetId = null;
 let people = {};
 let originalData = null;
+const currentYear = new Date().getFullYear();
 
 function showInfo(msg, isError=false){
   const box = document.getElementById('infoBox');
@@ -213,6 +223,10 @@ function showInfo(msg, isError=false){
   box.textContent = msg;
   if(isError) setTimeout(()=>box.style.display='none',2500);
 }
+
+// 年份提示
+document.getElementById('tip_birth').textContent = `不可大于${currentYear}`;
+document.getElementById('tip_death').textContent = `不可大于${currentYear}`;
 
 // 名字框：只允许汉字
 document.getElementById('input_name').addEventListener('input', function(){
@@ -231,14 +245,44 @@ document.getElementById('input_rank').addEventListener('input', function(){
   }
   this.value = v;
 });
-// 出生年份：只数字
+
+// 出生年份：只数字，大于当年则清空本框
 document.getElementById('input_birthYear').addEventListener('input', function(){
-  this.value = this.value.replace(/[^\d]/g,'');
+  let v = this.value.replace(/[^\d]/g,'');
+  this.value = v;
+  if(v.length === 4){
+    let num = Number(v);
+    if(num > currentYear){
+      this.value = '';
+    }
+    // 去世年份 >= 出生年份
+    checkDeathGeBirth();
+  }
 });
-// 去世年份：只数字
+// 去世年份：只数字，大于当年则清空本框
 document.getElementById('input_deathYear').addEventListener('input', function(){
-  this.value = this.value.replace(/[^\d]/g,'');
+  let v = this.value.replace(/[^\d]/g,'');
+  this.value = v;
+  if(v.length === 4){
+    let num = Number(v);
+    if(num > currentYear){
+      this.value = '';
+    }
+    checkDeathGeBirth();
+  }
 });
+// 校验：去世 >= 出生，相等允许
+function checkDeathGeBirth(){
+  let bVal = document.getElementById('input_birthYear').value;
+  let dVal = document.getElementById('input_deathYear').value;
+  if(bVal.length ===4 && dVal.length ===4){
+    let b = Number(bVal);
+    let d = Number(dVal);
+    if(d < b){
+      document.getElementById('input_deathYear').value = '';
+    }
+  }
+}
 
 function parseCSV(text){
   const lines = text.trim().split("\n");
@@ -321,7 +365,6 @@ window.onload = async function(){
 
 document.getElementById('submitBtn').addEventListener('click', function(){
   const changes = {};
-  const currentYear = new Date().getFullYear();
   const newName = document.getElementById('input_name').value.trim();
   const newRank = document.getElementById('input_rank').value.trim();
   const newWife = document.getElementById('input_wife').value.trim();
@@ -331,35 +374,6 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBurialPlace = document.getElementById('input_burialPlace').value.trim();
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
-
-  if(newName && [...newName].length>2){
-    showInfo("名字最多两个汉字",true);return;
-  }
-  if(newWife && [...newWife].length>3){
-    showInfo("妻子名字最多三个汉字",true);return;
-  }
-  if(newRank){
-    const r = Number(newRank);
-    if(isNaN(r) || r<1 || r>19){
-      showInfo("兄弟排行只能填1到19",true);return;
-    }
-  }
-  if(newBirthYear){
-    if(!/^\d{4}$/.test(newBirthYear)){showInfo("出生年份必须4位数字",true);return;}
-    const b = Number(newBirthYear);
-    if(b>currentYear){showInfo("出生年份不能超过今年",true);return;}
-  }
-  if(newDeathYear){
-    if(!/^\d{4}$/.test(newDeathYear)){showInfo("去世年份必须4位数字",true);return;}
-    const d = Number(newDeathYear);
-    if(d>currentYear){showInfo("去世年份不能超过今年",true);return;}
-  }
-  let useBirth = newBirthYear || originalData.birthYear;
-  let useDeath = newDeathYear || originalData.deathYear;
-  if(useBirth && useDeath && /^\d{4}$/.test(useBirth) && /^\d{4}$/.test(useDeath)){
-    const b = Number(useBirth), d = Number(useDeath);
-    if(d <= b){showInfo("去世年份必须大于出生年份",true);return;}
-  }
 
   if(newName && newName !== originalData.name) changes.name = newName;
   if(newRank && newRank !== originalData.rank) changes.rank = newRank;
@@ -372,7 +386,8 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   if(newDeathYear !== '' && newDeathYear !== originalData.deathYear) changes.deathYear = newDeathYear;
 
   if(Object.keys(changes).length === 0){
-    showInfo("您没有修改任何内容",true);return;
+    showInfo("您没有修改任何内容",true);
+    return;
   }
   window.location.href = "verify.html?type=4" +
     "&id=" + encodeURIComponent(targetId) +
