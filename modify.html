@@ -259,7 +259,7 @@ document.querySelectorAll('.btn-clear').forEach(btn => {
     const fieldId = btn.dataset.field;
     const el = document.getElementById(fieldId);
     el.value = CLEAR_MARK;
-  })
+  });
 })
 
 function withSurname(name){
@@ -381,6 +381,7 @@ window.onload = async function(){
 
 document.getElementById('submitBtn').addEventListener('click', function(){
   const changes = {};
+  const currentYear = new Date().getFullYear();
 
   const newName = document.getElementById('input_name').value.trim();
   const newRank = document.getElementById('input_rank').value.trim();
@@ -392,25 +393,58 @@ document.getElementById('submitBtn').addEventListener('click', function(){
   const newBirthYear = document.getElementById('input_birthYear').value.trim();
   const newDeathYear = document.getElementById('input_deathYear').value.trim();
 
-  if(newRank && Number(newRank) < 1){
-    showInfo("兄弟排行不能小于1", true);
-    return;
-  }
-  if(newBirthYear && newBirthYear !== CLEAR_MARK && !/^\d{4}$/.test(newBirthYear)){
-    showInfo("出生年份必须是4位数字", true);
-    return;
-  }
-  if(newDeathYear && newDeathYear !== CLEAR_MARK && !/^\d{4}$/.test(newDeathYear)){
-    showInfo("去世年份必须是4位数字", true);
-    return;
-  }
+  // 名字校验
   if(newName && newName !== CLEAR_MARK && [...newName].length > 2){
     showInfo("名字最多两个汉字", true);
     return;
   }
+  // 妻子校验
   if(newWife && newWife !== CLEAR_MARK && [...newWife].length > 3){
     showInfo("妻子名字最多三个汉字", true);
     return;
+  }
+  // 兄弟排行校验 1~19
+  if(newRank && newRank !== CLEAR_MARK){
+    const rankNum = Number(newRank);
+    if(isNaN(rankNum) || rankNum < 1 || rankNum > 19){
+      showInfo("兄弟排行只能填 1 到 19", true);
+      return;
+    }
+  }
+  // 出生年份校验
+  if(newBirthYear && newBirthYear !== CLEAR_MARK){
+    if(!/^\d{4}$/.test(newBirthYear)){
+      showInfo("出生年份必须是4位数字", true);
+      return;
+    }
+    const bNum = Number(newBirthYear);
+    if(bNum > currentYear){
+      showInfo("出生年份不能超过今年", true);
+      return;
+    }
+  }
+  // 去世年份校验
+  if(newDeathYear && newDeathYear !== CLEAR_MARK){
+    if(!/^\d{4}$/.test(newDeathYear)){
+      showInfo("去世年份必须是4位数字", true);
+      return;
+    }
+    const dNum = Number(newDeathYear);
+    if(dNum > currentYear){
+      showInfo("去世年份不能超过今年", true);
+      return;
+    }
+  }
+  // 出生、去世都有填写，校验去世>出生
+  let useBirth = newBirthYear === CLEAR_MARK ? null : (newBirthYear || originalData.birthYear);
+  let useDeath = newDeathYear === CLEAR_MARK ? null : (newDeathYear || originalData.deathYear);
+  if(useBirth && useDeath && /^\d{4}$/.test(useBirth) && /^\d{4}$/.test(useDeath)){
+    const b = Number(useBirth);
+    const d = Number(useDeath);
+    if(d <= b){
+      showInfo("去世年份必须大于出生年份", true);
+      return;
+    }
   }
 
   if(newName && (newName === CLEAR_MARK || newName !== originalData.name)) changes.name = newName;
