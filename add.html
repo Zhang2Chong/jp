@@ -202,6 +202,23 @@ wifeInput.addEventListener("input", function () {
     this.value = this.value.replace(/[^\u4e00-\u9fa5]/g, "");
 });
 
+// 【新增：兄弟排行实时过滤】
+const rankInput = document.getElementById("birthOrder");
+rankInput.addEventListener("input", function(){
+    let val = this.value.replace(/\D/g, '');
+    if(val === ""){
+        this.value = "";
+        return;
+    }
+    let num = Number(val);
+    if(num > 19){
+        this.value = "19";
+    }else{
+        this.value = val;
+    }
+});
+
+
 document.getElementById('addForm').addEventListener('submit', function(e){
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
