@@ -46,7 +46,6 @@ h1{
 .btn-1{background:#ff8800}
 .btn-2{background:#2288ff}
 
-/* QR 精简区域，只放二维码，不留多余文字 */
 .qr-area{
   margin-top:30px;
 }
@@ -75,7 +74,6 @@ h1{
 <a class="btn btn-1" href="browse.html">📖 浏览世代族谱</a>
 <a class="btn btn-2" href="compare.html">⚖️ 两人血缘对比</a>
 
-<!-- 精简二维码，无额外文字，节省空间 -->
 <div class="qr-area">
   <canvas id="qrcode"></canvas>
 </div>
@@ -87,9 +85,8 @@ h1{
 </div>
 
 <script>
-// 自动分流页面：手机/平板进手机版，电脑进3D外墙
-const targetUrl = "https://zhang2chong.github.io/jp/index.html";
-// 二维码中间的家族图标
+// 二维码指向分流页自己
+const targetUrl = "https://zhang2chong.github.io/jp/index-redirect.html";
 const logoSrc = "assets/family-icon.png";
 
 QRCode.toCanvas(document.getElementById('qrcode'), targetUrl, {
@@ -113,7 +110,6 @@ function drawLogo(){
     const size = canvas.width * 0.22;
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
-    // 图标背后加白底，保证扫码识别
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
     ctx.roundRect(x - 4, y - 4, size + 8, size + 8, 6);
