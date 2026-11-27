@@ -229,6 +229,9 @@ let countdownTimer = null;
 let pollTimer = null;
 let isDone = false;
 let redirecting = false;
+let attemptCount = 0;          // ✅ 记录第几次尝试
+let currentTimeLimit = 90;     // ✅ 第一次90秒，错了改成60秒
+let remainSeconds = 90;        // ✅ 当前剩余秒数
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -381,6 +384,17 @@ function goBrowse(){
     window.location.href = "browse.html";
 }
 
+// ✅ 重置倒计时：第一次90秒，之后每次错了给60秒
+function resetCountdown(){
+    attemptCount++;
+    if(attemptCount === 1){
+        currentTimeLimit = 90;  // 第一次90秒
+    }else{
+        currentTimeLimit = 60;  // 输错后每次给60秒
+    }
+    remainSeconds = currentTimeLimit;
+}
+
 async function submitToJq(){
     const password = document.getElementById("passwordInput").value.trim();
     const infoMsg = document.getElementById("infoMsg");
@@ -417,8 +431,9 @@ async function submitToJq(){
     const ticket = makeShortTicket();
     const baseLineCount = await getLogLineCount();
 
+    // ✅ 每次提交前重置倒计时
+    resetCountdown();
     const startedAt = Date.now();
-    const totalLimitMs = 90000;
     const pollIntervalMs = 1000;
 
     const payload = {
@@ -459,16 +474,17 @@ async function submitToJq(){
             infoMsg.textContent = `📤 已送出，工单：${ticket}，正在自动核对..`;
             infoMsg.className = "info-msg";
 
+            // ✅ 开始倒计时
+            remainSeconds = currentTimeLimit;
             countdownTimer = setInterval(()=>{
-                const elapsed = Date.now() - startedAt;
-                const remain = Math.max(0, Math.ceil((totalLimitMs - elapsed) / 1000));
-                countdownMsg.textContent = `⌛ 剩余：${remain} 秒`;
-                if(remain <= 30){
+                remainSeconds--;
+                countdownMsg.textContent = `⌛ 剩余：${remainSeconds} 秒`;
+                if(remainSeconds <= 30){
                     countdownMsg.classList.add("warn");
                 }else{
                     countdownMsg.classList.remove("warn");
                 }
-                if(remain <= 0){
+                if(remainSeconds <= 0){
                     isDone = true;
                     goBrowse();
                 }
@@ -476,12 +492,6 @@ async function submitToJq(){
 
             pollTimer = setInterval(async ()=>{
                 if(isDone) return;
-                const elapsed = Date.now() - startedAt;
-                if(elapsed >= totalLimitMs){
-                    isDone = true;
-                    goBrowse();
-                    return;
-                }
                 const cols = await checkNewLines(baseLineCount, ticket);
                 if(cols !== null && !isDone){
                     const flag = cols[5].trim().toLowerCase();
@@ -494,35 +504,7 @@ async function submitToJq(){
                             window.location.href = "browse.html";
                         }, 3000);
                     }else{
-                        infoMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
-                        infoMsg.classList.add("error");
-                        confirmBtn.disabled = false;
-                    }
-                }
-            }, pollIntervalMs);
-        }else{
-            const r = await resp.json();
-            infoMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
-            infoMsg.classList.add("error");
-            confirmBtn.disabled = false;
-        }
-    }catch(err){
-        infoMsg.textContent = "❌ 网络错误，无法送出";
-        infoMsg.classList.add("error");
-        confirmBtn.disabled = false;
-    }
-}
-
-document.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-        submitToJq();
-    }
-});
-
-fillPreview();
-loadTokenFromCsv();
-document.getElementById("passwordInput").focus();
-</script>
-
-</body>
-</html>
+                        // ✅ 密码错了：不清空输入、不退出、重新给60秒机会
+                        clearAllTimers();
+                        infoMsg.textContent = "❌ 校对失败，密码错误，请重新输入";
+                        infoMsg.classList.add("
