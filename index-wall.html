@@ -15,7 +15,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: radial-gradient(circle at center, #121212 0%, #050505 100%);
+      background: radial-gradient(circle at center, #141414 0%, #000000 100%);
       font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
       color: #d4af37;
     }
@@ -27,161 +27,193 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
     }
 
-    .title {
-      position: absolute;
-      top: 12%;
-      font-size: 22px;
-      letter-spacing: 8px;
-      color: #d4af37;
-      opacity: 0.85;
-      text-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
-    }
-
+    /* 3D 场景 */
     .scene {
-      width: 220px;
-      height: 220px;
-      perspective: 1400px;
-      perspective-origin: 50% 50%;
+      width: 260px;
+      height: 260px;
+      perspective: 1600px;
+      perspective-origin: 50% 45%;
+      z-index: 5;
     }
 
+    /* 立方体 */
     .cube {
       position: relative;
       width: 100%;
       height: 100%;
       transform-style: preserve-3d;
-      /* 初始倾斜，一次看见正面、右面、顶面三面 */
-      transform: rotateY(-35deg) rotateX(25deg);
-      animation: rotateCube 8s infinite ease-in-out;
+      transform: rotateY(-32deg) rotateX(28deg);
+      animation: rotateCube 9s infinite ease-in-out;
     }
 
+    /* 六个面 */
     .face {
       position: absolute;
-      width: 220px;
-      height: 220px;
-      background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-      border: 1px solid rgba(212, 175, 55, 0.45);
-      box-shadow:
-        inset 0 0 35px rgba(212, 175, 55, 0.08),
-        0 0 25px rgba(0, 0, 0, 0.6);
+      width: 260px;
+      height: 260px;
+      background:
+        linear-gradient(135deg, rgba(25, 20, 8, 0.96) 0%, rgba(8, 8, 8, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.55);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 54px;
-      font-weight: 700;
-      color: #d4af37;
-      letter-spacing: 6px;
-      text-shadow: 0 0 12px rgba(212, 175, 55, 0.45);
+      flex-direction: column;
+      gap: 18px;
       backface-visibility: visible;
+      box-shadow:
+        inset 0 0 40px rgba(212, 175, 55, 0.12),
+        0 0 30px rgba(0, 0, 0, 0.75);
     }
 
+    /* 正面：张 + 张氏家谱 */
     .front {
-      transform: translateZ(110px);
-      background: radial-gradient(circle at center, #2a2208 0%, #0d0d0d 100%);
+      transform: translateZ(130px);
       cursor: pointer;
     }
-    .back {
-      transform: rotateY(180deg) translateZ(110px);
-      font-size: 18px;
+
+    .front .logo-ring {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 2px solid #d4af37;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 18px rgba(212, 175, 55, 0.55),
+        inset 0 0 12px rgba(212, 175, 55, 0.25);
+    }
+
+    .front .surname {
+      font-size: 64px;
+      font-weight: 700;
+      color: #d4af37;
       letter-spacing: 4px;
-      color: #9f8a44;
-      cursor: default;
+      text-shadow: 0 0 14px rgba(212, 175, 55, 0.65);
     }
+
+    .front .family-name {
+      font-size: 16px;
+      letter-spacing: 6px;
+      color: #d4af37;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.45);
+    }
+
+    /* 背面 */
+    .back {
+      transform: rotateY(180deg) translateZ(130px);
+    }
+
+    /* 左面 */
     .left {
-      transform: rotateY(-90deg) translateZ(110px);
-      background: linear-gradient(135deg, #141414 0%, #070707 100%);
-      cursor: default;
+      transform: rotateY(-90deg) translateZ(130px);
+      background: linear-gradient(135deg, rgba(18, 18, 18, 0.96) 0%, rgba(5, 5, 5, 0.98) 100%);
     }
+
+    /* 右面 */
     .right {
-      transform: rotateY(90deg) translateZ(110px);
-      background: linear-gradient(135deg, #141414 0%, #070707 100%);
-      cursor: default;
+      transform: rotateY(90deg) translateZ(130px);
+      background: linear-gradient(135deg, rgba(18, 18, 18, 0.96) 0%, rgba(5, 5, 5, 0.98) 100%);
     }
+
+    /* 顶面 */
     .top {
-      transform: rotateX(90deg) translateZ(110px);
-      background: linear-gradient(135deg, #181818 0%, #080808 100%);
-      cursor: default;
+      transform: rotateX(90deg) translateZ(130px);
+      background: linear-gradient(135deg, rgba(22, 22, 22, 0.96) 0%, rgba(6, 6, 6, 0.98) 100%);
     }
+
+    /* 底面 */
     .bottom {
-      transform: rotateX(-90deg) translateZ(110px);
-      background: linear-gradient(135deg, #0f0f0f 0%, #050505 100%);
-      cursor: default;
+      transform: rotateX(-90deg) translateZ(130px);
+      background: linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(2, 2, 2, 1) 100%);
     }
 
+    /* 旋转动画 */
     @keyframes rotateCube {
-      0%   { transform: rotateY(-35deg) rotateX(25deg); }
-      40%  { transform: rotateY(145deg) rotateX(25deg); }
-      50%  { transform: rotateY(145deg) rotateX(205deg); }
-      90%  { transform: rotateY(-35deg) rotateX(205deg); }
-      100% { transform: rotateY(-35deg) rotateX(25deg); }
+      0%   { transform: rotateY(-32deg) rotateX(28deg); }
+      40%  { transform: rotateY(148deg) rotateX(28deg); }
+      50%  { transform: rotateY(148deg) rotateX(208deg); }
+      90%  { transform: rotateY(-32deg) rotateX(208deg); }
+      100% { transform: rotateY(-32deg) rotateX(28deg); }
     }
 
+    /* 底部 hash 地面，加强立体感 */
     .hash-ground {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 42%;
+      left: 50%;
+      bottom: 8%;
+      width: 180vw;
+      height: 340px;
       background:
-        linear-gradient(to top, rgba(212, 175, 55, 0.08) 0%, transparent 100%),
+        radial-gradient(ellipse at center top, rgba(212, 175, 55, 0.18) 0%, transparent 55%),
         repeating-linear-gradient(
           0deg,
-          rgba(212, 175, 55, 0.06) 0px,
-          rgba(212, 175, 55, 0.06) 1px,
+          rgba(212, 175, 55, 0.12) 0px,
+          rgba(212, 175, 55, 0.12) 1px,
           transparent 1px,
-          transparent 40px
+          transparent 44px
         ),
         repeating-linear-gradient(
           90deg,
-          rgba(212, 175, 55, 0.06) 0px,
-          rgba(212, 175, 55, 0.06) 1px,
+          rgba(212, 175, 55, 0.12) 0px,
+          rgba(212, 175, 55, 0.12) 1px,
           transparent 1px,
-          transparent 40px
+          transparent 44px
         );
-      transform: perspective(600px) rotateX(55deg);
-      transform-origin: bottom;
-      mask-image: linear-gradient(to top, black 40%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
+      transform: translateX(-50%) perspective(700px) rotateX(60deg);
+      transform-origin: center bottom;
+      filter: blur(0.6px);
+      z-index: 1;
       pointer-events: none;
     }
 
+    /* 地面光晕 */
+    .ground-glow {
+      position: absolute;
+      left: 50%;
+      bottom: 18%;
+      width: 520px;
+      height: 180px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.35) 0%, transparent 70%);
+      filter: blur(18px);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* 地面 hash 小标记 */
     .hash-mark {
       position: absolute;
-      bottom: 18%;
-      font-size: 13px;
+      font-size: 12px;
       letter-spacing: 3px;
-      color: #9f8a44;
-      opacity: 0.75;
-      text-shadow: 0 0 8px rgba(212, 175, 55, 0.25);
+      color: rgba(212, 175, 55, 0.75);
+      text-shadow: 0 0 8px rgba(212, 175, 55, 0.35);
+      z-index: 3;
+      pointer-events: none;
     }
-    .hash-mark.left  { left: 12%; }
-    .hash-mark.right { right: 12%; }
-    .enter-hint {
-      position: absolute;
-      bottom: 10%;
-      font-size: 14px;
-      letter-spacing: 6px;
-      color: #d4af37;
-      opacity: 0.8;
-      animation: pulse 2s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.45; }
-      50%      { opacity: 1; }
-    }
+
+    .hash-mark.one   { left: 18%; bottom: 14%; }
+    .hash-mark.two   { right: 22%; bottom: 18%; }
+    .hash-mark.three { left: 30%; bottom: 22%; }
+    .hash-mark.four  { right: 34%; bottom: 10%; }
   </style>
 </head>
 
 <body>
   <section class="wall">
-    <div class="title">张氏家谱</div>
-
     <div class="scene">
       <div class="cube" id="cube">
-        <div class="face front" id="enterFace">张</div>
-        <div class="face back">INDEX WALL</div>
+        <!-- 正面：唯一可进入面 -->
+        <div class="face front" id="enterFace">
+          <div class="logo-ring">
+            <div class="surname">张</div>
+          </div>
+          <div class="family-name">张氏家谱</div>
+        </div>
+
+        <div class="face back"></div>
         <div class="face left"></div>
         <div class="face right"></div>
         <div class="face top"></div>
@@ -189,10 +221,14 @@
       </div>
     </div>
 
+    <!-- 底部立体 hash 地面 -->
+    <div class="ground-glow"></div>
     <div class="hash-ground"></div>
-    <div class="hash-mark left">#02 INDEX WALL</div>
-    <div class="hash-mark right">#01 FAMILY TREE</div>
-    <div class="enter-hint">点击【张】这一面进入</div>
+
+    <div class="hash-mark one">#01 FAMILY TREE</div>
+    <div class="hash-mark two">#02 INDEX WALL</div>
+    <div class="hash-mark three">#03 ANCESTOR</div>
+    <div class="hash-mark four">#04 WALL</div>
   </section>
 
   <script>
@@ -202,13 +238,14 @@
     enterFace.addEventListener('click', function () {
       cube.style.animation = 'none';
       cube.offsetHeight;
+
       cube.animate(
         [
-          { transform: 'rotateY(-35deg) rotateX(25deg)', scale: 1 },
-          { transform: 'rotateY(-35deg) rotateX(25deg) rotateY(360deg) rotateX(180deg)', scale: 1.35 }
+          { transform: 'rotateY(-32deg) rotateX(28deg) scale(1)', filter: 'brightness(1)' },
+          { transform: 'rotateY(-32deg) rotateX(28deg) rotateY(360deg) rotateX(180deg) scale(1.35)', filter: 'brightness(1.4)' }
         ],
         {
-          duration: 900,
+          duration: 1000,
           easing: 'ease-in-out',
           fill: 'forwards'
         }
