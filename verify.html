@@ -445,7 +445,7 @@ async function submitToJq(){
         });
 
         if(resp.ok){
-            infoMsg.textContent = `📤 已送出，工单Ticket：${ticket}，正在自动核对结果...`;
+            infoMsg.textContent = `📤 已送出，工单：${ticket}，正在自动核对..`;
             infoMsg.className = "info-msg";
 
             countdownTimer = setInterval(()=>{
