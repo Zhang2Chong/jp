@@ -227,6 +227,7 @@ const CSV_RAW_URL = "https://zhang2chong.github.io/jp/token_seq.csv";
 let knockToken = "";
 let countdownTimer = null;
 let pollTimer = null;
+let isDone = false;
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -382,6 +383,7 @@ async function submitToJq(){
     infoMsg.textContent = "";
     countdownMsg.textContent = "";
     countdownMsg.classList.remove("warn");
+    isDone = false;
 
     if(!password || password.length !== 6){
         infoMsg.textContent = "❌ 请输入6位数字密码";
@@ -459,6 +461,7 @@ async function submitToJq(){
                 }
                 if(remain <= 0){
                     clearAllTimers();
+                    isDone = true;
                     infoMsg.textContent = "⚠️ 本单90秒总时限耗尽，工单作废，请重新提交";
                     infoMsg.classList.add("error");
                     confirmBtn.disabled = false;
@@ -466,26 +469,29 @@ async function submitToJq(){
             }, 1000);
 
             pollTimer = setInterval(async ()=>{
+                if(isDone) return;
                 const elapsed = Date.now() - startedAt;
                 if(elapsed >= totalLimitMs){
                     clearAllTimers();
+                    isDone = true;
                     return;
                 }
                 const cols = await checkNewLines(baseLineCount, ticket);
-                if(cols !== null){
-                    clearAllTimers();
+                if(cols !== null && !isDone){
                     const flag = cols[5].trim().toLowerCase();
                     if(flag === "t"){
+                        isDone = true;
+                        clearAllTimers();
                         infoMsg.textContent = "✅ 通过，家谱资料已经入库同步";
                         infoMsg.classList.add("success");
+                        // 成功：停留3秒跳转
                         setTimeout(()=>{
                             window.location.href = "browse.html";
-                        }, 2500);
+                        }, 3000);
                     }else{
+                        // 失败：立刻红字，计时器继续跑，不关闭倒计时
                         infoMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
                         infoMsg.classList.add("error");
-                        countdownMsg.textContent = "";
-                        countdownMsg.classList.remove("warn");
                         confirmBtn.disabled = false;
                     }
                 }
