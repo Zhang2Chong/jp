@@ -46,27 +46,15 @@ h1{
 .btn-1{background:#ff8800}
 .btn-2{background:#2288ff}
 
-/* QR区域样式 */
+/* QR 精简区域，只放二维码，不留多余文字 */
 .qr-area{
-  margin-top:40px;
-  padding:20px;
-}
-.qr-title{
-  color:#ffdd66;
-  font-size:16px;
-  margin-bottom:12px;
-  letter-spacing:3px;
+  margin-top:30px;
 }
 #qrcode{
   display:inline-block;
   background:#222;
-  padding:10px;
-  border-radius:8px;
-}
-.qr-tip{
-  margin-top:10px;
-  color:#aaa;
-  font-size:13px;
+  padding:8px;
+  border-radius:6px;
 }
 
 .footer-note{
@@ -87,11 +75,9 @@ h1{
 <a class="btn btn-1" href="browse.html">📖 浏览世代族谱</a>
 <a class="btn btn-2" href="compare.html">⚖️ 两人血缘对比</a>
 
-<!-- 二维码放在两个按钮下面、版权上面 -->
+<!-- 精简二维码，无额外文字，节省空间 -->
 <div class="qr-area">
-  <div class="qr-title">三维家谱外墙入口</div>
   <canvas id="qrcode"></canvas>
-  <div class="qr-tip">手机 / iPad 扫码打开 index-wall</div>
 </div>
 
 <div class="footer-note">
@@ -101,10 +87,10 @@ h1{
 </div>
 
 <script>
-// 这里改成你index-wall的链接
+// 修改这里为你的 index-wall 链接
 const targetUrl = "https://xxx.github.io/xxx/index-wall.html";
 QRCode.toCanvas(document.getElementById('qrcode'), targetUrl, {
-  width:200,
+  width:180,
   margin:2,
   color:{
     dark:"#ffdd66",
