@@ -228,6 +228,7 @@ let knockToken = "";
 let countdownTimer = null;
 let pollTimer = null;
 let isDone = false;
+let redirecting = false;
 
 const params = new URLSearchParams(window.location.search);
 const type = params.get("type");
@@ -373,6 +374,13 @@ function clearAllTimers(){
     }
 }
 
+function goBrowse(){
+    if(redirecting) return;
+    redirecting = true;
+    clearAllTimers();
+    window.location.href = "browse.html";
+}
+
 async function submitToJq(){
     const password = document.getElementById("passwordInput").value.trim();
     const infoMsg = document.getElementById("infoMsg");
@@ -384,6 +392,7 @@ async function submitToJq(){
     countdownMsg.textContent = "";
     countdownMsg.classList.remove("warn");
     isDone = false;
+    redirecting = false;
 
     if(!password || password.length !== 6){
         infoMsg.textContent = "❌ 请输入6位数字密码";
@@ -460,11 +469,8 @@ async function submitToJq(){
                     countdownMsg.classList.remove("warn");
                 }
                 if(remain <= 0){
-                    clearAllTimers();
                     isDone = true;
-                    infoMsg.textContent = "⚠️ 本单90秒总时限耗尽，工单作废，请重新提交";
-                    infoMsg.classList.add("error");
-                    confirmBtn.disabled = false;
+                    goBrowse();
                 }
             }, 1000);
 
@@ -472,8 +478,8 @@ async function submitToJq(){
                 if(isDone) return;
                 const elapsed = Date.now() - startedAt;
                 if(elapsed >= totalLimitMs){
-                    clearAllTimers();
                     isDone = true;
+                    goBrowse();
                     return;
                 }
                 const cols = await checkNewLines(baseLineCount, ticket);
@@ -484,12 +490,10 @@ async function submitToJq(){
                         clearAllTimers();
                         infoMsg.textContent = "✅ 通过，家谱资料已经入库同步";
                         infoMsg.classList.add("success");
-                        // 成功：停留3秒跳转
                         setTimeout(()=>{
                             window.location.href = "browse.html";
                         }, 3000);
                     }else{
-                        // 失败：立刻红字，计时器继续跑，不关闭倒计时
                         infoMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
                         infoMsg.classList.add("error");
                         confirmBtn.disabled = false;
