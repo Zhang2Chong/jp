@@ -7,7 +7,7 @@
   "theme_color": "#1a1a1a",
   "icons": [
     {
-      "src": "./assets/family-icon.png",
+      "src": "../assets/family-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
