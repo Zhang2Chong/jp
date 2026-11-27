@@ -460,6 +460,7 @@ async function submitToJq(){
             infoMsg.className = "info-msg";
 
             countdownTimer = setInterval(()=>{
+                if(isDone) return;
                 const elapsed = Date.now() - startedAt;
                 const remain = Math.max(0, Math.ceil((totalLimitMs - elapsed) / 1000));
                 countdownMsg.textContent = `⌛ 剩余：${remain} 秒`;
@@ -484,14 +485,14 @@ async function submitToJq(){
                 }
                 const cols = await checkNewLines(baseLineCount, ticket);
                 if(cols !== null && !isDone){
+                    isDone = true;
+                    clearAllTimers();
                     const flag = cols[5].trim().toLowerCase();
                     if(flag === "t"){
-                        isDone = true;
-                        clearAllTimers();
                         infoMsg.textContent = "✅ 通过，家谱资料已经入库同步";
                         infoMsg.classList.add("success");
                         setTimeout(()=>{
-                            window.location.href = "browse.html";
+                            goBrowse();
                         }, 3000);
                     }else{
                         infoMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
