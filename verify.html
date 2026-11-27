@@ -112,17 +112,11 @@ h2{
     margin-bottom:4px;
     min-height:20px;
 }
-.error-msg{
+.info-msg.error{
     color:#ff6b6b;
-    font-size:15px;
-    margin-bottom:4px;
-    min-height:20px;
 }
-.success-msg{
+.info-msg.success{
     color:#4ade80;
-    font-size:15px;
-    margin-bottom:6px;
-    min-height:20px;
 }
 .countdown-msg{
     font-size:16px;
@@ -138,7 +132,7 @@ h2{
     display:flex;
     gap:12px;
     justify-content:center;
-    margin-top:0;
+    margin-top:8px;
 }
 .btn{
     padding:12px 24px;
@@ -217,8 +211,6 @@ h2{
         <div class="tip-msg" id="tipMsg"></div>
         <div class="countdown-msg" id="countdownMsg"></div>
         <div class="info-msg" id="infoMsg"></div>
-        <div class="error-msg" id="errorMsg"></div>
-        <div class="success-msg" id="successMsg"></div>
         <div class="btn-row">
             <button class="btn btn-cancel" onclick="goBack();">取消</button>
             <button class="btn btn-confirm" id="confirmBtn" onclick="submitToJq();">确认并提交</button>
@@ -382,28 +374,29 @@ function clearAllTimers(){
 
 async function submitToJq(){
     const password = document.getElementById("passwordInput").value.trim();
-    const errorMsg = document.getElementById("errorMsg");
     const infoMsg = document.getElementById("infoMsg");
-    const successMsg = document.getElementById("successMsg");
     const confirmBtn = document.getElementById("confirmBtn");
     const countdownMsg = document.getElementById("countdownMsg");
 
-    errorMsg.textContent = "";
-    successMsg.textContent = "";
+    infoMsg.className = "info-msg";
+    infoMsg.textContent = "";
     countdownMsg.textContent = "";
     countdownMsg.classList.remove("warn");
 
     if(!password || password.length !== 6){
-        errorMsg.textContent = "❌ 请输入6位数字密码";
+        infoMsg.textContent = "❌ 请输入6位数字密码";
+        infoMsg.classList.add("error");
         return;
     }
     if(!knockToken){
-        errorMsg.textContent = "❌ 敲门令牌尚未加载，不能提交";
+        infoMsg.textContent = "❌ 敲门令牌尚未加载，不能提交";
+        infoMsg.classList.add("error");
         return;
     }
 
     confirmBtn.disabled = true;
     infoMsg.textContent = "⏳ 正在提交资料到校验通道...";
+    infoMsg.className = "info-msg";
 
     let sendId = null;
     if(type === "4"){
@@ -453,6 +446,7 @@ async function submitToJq(){
 
         if(resp.ok){
             infoMsg.textContent = `📤 已送出，工单Ticket：${ticket}，正在自动核对结果...`;
+            infoMsg.className = "info-msg";
 
             countdownTimer = setInterval(()=>{
                 const elapsed = Date.now() - startedAt;
@@ -465,8 +459,8 @@ async function submitToJq(){
                 }
                 if(remain <= 0){
                     clearAllTimers();
-                    errorMsg.textContent = "⚠️ 本单3分钟总时限耗尽，工单作废，请重新提交";
-                    infoMsg.textContent = "";
+                    infoMsg.textContent = "⚠️ 本单90秒总时限耗尽，工单作废，请重新提交";
+                    infoMsg.classList.add("error");
                     confirmBtn.disabled = false;
                 }
             }, 1000);
@@ -482,14 +476,14 @@ async function submitToJq(){
                     clearAllTimers();
                     const flag = cols[5].trim().toLowerCase();
                     if(flag === "t"){
-                        successMsg.textContent = "✅ 通过，家谱资料已经入库同步";
-                        infoMsg.textContent = "";
+                        infoMsg.textContent = "✅ 通过，家谱资料已经入库同步";
+                        infoMsg.classList.add("success");
                         setTimeout(()=>{
                             window.location.href = "browse.html";
                         }, 2500);
                     }else{
-                        errorMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
-                        infoMsg.textContent = "";
+                        infoMsg.textContent = "❌ 校对失败，请重新核对密码再提交";
+                        infoMsg.classList.add("error");
                         countdownMsg.textContent = "";
                         countdownMsg.classList.remove("warn");
                         confirmBtn.disabled = false;
@@ -498,11 +492,13 @@ async function submitToJq(){
             }, pollIntervalMs);
         }else{
             const r = await resp.json();
-            errorMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
+            infoMsg.textContent = `❌ 提交失败：${r.message || "仓库触发异常"}`;
+            infoMsg.classList.add("error");
             confirmBtn.disabled = false;
         }
     }catch(err){
-        errorMsg.textContent = "❌ 网络错误，无法送出";
+        infoMsg.textContent = "❌ 网络错误，无法送出";
+        infoMsg.classList.add("error");
         confirmBtn.disabled = false;
     }
 }
