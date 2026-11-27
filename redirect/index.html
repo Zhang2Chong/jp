@@ -3,61 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>张氏家谱</title>
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./assets/family-icon.png">
-<link rel="apple-touch-icon" href="./assets/family-icon.png">
-<meta name="theme-color" content="#1a1a1a">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-    background:#1a1a1a;
-    color:#facc54;
-    font-family:"Microsoft YaHei",sans-serif;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-.wrap{
-    text-align:center;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:18px;
-}
-.wrap img{
-    width:120px;
-    height:120px;
-    border-radius:16px;
-}
-.wrap h1{
-    font-size:22px;
-    color:#ffcc44;
-}
-.wrap p{
-    font-size:15px;
-    color:#aaa;
-}
-.wrap a{
-    color:#ff9f29;
-    text-decoration:none;
-    font-size:15px;
-    display:block;
-    margin-top:6px;
-}
+.wrap{text-align:center;padding-top:30px}
+img{width:90px}
+h1{color:#ff9f29;font-size:26px}
+#tip{color:#aaa;font-size:15px;margin-top:6px}
+.wrap a{color:#ff9f29;text-decoration:none;font-size:15px;display:block;margin-top:6px}
 </style>
 </head>
 <body>
 <div class="wrap">
-    <img src="./assets/family-icon.png" alt="icon">
-    <h1>张氏家谱</h1>
-    <p id="tip">正在进入…</p>
-    <noscript>
-        <a href="https://zhang2chong.github.io/jp/index.html">手机版</a>
-        <a href="https://zhang2chong.github.io/jp/index-wall.html">电脑版</a>
-    </noscript>
+<img src="./assets/family-icon.png" alt="icon">
+<h1>张氏家谱</h1>
+<p id="tip">正在进入...</p>
+<noscript>
+<a href="https://zhang2chong.github.io/jp/index.html">手机版</a>
+<a href="https://zhang2chong.github.io/jp/index-wall.html">电脑版</a>
+</noscript>
 </div>
 
 <script>
@@ -65,14 +28,23 @@ const MOBILE_URL = "https://zhang2chong.github.io/jp/index.html";
 const DESKTOP_URL = "https://zhang2chong.github.io/jp/index-wall.html";
 
 function isMobileDevice(){
-    const ua = navigator.userAgent;
-    if (/iPhone|iPod|Windows Phone/i.test(ua)) return true;
-    if (/Android/i.test(ua) && /Mobile/i.test(ua)) return true;
-    return false;
+  const ua = navigator.userAgent;
+  // iPhone、iPod 是手机
+  if (/iPhone|iPod/i.test(ua)) return true;
+  // iPad 平板，不算手机
+  if (/iPad/i.test(ua)) return false;
+  // Android ：有 Mobile 并且不是平板，才判定为手机
+  if (/Android/i.test(ua)) {
+    // 只要有 Tablet / Tab 字样，识别为平板，不进手机版
+    if (/Tab|Tablet/i.test(ua)) return false;
+    // 剩下Android带Mobile的，才是手机
+    return /Mobile/i.test(ua);
+  }
+  return false;
 }
 
 const target = isMobileDevice() ? MOBILE_URL : DESKTOP_URL;
-document.getElementById("tip").textContent = isMobileDevice() ? "正在进入手机版…" : "正在进入电脑版…";
+document.getElementById("tip").textContent = isMobileDevice() ? "正在进入手机版..." : "正在进入电脑版...";
 window.location.replace(target);
 </script>
 </body>
